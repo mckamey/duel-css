@@ -181,6 +181,8 @@ public class CssLexer implements Iterator<CssToken> {
 						return this.scanString();
 
 					case CssGrammar.OP_PAIR_DELIM:
+					case CssGrammar.OP_CLASS:
+					case CssGrammar.OP_CHILD:
 					case CssGrammar.OP_COMMA:
 					case CssGrammar.OP_PAREN_BEGIN:
 					case CssGrammar.OP_SQUARE_BEGIN:
@@ -259,6 +261,11 @@ public class CssLexer implements Iterator<CssToken> {
 			return true;
 		}
 
+		if (CharUtility.isDigit(this.ch)) {
+			this.scanNumber();
+			return true;
+		}
+		
 		// reset the buffer
 		this.buffer.setLength(0);
 
@@ -289,6 +296,8 @@ public class CssLexer implements Iterator<CssToken> {
 				case CssGrammar.OP_SQUARE_END:
 				case CssGrammar.OP_COMMA:
 
+				case CssGrammar.OP_CLASS:
+				case CssGrammar.OP_CHILD:
 				case CssGrammar.OP_INCLUDES_MATCH:
 				case CssGrammar.OP_DASH_MATCH:
 				case CssGrammar.OP_PREFIX_MATCH:
@@ -316,6 +325,29 @@ public class CssLexer implements Iterator<CssToken> {
 
 	/**
 	 * Consumes the String literal appending it to the current buffer
+	 * @throws IOException
+	 */
+	private CssToken scanNumber()
+		throws IOException {
+
+		// reset the buffer
+		this.buffer.setLength(0);
+		this.buffer.append((char)this.ch);
+
+		// consume until reach the delim
+		while (CharUtility.isDigit(this.nextChar()) || this.ch == '.') {
+			this.buffer.append((char)this.ch);
+		}
+
+		if (CharUtility.isNameStartChar(this.ch)) {
+			return (this.token = CssToken.value(this.scanIdent(true), this.token_index, this.token_line, this.token_column));
+		}
+
+		return (this.token = CssToken.value(this.buffer.toString(), this.index, this.line, this.column));
+	}
+
+	/**
+	 * Consumes the next token as a String literal
 	 * @throws IOException
 	 */
 	private CssToken scanString()
@@ -391,15 +423,23 @@ public class CssLexer implements Iterator<CssToken> {
 		return (this.token = CssToken.value(this.scanName(), this.index, this.line, this.column));
 	}
 
+	private String scanIdent()
+		throws IOException {
+
+		return this.scanIdent(false);
+	}
+
 	/**
 	 * Scan the next token as an identifier
 	 * @return identifier
 	 * @throws IOException
 	 */
-	private String scanIdent()
+	private String scanIdent(boolean append)
 		throws IOException {
 
-		this.buffer.setLength(0);
+		if (!append) {
+			this.buffer.setLength(0);
+		}
 
 		// optional prefix
 		if (this.ch == CssGrammar.OP_IDENT_PREFIX) {

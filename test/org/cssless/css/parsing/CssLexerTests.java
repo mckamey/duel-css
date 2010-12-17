@@ -51,6 +51,7 @@ public class CssLexerTests {
 
 		Object[] actual = new CssLexer(input).toList().toArray();
 
+//dumpLists(expected, actual);
 		assertArrayEquals(expected, actual);
 	}
 
@@ -192,6 +193,47 @@ public class CssLexerTests {
 	}
 
 	@Test
+	public void selectorMixedTest() {
+
+		String input = "div#my-id *.myClass E[foo~=\"warning\"]>F:first-child + G:lang(en) { color : #336699;}";
+
+		Object[] expected = {
+				CssToken.ident("div"),
+				CssToken.value("#my-id"),
+				CssToken.value("*"),
+				CssToken.value("."),
+				CssToken.ident("myClass"),
+				CssToken.ident("E"),
+				CssToken.value("["),
+				CssToken.ident("foo"),
+				CssToken.value("~="),
+				CssToken.value("\"warning\""),
+				CssToken.value("]"),
+				CssToken.value(">"),
+				CssToken.ident("F"),
+				CssToken.value(":"),
+				CssToken.ident("first-child"),
+				CssToken.value("+"),
+				CssToken.ident("G"),
+				CssToken.value(":"),
+				CssToken.ident("lang"),
+				CssToken.value("("),
+				CssToken.ident("en"),
+				CssToken.value(")"),
+				CssToken.blockBegin(),
+				CssToken.ident("color"),
+				CssToken.value(":"),
+				CssToken.value("#336699"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void selectorComplexTest() {
 
 		String input =
@@ -271,7 +313,6 @@ public class CssLexerTests {
 
 		Object[] actual = new CssLexer(input).toList().toArray();
 
-//dumpLists(expected, actual);
 		assertArrayEquals(expected, actual);
 	}
 

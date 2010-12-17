@@ -17,6 +17,8 @@ final class CssGrammar {
 	public static final char OP_STRING_DELIM = '"';
 	public static final char OP_STRING_DELIM_ALT = '\'';
 
+	public static final char OP_CLASS = '.';
+	public static final char OP_CHILD = '>';
 	public static final char OP_INCLUDES_MATCH = '~';
 	public static final char OP_DASH_MATCH = '|';
 	public static final char OP_PREFIX_MATCH = '^';
