@@ -216,7 +216,7 @@ public class CssLexer implements Iterator<CssToken> {
 					this.nextChar();
 					return (this.token = CssToken.value(value, this.index, this.line, this.column));
 
-				case CssGrammar.OP_INCLUDES_MATCH:
+				case CssGrammar.OP_SIBLING: // "~" or "~="
 				case CssGrammar.OP_DASH_MATCH:
 				case CssGrammar.OP_PREFIX_MATCH:
 				case CssGrammar.OP_SUFFIX_MATCH:
@@ -248,7 +248,7 @@ public class CssLexer implements Iterator<CssToken> {
 			}
 
 			if (isNumber || CharUtility.isNumeric(this.ch)) {
-				return this.scanNumber();
+				return this.scanNumeric();
 			}
 
 			if (this.ch == CssGrammar.OP_MINUS || CharUtility.isNameStartChar(this.ch)) {
@@ -303,8 +303,8 @@ public class CssLexer implements Iterator<CssToken> {
 				case CssGrammar.OP_DOT:
 				case CssGrammar.OP_CHILD:
 				case CssGrammar.OP_ADJACENT:
+				case CssGrammar.OP_SIBLING:
 				case CssGrammar.OP_MATCH:
-				case CssGrammar.OP_INCLUDES_MATCH:
 				case CssGrammar.OP_DASH_MATCH:
 				case CssGrammar.OP_PREFIX_MATCH:
 				case CssGrammar.OP_SUFFIX_MATCH:
@@ -328,7 +328,7 @@ public class CssLexer implements Iterator<CssToken> {
 	 * Consumes the String literal appending it to the current buffer
 	 * @throws IOException
 	 */
-	private CssToken scanNumber()
+	private CssToken scanNumeric()
 		throws IOException {
 
 		// reset the buffer
@@ -340,11 +340,16 @@ public class CssLexer implements Iterator<CssToken> {
 			this.buffer.append((char)this.ch);
 		}
 
-		if (CharUtility.isNameStartChar(this.ch)) {
-			return (this.token = CssToken.value(this.scanIdent(true), this.token_index, this.token_line, this.token_column));
+		if (this.ch == CssGrammar.OP_PERCENT) {
+			this.buffer.append(CssGrammar.OP_PERCENT);
+			this.nextChar();
 		}
 
-		return (this.token = CssToken.value(this.buffer.toString(), this.index, this.line, this.column));
+		else if (CharUtility.isNameStartChar(this.ch)) {
+			this.scanIdent(true);
+		}
+
+		return (this.token = CssToken.numeric(this.buffer.toString(), this.index, this.line, this.column));
 	}
 
 	/**
@@ -376,7 +381,7 @@ public class CssLexer implements Iterator<CssToken> {
 
 		this.nextChar();
 		this.buffer.append((char)delim);
-		return (this.token = CssToken.value(this.buffer.toString(), this.index, this.line, this.column));
+		return (this.token = CssToken.stringValue(this.buffer.toString(), this.index, this.line, this.column));
 	}
 
 	/**

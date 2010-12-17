@@ -13,17 +13,27 @@ public enum CssTokenType {
 	START,
 
 	/**
-	 * Value
+	 * General value
 	 */
 	VALUE,
 
 	/**
-	 * Identifier
+	 * Identifier value
 	 */
 	IDENT,
 
 	/**
-	 * At-rule
+	 * String value
+	 */
+	STRING,
+
+	/**
+	 * Numeric value
+	 */
+	NUMERIC,
+
+	/**
+	 * At-rule keyword
 	 */
 	AT_RULE,
 

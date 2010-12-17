@@ -11,9 +11,9 @@ public class CssLexerTests {
 		String input = "\"Lucida Sans Unicode\" ,'Lucida Grande',Helvetica, Arial, sans-serif";
 
 		Object[] expected = {
-				CssToken.value("\"Lucida Sans Unicode\""),
+				CssToken.stringValue("\"Lucida Sans Unicode\""),
 				CssToken.value(","),
-				CssToken.value("'Lucida Grande'"),
+				CssToken.stringValue("'Lucida Grande'"),
 				CssToken.value(","),
 				CssToken.ident("Helvetica"),
 				CssToken.value(","),
@@ -30,7 +30,7 @@ public class CssLexerTests {
 	@Test
 	public void valueListMixedTest() {
 
-		String input = "h1 { font: bold 2em/1.2 Helvetica, Arial, sans-serif }";
+		String input = "h1 { font: bold 2.0em/120% Helvetica, Arial, sans-serif }";
 
 		Object[] expected = {
 				CssToken.ident("h1"),
@@ -38,9 +38,9 @@ public class CssLexerTests {
 				CssToken.ident("font"),
 				CssToken.value(":"),
 				CssToken.ident("bold"),
-				CssToken.value("2em"),
+				CssToken.numeric("2.0em"),
 				CssToken.value("/"),
-				CssToken.value("1.2"),
+				CssToken.numeric("120%"),
 				CssToken.ident("Helvetica"),
 				CssToken.value(","),
 				CssToken.ident("Arial"),
@@ -118,7 +118,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.ident("margin"),
 				CssToken.value(":"),
-				CssToken.value(".2em"),
+				CssToken.numeric(".2em"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -139,7 +139,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.ident("margin"),
 				CssToken.value(":"),
-				CssToken.value("-1.2em"),
+				CssToken.numeric("-1.2em"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -159,7 +159,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.ident("margin"),
 				CssToken.value(":"),
-				CssToken.value("-.2em"),
+				CssToken.numeric("-.2em"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -244,7 +244,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.ident("content"),
 				CssToken.value(":"),
-				CssToken.value("''"),
+				CssToken.stringValue("''"),
 				CssToken.blockEnd()
 			};
 
@@ -296,7 +296,7 @@ public class CssLexerTests {
 				CssToken.value("["),
 				CssToken.ident("foo"),
 				CssToken.value("~="),
-				CssToken.value("\"warning\""),
+				CssToken.stringValue("\"warning\""),
 				CssToken.value("]"),
 				CssToken.value(">"),
 				CssToken.ident("F"),
@@ -341,7 +341,7 @@ public class CssLexerTests {
 				CssToken.value("["),
 				CssToken.ident("example"),
 				CssToken.value("="),
-				CssToken.value(
+				CssToken.stringValue(
 					"\"public class foo\\\n" +
 					"{\\\n" +
 					"\tprivate int x;\\\n" +
@@ -414,7 +414,7 @@ public class CssLexerTests {
 				CssToken.atRule("import"),
 				CssToken.ident("url"),
 				CssToken.value("("),
-				CssToken.value("\"reset.css\""),
+				CssToken.stringValue("\"reset.css\""),
 				CssToken.value(")"),
 				CssToken.ident("screen"),
 				CssToken.ruleDelim()
@@ -440,7 +440,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.ident("font-size"),
 				CssToken.value(":"),
-				CssToken.value("10pt"),
+				CssToken.numeric("10pt"),
 				CssToken.blockEnd(),
 				CssToken.blockEnd()
 			};
@@ -464,22 +464,22 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.ident("font-family"),
 				CssToken.value(":"),
-				CssToken.value("'Foo'"),
+				CssToken.stringValue("'Foo'"),
 				CssToken.ruleDelim(),
 				CssToken.ident("src"),
 				CssToken.value(":"),
 				CssToken.ident("local"),
 				CssToken.value("("),
-				CssToken.value("'Foo'"),
+				CssToken.stringValue("'Foo'"),
 				CssToken.value(")"),
 				CssToken.value(","),
 				CssToken.ident("url"),
 				CssToken.value("("),
-				CssToken.value("'http://example.com/fonts/foo.tt'"),
+				CssToken.stringValue("'http://example.com/fonts/foo.tt'"),
 				CssToken.value(")"),
 				CssToken.ident("format"),
 				CssToken.value("("),
-				CssToken.value("'truetype'"),
+				CssToken.stringValue("'truetype'"),
 				CssToken.value(")"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
@@ -506,11 +506,11 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.ident("margin-left"),
 				CssToken.value(":"),
-				CssToken.value("4cm"),
+				CssToken.numeric("4cm"),
 				CssToken.ruleDelim(),
 				CssToken.ident("margin-right"),
 				CssToken.value(":"),
-				CssToken.value("3cm"),
+				CssToken.numeric("3cm"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -530,7 +530,7 @@ public class CssLexerTests {
 
 		Object[] expected = {
 				CssToken.ident("div"),
-				CssToken.value(".1a"),
+				CssToken.numeric(".1a"),// incorrect
 				CssToken.blockBegin(),
 				CssToken.ident("filter"),
 				CssToken.value(":"),
@@ -544,11 +544,11 @@ public class CssLexerTests {
 				CssToken.value("("),
 				CssToken.ident("src"),
 				CssToken.value("="),
-				CssToken.value("'foo.png'"),
+				CssToken.stringValue("'foo.png'"),
 				CssToken.value(","),
 				CssToken.ident("sizingMethod"),
 				CssToken.value("="),
-				CssToken.value("\"scale\""),
+				CssToken.stringValue("\"scale\""),
 				CssToken.value(")"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()

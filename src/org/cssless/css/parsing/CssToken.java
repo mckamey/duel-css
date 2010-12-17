@@ -124,6 +124,22 @@ public class CssToken {
 		return new CssToken(CssTokenType.VALUE, value, index, line, column);
 	}
 
+	public static CssToken numeric(String value) {
+		return new CssToken(CssTokenType.NUMERIC, value, -1, -1, -1);
+	}
+
+	public static CssToken numeric(String value, int index, int line, int column) {
+		return new CssToken(CssTokenType.NUMERIC, value, index, line, column);
+	}
+
+	public static CssToken stringValue(String value) {
+		return new CssToken(CssTokenType.STRING, value, -1, -1, -1);
+	}
+
+	public static CssToken stringValue(String value, int index, int line, int column) {
+		return new CssToken(CssTokenType.STRING, value, index, line, column);
+	}
+
 	public static CssToken ident(String value) {
 		return new CssToken(CssTokenType.IDENT, value, -1, -1, -1);
 	}
