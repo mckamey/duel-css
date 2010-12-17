@@ -51,7 +51,6 @@ public class CssLexerTests {
 
 		Object[] actual = new CssLexer(input).toList().toArray();
 
-//dumpLists(expected, actual);
 		assertArrayEquals(expected, actual);
 	}
 
@@ -193,7 +192,36 @@ public class CssLexerTests {
 	}
 
 	@Test
-	public void selectorMixedTest() {
+	public void selectorCompoundTest() {
+
+		String input = "span.foo.bar[foo=bar]{ color : red}";
+
+		Object[] expected = {
+				CssToken.ident("span"),
+				CssToken.value("."),
+				CssToken.ident("foo"),
+				CssToken.value("."),
+				CssToken.ident("bar"),
+				CssToken.value("["),
+				CssToken.ident("foo"),
+				CssToken.value("="),
+				CssToken.ident("bar"),
+				CssToken.value("]"),
+				CssToken.blockBegin(),
+				CssToken.ident("color"),
+				CssToken.value(":"),
+				CssToken.ident("red"),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+//dumpLists(expected, actual);
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void selectorComplexTest() {
 
 		String input = "div#my-id *.myClass E[foo~=\"warning\"]>F:first-child + G:lang(en) { color : #336699;}";
 
@@ -234,7 +262,7 @@ public class CssLexerTests {
 	}
 
 	@Test
-	public void selectorComplexTest() {
+	public void selectorEscapedTest() {
 
 		String input =
 			"p[example=\"public class foo\\\n" +

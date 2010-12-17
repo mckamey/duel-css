@@ -17,21 +17,22 @@ final class CssGrammar {
 	public static final char OP_STRING_DELIM = '"';
 	public static final char OP_STRING_DELIM_ALT = '\'';
 
-	public static final char OP_CLASS = '.';
+	public static final char OP_HASH = '#';
+	public static final char OP_DOT = '.';
 	public static final char OP_CHILD = '>';
+
+	public static final char OP_ATTR_BEGIN = '[';
+	public static final char OP_ATTR_END = ']';
+	public static final char OP_MATCH = '=';
 	public static final char OP_INCLUDES_MATCH = '~';
 	public static final char OP_DASH_MATCH = '|';
 	public static final char OP_PREFIX_MATCH = '^';
 	public static final char OP_SUFFIX_MATCH = '$';
 	public static final char OP_SUBSTR_MATCH = '*';
-	public static final char OP_MATCH_END = '=';
 
-	public static final char OP_HASH = '#';
 	public static final char OP_PAREN_BEGIN = '(';
 	public static final char OP_PAREN_END = ')';
-	public static final char OP_SQUARE_BEGIN = '[';
-	public static final char OP_SQUARE_END = ']';
-	public static final char OP_COMMA = ',';
+	public static final char OP_VALUE_DELIM = ',';
 
 	public static final char OP_COMMENT = '/';
 	public static final String OP_COMMENT_BEGIN = "/*";

@@ -180,14 +180,15 @@ public class CssLexer implements Iterator<CssToken> {
 						// consume string
 						return this.scanString();
 
-					case CssGrammar.OP_PAIR_DELIM:
-					case CssGrammar.OP_CLASS:
+					case CssGrammar.OP_DOT:
 					case CssGrammar.OP_CHILD:
-					case CssGrammar.OP_COMMA:
+					case CssGrammar.OP_MATCH:
+					case CssGrammar.OP_PAIR_DELIM:
+					case CssGrammar.OP_VALUE_DELIM:
+					case CssGrammar.OP_ATTR_END:
+					case CssGrammar.OP_ATTR_BEGIN:
 					case CssGrammar.OP_PAREN_BEGIN:
-					case CssGrammar.OP_SQUARE_BEGIN:
 					case CssGrammar.OP_PAREN_END:
-					case CssGrammar.OP_SQUARE_END:
 						// consume
 						String value = String.valueOf((char)this.ch);
 						this.nextChar();
@@ -201,9 +202,9 @@ public class CssLexer implements Iterator<CssToken> {
 						// consume
 						String match = String.valueOf((char)this.ch);
 						this.nextChar();
-						if (this.ch == CssGrammar.OP_MATCH_END) {
+						if (this.ch == CssGrammar.OP_MATCH) {
 							this.nextChar();
-							match += CssGrammar.OP_MATCH_END;
+							match += CssGrammar.OP_MATCH;
 						}
 						return (this.token = CssToken.value(match, this.index, this.line, this.column));
 
@@ -291,12 +292,12 @@ public class CssLexer implements Iterator<CssToken> {
 
 				case CssGrammar.OP_PAIR_DELIM:
 				case CssGrammar.OP_PAREN_BEGIN:
-				case CssGrammar.OP_SQUARE_BEGIN:
+				case CssGrammar.OP_ATTR_BEGIN:
 				case CssGrammar.OP_PAREN_END:
-				case CssGrammar.OP_SQUARE_END:
-				case CssGrammar.OP_COMMA:
+				case CssGrammar.OP_ATTR_END:
+				case CssGrammar.OP_VALUE_DELIM:
 
-				case CssGrammar.OP_CLASS:
+				case CssGrammar.OP_DOT:
 				case CssGrammar.OP_CHILD:
 				case CssGrammar.OP_INCLUDES_MATCH:
 				case CssGrammar.OP_DASH_MATCH:
