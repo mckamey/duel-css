@@ -12,6 +12,7 @@ final class CssGrammar {
 	public static final char OP_DECL_DELIM = ';';
 
 	public static final char OP_MINUS = '-';
+	public static final char OP_PLUS = '+';
 	public static final char OP_PERCENT = '%';
 	public static final char OP_ESCAPE = '\\';
 

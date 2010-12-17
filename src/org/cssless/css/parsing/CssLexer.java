@@ -202,8 +202,21 @@ public class CssLexer implements Iterator<CssToken> {
 					this.resetMark();
 					break;
 
+				case CssGrammar.OP_PLUS:
+					this.setMark(CAPACITY);
+					this.nextChar();
+
+					// negative number or identifier
+					isNumber = CharUtility.isNumeric(this.ch);
+					if (isNumber) {
+						this.resetMark();
+						break;
+					}
+
+					// consume '+' adjacent combinator
+					return (this.token = CssToken.value(String.valueOf(CssGrammar.OP_ADJACENT), this.index, this.line, this.column));
+
 				case CssGrammar.OP_CHILD:
-				case CssGrammar.OP_ADJACENT:
 				case CssGrammar.OP_MATCH:
 				case CssGrammar.OP_PAIR_DELIM:
 				case CssGrammar.OP_VALUE_DELIM:
@@ -333,6 +346,8 @@ public class CssLexer implements Iterator<CssToken> {
 
 		// reset the buffer
 		this.buffer.setLength(0);
+
+		// [\.0-9+-]
 		this.buffer.append((char)this.ch);
 
 		// consume until reach the delim

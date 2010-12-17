@@ -170,6 +170,47 @@ public class CssLexerTests {
 	}
 
 	@Test
+	public void valueFloatPositiveTest() {
+
+		String input = ".bar{margin:+1.2em;}";
+
+		Object[] expected = {
+				CssToken.value("."),
+				CssToken.ident("bar"),
+				CssToken.blockBegin(),
+				CssToken.ident("margin"),
+				CssToken.value(":"),
+				CssToken.numeric("+1.2em"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void valueFloatPositiveBareTest() {
+
+		String input = "-bar{margin:+.2em;}";
+
+		Object[] expected = {
+				CssToken.ident("-bar"),
+				CssToken.blockBegin(),
+				CssToken.ident("margin"),
+				CssToken.value(":"),
+				CssToken.numeric("+.2em"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void ruleSetEmptyTest() {
 
 		String input = "h1 {}";
