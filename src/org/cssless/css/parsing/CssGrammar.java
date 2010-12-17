@@ -11,7 +11,7 @@ final class CssGrammar {
 	public static final char OP_PAIR_DELIM = ':';
 	public static final char OP_DECL_DELIM = ';';
 
-	public static final char OP_IDENT_PREFIX = '-';
+	public static final char OP_MINUS = '-';
 	public static final char OP_ESCAPE = '\\';
 
 	public static final char OP_STRING_DELIM = '"';

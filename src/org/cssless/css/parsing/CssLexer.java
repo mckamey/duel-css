@@ -147,6 +147,7 @@ public class CssLexer implements Iterator<CssToken> {
 				return this.token;
 		}
 
+		boolean isNumber = false;
 		try {
 			// skip whitespace
 			while (CharUtility.isWhiteSpace(this.ch)) {
@@ -182,6 +183,25 @@ public class CssLexer implements Iterator<CssToken> {
 					return this.scanString();
 
 				case CssGrammar.OP_DOT:
+					this.setMark(CAPACITY);
+					this.nextChar();
+					if (CharUtility.isDigit(this.ch)) {
+						// was number with leading decimal
+						this.resetMark();
+						isNumber = true;
+						break;
+					}
+					return (this.token = CssToken.value(String.valueOf(CssGrammar.OP_DOT), this.index, this.line, this.column));
+
+				case CssGrammar.OP_MINUS:
+					this.setMark(CAPACITY);
+					this.nextChar();
+
+					// negative number or identifier
+					isNumber = CharUtility.isNumeric(this.ch);
+					this.resetMark();
+					break;
+
 				case CssGrammar.OP_CHILD:
 				case CssGrammar.OP_MATCH:
 				case CssGrammar.OP_PAIR_DELIM:
@@ -226,11 +246,11 @@ public class CssLexer implements Iterator<CssToken> {
 					return (this.token = CssToken.end);
 			}
 
-			if (CharUtility.isDigit(this.ch)) {
+			if (isNumber || CharUtility.isNumeric(this.ch)) {
 				return this.scanNumber();
 			}
 
-			if (this.ch == CssGrammar.OP_IDENT_PREFIX || CharUtility.isNameStartChar(this.ch)) {
+			if (this.ch == CssGrammar.OP_MINUS || CharUtility.isNameStartChar(this.ch)) {
 				return (this.token = CssToken.ident(this.scanIdent(), this.token_index, this.token_line, this.token_column));
 			}
 
@@ -257,12 +277,14 @@ public class CssLexer implements Iterator<CssToken> {
 		this.buffer.setLength(0);
 
 		while (true) {
-			if (CharUtility.isWhiteSpace(this.ch)) {
-				// whitespace as delimiter
-				return (this.token = CssToken.value(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
-			}
-
 			switch (this.ch) {
+				// whitespace as delimiter
+				case ' ':		// Space
+				case '\t':		// Tab
+				case '\n':		// LF
+				case '\r':		// CR
+				case '\u000C':	// FF
+
 				case CssGrammar.OP_BLOCK_END:
 				case CssGrammar.OP_BLOCK_BEGIN:
 				case CssGrammar.OP_DECL_DELIM:
@@ -311,7 +333,7 @@ public class CssLexer implements Iterator<CssToken> {
 		this.buffer.append((char)this.ch);
 
 		// consume until reach the delim
-		while (CharUtility.isDigit(this.nextChar()) || this.ch == '.') {
+		while (CharUtility.isNumeric(this.nextChar())) {
 			this.buffer.append((char)this.ch);
 		}
 
@@ -417,8 +439,8 @@ public class CssLexer implements Iterator<CssToken> {
 			this.buffer.setLength(0);
 		}
 
-		// optional prefix
-		if (this.ch == CssGrammar.OP_IDENT_PREFIX) {
+		// optional ident prefix
+		if (this.ch == CssGrammar.OP_MINUS) {
 			this.buffer.append((char)this.ch);
 			this.nextChar();
 		}
@@ -564,13 +586,13 @@ public class CssLexer implements Iterator<CssToken> {
 	 * @throws IOException
 	 */
 	private void setMark(int bufferSize) throws IOException {
-		this.reader.mark(bufferSize);
-
 		// store current statistics
 		this.mark_line = this.line;
 		this.mark_column = this.column;
 		this.mark_index = this.index;
 		this.mark_ch = this.ch;
+
+		this.reader.mark(bufferSize);
 	}
 
 	/**
@@ -578,13 +600,13 @@ public class CssLexer implements Iterator<CssToken> {
 	 * @throws IOException
 	 */
 	private void resetMark() throws IOException {
-		this.reader.reset();
-
 		// restore current statistics
 		this.line = this.mark_line;
 		this.column = this.mark_column;
 		this.index = this.mark_index;
 		this.ch = this.mark_ch;
+
+		this.reader.reset();
 	}
 
 	/**

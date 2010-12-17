@@ -53,6 +53,10 @@ final class CharUtility {
 		return (ch >= '0') && (ch <= '9');
 	}
 
+	public static boolean isNumeric(int ch) {
+		return ((ch >= '0') && (ch <= '9')) || ch == '.';
+	}
+
 	public static boolean isHexDigit(int ch) {
 		return
 			(ch >= '0' && ch <= '9') ||

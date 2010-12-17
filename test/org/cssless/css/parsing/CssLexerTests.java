@@ -108,6 +108,68 @@ public class CssLexerTests {
 	}
 
 	@Test
+	public void valueFloatBareTest() {
+
+		String input = "#bar{margin:.2em;}";
+
+		Object[] expected = {
+				CssToken.value("#bar"),
+				CssToken.blockBegin(),
+				CssToken.ident("margin"),
+				CssToken.value(":"),
+				CssToken.value(".2em"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void valueFloatNegativeTest() {
+
+		String input = ".bar{margin:-1.2em;}";
+
+		Object[] expected = {
+				CssToken.value("."),
+				CssToken.ident("bar"),
+				CssToken.blockBegin(),
+				CssToken.ident("margin"),
+				CssToken.value(":"),
+				CssToken.value("-1.2em"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void valueFloatNegativeBareTest() {
+
+		String input = "-bar{margin:-.2em;}";
+
+		Object[] expected = {
+				CssToken.ident("-bar"),
+				CssToken.blockBegin(),
+				CssToken.ident("margin"),
+				CssToken.value(":"),
+				CssToken.value("-.2em"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+//dumpLists(expected, actual);
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void ruleSetEmptyTest() {
 
 		String input = "h1 {}";
@@ -216,7 +278,6 @@ public class CssLexerTests {
 
 		Object[] actual = new CssLexer(input).toList().toArray();
 
-//dumpLists(expected, actual);
 		assertArrayEquals(expected, actual);
 	}
 
