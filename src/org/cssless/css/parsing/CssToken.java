@@ -132,6 +132,14 @@ public class CssToken {
 		return new CssToken(CssTokenType.IDENT, value, index, line, column);
 	}
 
+	public static CssToken important() {
+		return new CssToken(CssTokenType.IMPORTANT, -1, -1, -1);
+	}
+
+	public static CssToken important(int index, int line, int column) {
+		return new CssToken(CssTokenType.IMPORTANT, index, line, column);
+	}
+
 	public static CssToken comment(String value) {
 		return new CssToken(CssTokenType.COMMENT, value, -1, -1, -1);
 	}

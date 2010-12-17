@@ -43,6 +43,11 @@ public enum CssTokenType {
 	RULE_DELIM,
 
 	/**
+	 * Priority marker
+	 */
+	IMPORTANT,
+
+	/**
 	 * Comment block
 	 */
 	COMMENT,

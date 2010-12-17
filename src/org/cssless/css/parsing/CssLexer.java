@@ -9,6 +9,7 @@ import java.util.*;
 public class CssLexer implements Iterator<CssToken> {
 
 	private static final int EOF = -1;
+	private static final int CAPACITY = 16;
 
 	private final LineNumberReader reader;
 	private final StringBuilder buffer = new StringBuilder(512);
@@ -207,6 +208,9 @@ public class CssLexer implements Iterator<CssToken> {
 					case CssGrammar.OP_HASH:
 						return this.scanHash();
 
+					case CssGrammar.OP_IMPORTANT_BEGIN:
+						return this.scanImportant();
+
 					case CssGrammar.OP_COMMENT:
 						if (this.tryScanComment()) {
 							return this.token;
@@ -356,6 +360,29 @@ public class CssLexer implements Iterator<CssToken> {
 		return (this.token = CssToken.atRule(this.scanIdent(), this.token_index, this.token_line, this.token_column));
 	}
 
+	private CssToken scanImportant()
+		throws IOException {
+
+		// consume '!' and any whitespace
+		while (CharUtility.isWhiteSpace(this.nextChar()));
+
+		// mark position with capacity to check start delims
+		this.setMark(CAPACITY);
+
+		for (int i=0, length=CssGrammar.OP_IMPORTANT.length(); i<length; i++) {
+			if (this.ch != CssGrammar.OP_IMPORTANT.charAt(i)) {
+				// didn't match important
+				// NOTE: this may throw an exception if block was unterminated
+				this.resetMark();
+				return (this.token = CssToken.value("!", this.token_index, this.token_line, this.token_column));
+			}
+
+			this.nextChar();
+		}
+
+		return (this.token = CssToken.important(this.token_index, this.token_line, this.token_column));
+	}
+
 	private CssToken scanHash() throws IOException {
 		// consume hash
 		this.buffer.setLength(0);
@@ -418,7 +445,6 @@ public class CssLexer implements Iterator<CssToken> {
 		throws IOException {
 
 		// mark current position with capacity to check start delims
-		final int CAPACITY = 16;
 		this.setMark(CAPACITY);
 
 		String value = this.tryScanBlockValue(CssGrammar.OP_COMMENT_BEGIN, CssGrammar.OP_COMMENT_END);

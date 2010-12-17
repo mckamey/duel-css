@@ -37,5 +37,6 @@ final class CssGrammar {
 	public static final String OP_COMMENT_ALT_BEGIN = "//";
 	public static final String OP_COMMENT_ALT_END = "\n";
 
-	public static final String OP_IMPORTANT = "!important";
+	public static final char OP_IMPORTANT_BEGIN = '!';
+	public static final String OP_IMPORTANT = "important";
 }

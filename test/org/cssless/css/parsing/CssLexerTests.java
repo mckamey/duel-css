@@ -28,18 +28,78 @@ public class CssLexerTests {
 	}
 
 	@Test
-	public void atRuleTest() {
+	public void valueListMixedTest() {
 
-		String input = "@import url(\"reset.css\") screen;";
+		String input = "h1 { font: bold 2em/1.2 Helvetica, Arial, sans-serif }";
 
 		Object[] expected = {
-				CssToken.atRule("import"),
-				CssToken.ident("url"),
+				CssToken.ident("h1"),
+				CssToken.blockBegin(),
+				CssToken.ident("font"),
+				CssToken.value(":"),
+				CssToken.ident("bold"),
+				CssToken.value("2em"),
+				CssToken.value("/"),
+				CssToken.value("1.2"),
+				CssToken.ident("Helvetica"),
+				CssToken.value(","),
+				CssToken.ident("Arial"),
+				CssToken.value(","),
+				CssToken.ident("sans-serif"),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void valueListComplexTest() {
+
+		String input =
+			"body {"+
+			"background : -webkit-gradient ( linear , left top , left bottom , from(#D5DDE5), to(#FFFFFF) );" +
+			"background:-moz-linear-gradient(top,#D5DDE5,#FFFFFF)"+
+			"}";
+
+		Object[] expected = {
+				CssToken.ident("body"),
+				CssToken.blockBegin(),
+				CssToken.ident("background"),
+				CssToken.value(":"),
+				CssToken.ident("-webkit-gradient"),
 				CssToken.value("("),
-				CssToken.value("\"reset.css\""),
+				CssToken.ident("linear"),
+				CssToken.value(","),
+				CssToken.ident("left"),
+				CssToken.ident("top"),
+				CssToken.value(","),
+				CssToken.ident("left"),
+				CssToken.ident("bottom"),
+				CssToken.value(","),
+				CssToken.ident("from"),
+				CssToken.value("("),
+				CssToken.value("#D5DDE5"),
 				CssToken.value(")"),
-				CssToken.ident("screen"),
-				CssToken.ruleDelim()
+				CssToken.value(","),
+				CssToken.ident("to"),
+				CssToken.value("("),
+				CssToken.value("#FFFFFF"),
+				CssToken.value(")"),
+				CssToken.value(")"),
+				CssToken.ruleDelim(),
+				CssToken.ident("background"),
+				CssToken.value(":"),
+				CssToken.ident("-moz-linear-gradient"),
+				CssToken.value("("),
+				CssToken.ident("top"),
+				CssToken.value(","),
+				CssToken.value("#D5DDE5"),
+				CssToken.value(","),
+				CssToken.value("#FFFFFF"),
+				CssToken.value(")"),
+				CssToken.blockEnd()
 			};
 
 		Object[] actual = new CssLexer(input).toList().toArray();
@@ -107,7 +167,7 @@ public class CssLexerTests {
 	}
 
 	@Test
-	public void selectorsMultipleTest() {
+	public void selectorMultipleTest() {
 
 		String input = "q:before,q:after{content:''}";
 
@@ -132,112 +192,7 @@ public class CssLexerTests {
 	}
 
 	@Test
-	public void complexValueTest() {
-
-		String input =
-			"body {"+
-			"background : -webkit-gradient ( linear , left top , left bottom , from(#D5DDE5), to(#FFFFFF) );" +
-			"background:-moz-linear-gradient(top,#D5DDE5,#FFFFFF)"+
-			"}";
-
-		Object[] expected = {
-				CssToken.ident("body"),
-				CssToken.blockBegin(),
-				CssToken.ident("background"),
-				CssToken.value(":"),
-				CssToken.ident("-webkit-gradient"),
-				CssToken.value("("),
-				CssToken.ident("linear"),
-				CssToken.value(","),
-				CssToken.ident("left"),
-				CssToken.ident("top"),
-				CssToken.value(","),
-				CssToken.ident("left"),
-				CssToken.ident("bottom"),
-				CssToken.value(","),
-				CssToken.ident("from"),
-				CssToken.value("("),
-				CssToken.value("#D5DDE5"),
-				CssToken.value(")"),
-				CssToken.value(","),
-				CssToken.ident("to"),
-				CssToken.value("("),
-				CssToken.value("#FFFFFF"),
-				CssToken.value(")"),
-				CssToken.value(")"),
-				CssToken.ruleDelim(),
-				CssToken.ident("background"),
-				CssToken.value(":"),
-				CssToken.ident("-moz-linear-gradient"),
-				CssToken.value("("),
-				CssToken.ident("top"),
-				CssToken.value(","),
-				CssToken.value("#D5DDE5"),
-				CssToken.value(","),
-				CssToken.value("#FFFFFF"),
-				CssToken.value(")"),
-				CssToken.blockEnd()
-			};
-
-		Object[] actual = new CssLexer(input).toList().toArray();
-
-		assertArrayEquals(expected, actual);
-	}
-
-	@Test
-	public void complexValue2Test() {
-
-		String input = "h1 { font: bold 2em/1.2 Helvetica, Arial, sans-serif }";
-
-		Object[] expected = {
-				CssToken.ident("h1"),
-				CssToken.blockBegin(),
-				CssToken.ident("font"),
-				CssToken.value(":"),
-				CssToken.ident("bold"),
-				CssToken.value("2em"),
-				CssToken.value("/"),
-				CssToken.value("1.2"),
-				CssToken.ident("Helvetica"),
-				CssToken.value(","),
-				CssToken.ident("Arial"),
-				CssToken.value(","),
-				CssToken.ident("sans-serif"),
-				CssToken.blockEnd()
-			};
-
-		Object[] actual = new CssLexer(input).toList().toArray();
-
-		assertArrayEquals(expected, actual);
-	}
-
-	@Test
-	public void mediaBlockTest() {
-
-		String input = "@media screen, print {body {font-size: 10pt } }";
-
-		Object[] expected = {
-				CssToken.atRule("media"),
-				CssToken.ident("screen"),
-				CssToken.value(","),
-				CssToken.ident("print"),
-				CssToken.blockBegin(),
-				CssToken.ident("body"),
-				CssToken.blockBegin(),
-				CssToken.ident("font-size"),
-				CssToken.value(":"),
-				CssToken.value("10pt"),
-				CssToken.blockEnd(),
-				CssToken.blockEnd()
-			};
-
-		Object[] actual = new CssLexer(input).toList().toArray();
-
-		assertArrayEquals(expected, actual);
-	}
-
-	@Test
-	public void complexSelectorTest() {
+	public void selectorComplexTest() {
 
 		String input =
 			"p[example=\"public class foo\\\n" +
@@ -270,6 +225,163 @@ public class CssLexerTests {
 				CssToken.ident("color"),
 				CssToken.value(":"),
 				CssToken.ident("red"),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void importantTest() {
+
+		String input = "h1 { color : blue!important}";
+
+		Object[] expected = {
+				CssToken.ident("h1"),
+				CssToken.blockBegin(),
+				CssToken.ident("color"),
+				CssToken.value(":"),
+				CssToken.ident("blue"),
+				CssToken.important(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void importantWhitespaceTest() {
+
+		String input = "h1 { color : blue ! important ;}";
+
+		Object[] expected = {
+				CssToken.ident("h1"),
+				CssToken.blockBegin(),
+				CssToken.ident("color"),
+				CssToken.value(":"),
+				CssToken.ident("blue"),
+				CssToken.important(),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+//dumpLists(expected, actual);
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void atRuleImportTest() {
+
+		String input = "@import url(\"reset.css\") screen;";
+
+		Object[] expected = {
+				CssToken.atRule("import"),
+				CssToken.ident("url"),
+				CssToken.value("("),
+				CssToken.value("\"reset.css\""),
+				CssToken.value(")"),
+				CssToken.ident("screen"),
+				CssToken.ruleDelim()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void atRuleMediaTest() {
+
+		String input = "@media screen, print {body {font-size: 10pt } }";
+
+		Object[] expected = {
+				CssToken.atRule("media"),
+				CssToken.ident("screen"),
+				CssToken.value(","),
+				CssToken.ident("print"),
+				CssToken.blockBegin(),
+				CssToken.ident("body"),
+				CssToken.blockBegin(),
+				CssToken.ident("font-size"),
+				CssToken.value(":"),
+				CssToken.value("10pt"),
+				CssToken.blockEnd(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void atRuleFontTest() {
+
+		String input =
+			"@font-face {\n" +
+			"\tfont-family: 'Foo';\n" +
+			"\tsrc: local('Foo'), url('http://example.com/fonts/foo.tt') format('truetype');\n" +
+			"}";
+
+		Object[] expected = {
+				CssToken.atRule("font-face"),
+				CssToken.blockBegin(),
+				CssToken.ident("font-family"),
+				CssToken.value(":"),
+				CssToken.value("'Foo'"),
+				CssToken.ruleDelim(),
+				CssToken.ident("src"),
+				CssToken.value(":"),
+				CssToken.ident("local"),
+				CssToken.value("("),
+				CssToken.value("'Foo'"),
+				CssToken.value(")"),
+				CssToken.value(","),
+				CssToken.ident("url"),
+				CssToken.value("("),
+				CssToken.value("'http://example.com/fonts/foo.tt'"),
+				CssToken.value(")"),
+				CssToken.ident("format"),
+				CssToken.value("("),
+				CssToken.value("'truetype'"),
+				CssToken.value(")"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void atRulePageTest() {
+
+		String input =
+			"@page :left {\r\n" +
+			"    margin-left: 4cm;\r\n" +
+			"    margin-right: 3cm;\r\n" +
+			"}\r\n";
+
+		Object[] expected = {
+				CssToken.atRule("page"),
+				CssToken.value(":"),
+				CssToken.ident("left"),
+				CssToken.blockBegin(),
+				CssToken.ident("margin-left"),
+				CssToken.value(":"),
+				CssToken.value("4cm"),
+				CssToken.ruleDelim(),
+				CssToken.ident("margin-right"),
+				CssToken.value(":"),
+				CssToken.value("3cm"),
+				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
 
@@ -331,7 +443,6 @@ public class CssLexerTests {
 
 		Object[] actual = new CssLexer(input).toList().toArray();
 
-//dumpLists(expected, actual);
 		assertArrayEquals(expected, actual);
 	}
 
