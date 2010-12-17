@@ -562,6 +562,28 @@ public class CssLexerTests {
 	}
 
 	@Test
+	public void pseudoElementTest() {
+
+		String input = "p::first-line { text-transform: uppercase; }";
+
+		Object[] expected = {
+				CssToken.ident("p"),
+				CssToken.value("::"),
+				CssToken.ident("first-line"),
+				CssToken.blockBegin(),
+				CssToken.ident("text-transform"),
+				CssToken.value(":"),
+				CssToken.ident("uppercase"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void declarationFilterTest() {
 
 		String input =

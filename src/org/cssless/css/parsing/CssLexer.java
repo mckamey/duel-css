@@ -218,7 +218,6 @@ public class CssLexer implements Iterator<CssToken> {
 
 				case CssGrammar.OP_CHILD:
 				case CssGrammar.OP_MATCH:
-				case CssGrammar.OP_PAIR_DELIM:
 				case CssGrammar.OP_VALUE_DELIM:
 				case CssGrammar.OP_ATTR_END:
 				case CssGrammar.OP_ATTR_BEGIN:
@@ -228,6 +227,15 @@ public class CssLexer implements Iterator<CssToken> {
 					String value = String.valueOf((char)this.ch);
 					this.nextChar();
 					return (this.token = CssToken.value(value, this.index, this.line, this.column));
+
+				case CssGrammar.OP_PAIR_DELIM:
+					// consume ':'
+					String pseudo = String.valueOf(CssGrammar.OP_PAIR_DELIM);
+					if (this.nextChar() == CssGrammar.OP_PAIR_DELIM) {
+						this.nextChar();
+						pseudo += CssGrammar.OP_PAIR_DELIM;
+					}
+					return (this.token = CssToken.value(pseudo, this.index, this.line, this.column));
 
 				case CssGrammar.OP_SIBLING: // "~" or "~="
 				case CssGrammar.OP_DASH_MATCH:
