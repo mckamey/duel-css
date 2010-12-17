@@ -140,6 +140,13 @@ public class CssLexer implements Iterator<CssToken> {
 			return this.token;
 		}
 
+		switch (this.token.getToken()) {
+			case END:
+			case ERROR:
+				// remain in these states
+				return this.token;
+		}
+
 		try {
 			// skip whitespace
 			while (CharUtility.isWhiteSpace(this.ch)) {
@@ -150,94 +157,84 @@ public class CssLexer implements Iterator<CssToken> {
 			this.token_line = this.line;
 			this.token_column = this.column;
 
-			while (true) {
-				// skip whitespace
-				while (CharUtility.isWhiteSpace(this.ch)) {
+			switch (this.ch) {
+				case CssGrammar.OP_AT_RULE:
+					return this.scanAtKeyword();
+
+				case CssGrammar.OP_BLOCK_BEGIN:
+					// consume '{'
 					this.nextChar();
-				}
+					return (this.token = CssToken.blockBegin(this.index, this.line, this.column));
 
-				switch (this.ch) {
-					case CssGrammar.OP_AT_RULE:
-						return this.scanAtKeyword();
+				case CssGrammar.OP_BLOCK_END:
+					// consume '}'
+					this.nextChar();
+					return (this.token = CssToken.blockEnd(this.index, this.line, this.column));
 
-					case CssGrammar.OP_BLOCK_BEGIN:
-						// consume '{'
+				case CssGrammar.OP_DECL_DELIM:
+					// consume ';'
+					this.nextChar();
+					return (this.token = CssToken.ruleDelim(this.index, this.line, this.column));
+
+				case CssGrammar.OP_STRING_DELIM:
+				case CssGrammar.OP_STRING_DELIM_ALT:
+					// consume string
+					return this.scanString();
+
+				case CssGrammar.OP_DOT:
+				case CssGrammar.OP_CHILD:
+				case CssGrammar.OP_MATCH:
+				case CssGrammar.OP_PAIR_DELIM:
+				case CssGrammar.OP_VALUE_DELIM:
+				case CssGrammar.OP_ATTR_END:
+				case CssGrammar.OP_ATTR_BEGIN:
+				case CssGrammar.OP_PAREN_BEGIN:
+				case CssGrammar.OP_PAREN_END:
+					// consume
+					String value = String.valueOf((char)this.ch);
+					this.nextChar();
+					return (this.token = CssToken.value(value, this.index, this.line, this.column));
+
+				case CssGrammar.OP_INCLUDES_MATCH:
+				case CssGrammar.OP_DASH_MATCH:
+				case CssGrammar.OP_PREFIX_MATCH:
+				case CssGrammar.OP_SUFFIX_MATCH:
+				case CssGrammar.OP_SUBSTR_MATCH:
+					// consume
+					String match = String.valueOf((char)this.ch);
+					this.nextChar();
+					if (this.ch == CssGrammar.OP_MATCH) {
 						this.nextChar();
-						return (this.token = CssToken.blockBegin(this.index, this.line, this.column));
+						match += CssGrammar.OP_MATCH;
+					}
+					return (this.token = CssToken.value(match, this.index, this.line, this.column));
 
-					case CssGrammar.OP_BLOCK_END:
-						// consume '}'
-						this.nextChar();
-						return (this.token = CssToken.blockEnd(this.index, this.line, this.column));
+				case CssGrammar.OP_HASH:
+					return this.scanHash();
 
-					case CssGrammar.OP_DECL_DELIM:
-						// consume ';'
-						this.nextChar();
-						return (this.token = CssToken.ruleDelim(this.index, this.line, this.column));
+				case CssGrammar.OP_IMPORTANT_BEGIN:
+					return this.scanImportant();
 
-					case CssGrammar.OP_STRING_DELIM:
-					case CssGrammar.OP_STRING_DELIM_ALT:
-						// consume string
-						return this.scanString();
-
-					case CssGrammar.OP_DOT:
-					case CssGrammar.OP_CHILD:
-					case CssGrammar.OP_MATCH:
-					case CssGrammar.OP_PAIR_DELIM:
-					case CssGrammar.OP_VALUE_DELIM:
-					case CssGrammar.OP_ATTR_END:
-					case CssGrammar.OP_ATTR_BEGIN:
-					case CssGrammar.OP_PAREN_BEGIN:
-					case CssGrammar.OP_PAREN_END:
-						// consume
-						String value = String.valueOf((char)this.ch);
-						this.nextChar();
-						return (this.token = CssToken.value(value, this.index, this.line, this.column));
-
-					case CssGrammar.OP_INCLUDES_MATCH:
-					case CssGrammar.OP_DASH_MATCH:
-					case CssGrammar.OP_PREFIX_MATCH:
-					case CssGrammar.OP_SUFFIX_MATCH:
-					case CssGrammar.OP_SUBSTR_MATCH:
-						// consume
-						String match = String.valueOf((char)this.ch);
-						this.nextChar();
-						if (this.ch == CssGrammar.OP_MATCH) {
-							this.nextChar();
-							match += CssGrammar.OP_MATCH;
-						}
-						return (this.token = CssToken.value(match, this.index, this.line, this.column));
-
-					case CssGrammar.OP_HASH:
-						return this.scanHash();
-
-					case CssGrammar.OP_IMPORTANT_BEGIN:
-						return this.scanImportant();
-
-					case CssGrammar.OP_COMMENT:
-						if (this.tryScanComment()) {
-							return this.token;
-						}
-						this.nextChar();
-						return (this.token = CssToken.value(String.valueOf(CssGrammar.OP_COMMENT), this.index, this.line, this.column));
-						
-					case EOF:
-						return (this.token = CssToken.end);
-				}
-
-				switch (this.token.getToken()) {
-					case END:
-					case ERROR:
-						// remain in these states
+				case CssGrammar.OP_COMMENT:
+					if (this.tryScanComment()) {
 						return this.token;
-
-					default:
-						if (this.tryScanValue()) {
-							return this.token;
-						}
-						continue;
-				}
+					}
+					this.nextChar();
+					return (this.token = CssToken.value(String.valueOf(CssGrammar.OP_COMMENT), this.index, this.line, this.column));
+					
+				case EOF:
+					return (this.token = CssToken.end);
 			}
+
+			if (CharUtility.isDigit(this.ch)) {
+				return this.scanNumber();
+			}
+
+			if (this.ch == CssGrammar.OP_IDENT_PREFIX || CharUtility.isNameStartChar(this.ch)) {
+				return (this.token = CssToken.ident(this.scanIdent(), this.token_index, this.token_line, this.token_column));
+			}
+
+			return this.scanValue();
 
 		} catch (IOException ex) {
 			this.lastError = ex;
@@ -253,33 +250,16 @@ public class CssLexer implements Iterator<CssToken> {
 	 * @return
 	 * @throws IOException
 	 */
-	private boolean tryScanValue()
+	private CssToken scanValue()
 		throws IOException {
-
-		if (this.ch == CssGrammar.OP_IDENT_PREFIX ||
-			CharUtility.isNameStartChar(this.ch)) {
-			this.token = CssToken.ident(this.scanIdent(), this.token_index, this.token_line, this.token_column);
-			return true;
-		}
-
-		if (CharUtility.isDigit(this.ch)) {
-			this.scanNumber();
-			return true;
-		}
 		
 		// reset the buffer
 		this.buffer.setLength(0);
 
 		while (true) {
 			if (CharUtility.isWhiteSpace(this.ch)) {
-				if (this.buffer.length() > 0) {
-					// whitespace as delimiter
-					this.token = CssToken.value(this.buffer.toString(), this.token_index, this.token_line, this.token_column);
-					return true;
-				}
-
-				// skip leading whitespace
-				while (CharUtility.isWhiteSpace(this.nextChar()));
+				// whitespace as delimiter
+				return (this.token = CssToken.value(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 			}
 
 			switch (this.ch) {
@@ -307,13 +287,8 @@ public class CssLexer implements Iterator<CssToken> {
 
 				case CssGrammar.OP_COMMENT:
 				case EOF:
-					if (this.buffer.length() < 1) {
-						return false;
-					}
-
 					// flush the buffer
-					this.token = CssToken.value(this.buffer.toString(), this.token_index, this.token_line, this.token_column);
-					return true;
+					return (this.token = CssToken.value(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 
 				default:
 					// consume until reach a special char
