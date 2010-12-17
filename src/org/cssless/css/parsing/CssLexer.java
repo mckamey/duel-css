@@ -203,6 +203,7 @@ public class CssLexer implements Iterator<CssToken> {
 					break;
 
 				case CssGrammar.OP_CHILD:
+				case CssGrammar.OP_ADJACENT:
 				case CssGrammar.OP_MATCH:
 				case CssGrammar.OP_PAIR_DELIM:
 				case CssGrammar.OP_VALUE_DELIM:
@@ -301,6 +302,8 @@ public class CssLexer implements Iterator<CssToken> {
 
 				case CssGrammar.OP_DOT:
 				case CssGrammar.OP_CHILD:
+				case CssGrammar.OP_ADJACENT:
+				case CssGrammar.OP_MATCH:
 				case CssGrammar.OP_INCLUDES_MATCH:
 				case CssGrammar.OP_DASH_MATCH:
 				case CssGrammar.OP_PREFIX_MATCH:

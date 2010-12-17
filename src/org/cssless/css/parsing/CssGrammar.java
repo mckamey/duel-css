@@ -19,6 +19,7 @@ final class CssGrammar {
 
 	public static final char OP_HASH = '#';
 	public static final char OP_DOT = '.';
+	public static final char OP_ADJACENT = '+';
 	public static final char OP_CHILD = '>';
 
 	public static final char OP_ATTR_BEGIN = '[';

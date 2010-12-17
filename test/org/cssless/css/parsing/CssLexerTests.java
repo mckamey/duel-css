@@ -229,7 +229,7 @@ public class CssLexerTests {
 	}
 
 	@Test
-	public void selectorMultipleTest() {
+	public void selectorGroupingTest() {
 
 		String input = "q:before,q:after{content:''}";
 
@@ -636,7 +636,8 @@ public class CssLexerTests {
 
 		Object[] expected = {
 				CssToken.value("*"),
-				CssToken.value("+html"),
+				CssToken.value("+"),
+				CssToken.ident("html"),
 				CssToken.ident("div"),
 				CssToken.value("."),
 				CssToken.ident("blah"),
@@ -766,7 +767,6 @@ public class CssLexerTests {
 
 		Object[] actual = new CssLexer(input).toList().toArray();
 
-//dumpLists(expected, actual);
 		assertArrayEquals(expected, actual);
 	}
 	
