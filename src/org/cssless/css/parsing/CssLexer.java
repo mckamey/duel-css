@@ -155,12 +155,6 @@ public class CssLexer implements Iterator<CssToken> {
 					this.nextChar();
 				}
 
-				if (this.ch == CssGrammar.OP_COMMENT) {
-					if (this.tryScanComment()) {
-						return this.token;
-					}
-				}
-
 				switch (this.ch) {
 					case CssGrammar.OP_AT_RULE:
 						return this.scanAtKeyword();
@@ -213,6 +207,13 @@ public class CssLexer implements Iterator<CssToken> {
 					case CssGrammar.OP_HASH:
 						return this.scanHash();
 
+					case CssGrammar.OP_COMMENT:
+						if (this.tryScanComment()) {
+							return this.token;
+						}
+						this.nextChar();
+						return (this.token = CssToken.value(String.valueOf(CssGrammar.OP_COMMENT), this.index, this.line, this.column));
+						
 					case EOF:
 						return (this.token = CssToken.end);
 				}
@@ -250,7 +251,7 @@ public class CssLexer implements Iterator<CssToken> {
 
 		if (this.ch == CssGrammar.OP_IDENT_PREFIX ||
 			CharUtility.isNameStartChar(this.ch)) {
-			this.token = CssToken.value(this.scanIdent(), this.token_index, this.token_line, this.token_column);
+			this.token = CssToken.ident(this.scanIdent(), this.token_index, this.token_line, this.token_column);
 			return true;
 		}
 
@@ -289,6 +290,8 @@ public class CssLexer implements Iterator<CssToken> {
 				case CssGrammar.OP_PREFIX_MATCH:
 				case CssGrammar.OP_SUFFIX_MATCH:
 				case CssGrammar.OP_SUBSTR_MATCH:
+
+				case CssGrammar.OP_COMMENT:
 				case EOF:
 					if (this.buffer.length() < 1) {
 						return false;
@@ -324,7 +327,7 @@ public class CssLexer implements Iterator<CssToken> {
 			this.buffer.append((char)this.ch);
 
 			if (this.ch == CssGrammar.OP_ESCAPE) {
-				if (!CharUtility.isEscape(this.nextChar())) {
+				if (!CharUtility.isEscape(this.nextChar()) && !CharUtility.isNewline(this.ch)) {
 					throw new SyntaxException("Malformed escape sequence", this.token_index, this.token_line, this.token_column);
 				}
 				this.buffer.append((char)this.ch);
@@ -414,11 +417,21 @@ public class CssLexer implements Iterator<CssToken> {
 	private boolean tryScanComment()
 		throws IOException {
 
+		// mark current position with capacity to check start delims
+		final int CAPACITY = 16;
+		this.setMark(CAPACITY);
+
 		String value = this.tryScanBlockValue(CssGrammar.OP_COMMENT_BEGIN, CssGrammar.OP_COMMENT_END);
 		if (value == null) {
-			this.tryScanBlockValue(CssGrammar.OP_COMMENT_ALT_BEGIN, CssGrammar.OP_COMMENT_ALT_END);
+			// NOTE: this may throw an exception if block was unterminated
+			this.resetMark();
+
+			this.setMark(CAPACITY);
+			value = this.tryScanBlockValue(CssGrammar.OP_COMMENT_ALT_BEGIN, CssGrammar.OP_COMMENT_ALT_END);
 
 			if (value == null) {
+				// NOTE: this may throw an exception if block was unterminated
+				this.resetMark();
 				return false;
 			}
 		}
@@ -456,6 +469,9 @@ public class CssLexer implements Iterator<CssToken> {
 				i++;
 				if (i >= length) {
 					length--;
+
+					// consume final char
+					this.nextChar();
 
 					// trim ending delim from buffer
 					this.buffer.setLength(this.buffer.length() - length);

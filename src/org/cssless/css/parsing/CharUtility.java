@@ -19,6 +19,17 @@ final class CharUtility {
 		return true;
 	}
 
+	public static boolean isNewline(int ch) {
+		switch (ch) {
+			case '\n':		// LF
+			case '\r':		// CR
+			case '\u000C':	// FF
+				return true;
+			default:
+				return false;
+		}
+	}
+
 	public static boolean isWhiteSpace(int ch) {
 		switch (ch) {
 			case ' ':		// Space

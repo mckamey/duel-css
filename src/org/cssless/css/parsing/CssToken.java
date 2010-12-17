@@ -124,6 +124,14 @@ public class CssToken {
 		return new CssToken(CssTokenType.VALUE, value, index, line, column);
 	}
 
+	public static CssToken ident(String value) {
+		return new CssToken(CssTokenType.IDENT, value, -1, -1, -1);
+	}
+
+	public static CssToken ident(String value, int index, int line, int column) {
+		return new CssToken(CssTokenType.IDENT, value, index, line, column);
+	}
+
 	public static CssToken comment(String value) {
 		return new CssToken(CssTokenType.COMMENT, value, -1, -1, -1);
 	}

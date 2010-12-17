@@ -18,6 +18,11 @@ public enum CssTokenType {
 	VALUE,
 
 	/**
+	 * Identifier
+	 */
+	IDENT,
+
+	/**
 	 * At-rule
 	 */
 	AT_RULE,

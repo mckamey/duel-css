@@ -9,7 +9,6 @@ final class CssGrammar {
 	public static final char OP_BLOCK_BEGIN = '{';
 	public static final char OP_BLOCK_END = '}';
 	public static final char OP_PAIR_DELIM = ':';
-	public static final char OP_VALUE_DELIM = ' ';
 	public static final char OP_DECL_DELIM = ';';
 
 	public static final char OP_IDENT_PREFIX = '-';

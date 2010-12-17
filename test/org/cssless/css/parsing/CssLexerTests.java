@@ -15,11 +15,11 @@ public class CssLexerTests {
 				CssToken.value(","),
 				CssToken.value("'Lucida Grande'"),
 				CssToken.value(","),
-				CssToken.value("Helvetica"),
+				CssToken.ident("Helvetica"),
 				CssToken.value(","),
-				CssToken.value("Arial"),
+				CssToken.ident("Arial"),
 				CssToken.value(","),
-				CssToken.value("sans-serif")
+				CssToken.ident("sans-serif")
 			};
 
 		Object[] actual = new CssLexer(input).toList().toArray();
@@ -49,7 +49,7 @@ public class CssLexerTests {
 		String input = "h1 {}";
 
 		Object[] expected = {
-				CssToken.value("h1"),
+				CssToken.ident("h1"),
 				CssToken.blockBegin(),
 				CssToken.blockEnd()
 			};
@@ -65,11 +65,11 @@ public class CssLexerTests {
 		String input = "h1 { color : blue }";
 
 		Object[] expected = {
-				CssToken.value("h1"),
+				CssToken.ident("h1"),
 				CssToken.blockBegin(),
-				CssToken.value("color"),
+				CssToken.ident("color"),
 				CssToken.value(":"),
-				CssToken.value("blue"),
+				CssToken.ident("blue"),
 				CssToken.blockEnd()
 			};
 
@@ -84,15 +84,15 @@ public class CssLexerTests {
 		String input = "h1 { color : red; text-align:center; }";
 
 		Object[] expected = {
-				CssToken.value("h1"),
+				CssToken.ident("h1"),
 				CssToken.blockBegin(),
-				CssToken.value("color"),
+				CssToken.ident("color"),
 				CssToken.value(":"),
-				CssToken.value("red"),
+				CssToken.ident("red"),
 				CssToken.ruleDelim(),
-				CssToken.value("text-align"),
+				CssToken.ident("text-align"),
 				CssToken.value(":"),
-				CssToken.value("center"),
+				CssToken.ident("center"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -108,15 +108,15 @@ public class CssLexerTests {
 		String input = "q:before,q:after{content:''}";
 
 		Object[] expected = {
-				CssToken.value("q"),
+				CssToken.ident("q"),
 				CssToken.value(":"),
-				CssToken.value("before"),
+				CssToken.ident("before"),
 				CssToken.value(","),
-				CssToken.value("q"),
+				CssToken.ident("q"),
 				CssToken.value(":"),
-				CssToken.value("after"),
+				CssToken.ident("after"),
 				CssToken.blockBegin(),
-				CssToken.value("content"),
+				CssToken.ident("content"),
 				CssToken.value(":"),
 				CssToken.value("''"),
 				CssToken.blockEnd()
@@ -137,36 +137,36 @@ public class CssLexerTests {
 			"}";
 
 		Object[] expected = {
-				CssToken.value("body"),
+				CssToken.ident("body"),
 				CssToken.blockBegin(),
-				CssToken.value("background"),
+				CssToken.ident("background"),
 				CssToken.value(":"),
-				CssToken.value("-webkit-gradient"),
+				CssToken.ident("-webkit-gradient"),
 				CssToken.value("("),
-				CssToken.value("linear"),
+				CssToken.ident("linear"),
 				CssToken.value(","),
-				CssToken.value("left"),
-				CssToken.value("top"),
+				CssToken.ident("left"),
+				CssToken.ident("top"),
 				CssToken.value(","),
-				CssToken.value("left"),
-				CssToken.value("bottom"),
+				CssToken.ident("left"),
+				CssToken.ident("bottom"),
 				CssToken.value(","),
-				CssToken.value("from"),
+				CssToken.ident("from"),
 				CssToken.value("("),
 				CssToken.value("#D5DDE5"),
 				CssToken.value(")"),
 				CssToken.value(","),
-				CssToken.value("to"),
+				CssToken.ident("to"),
 				CssToken.value("("),
 				CssToken.value("#FFFFFF"),
 				CssToken.value(")"),
 				CssToken.value(")"),
 				CssToken.ruleDelim(),
-				CssToken.value("background"),
+				CssToken.ident("background"),
 				CssToken.value(":"),
-				CssToken.value("-moz-linear-gradient"),
+				CssToken.ident("-moz-linear-gradient"),
 				CssToken.value("("),
-				CssToken.value("top"),
+				CssToken.ident("top"),
 				CssToken.value(","),
 				CssToken.value("#D5DDE5"),
 				CssToken.value(","),
@@ -187,14 +187,56 @@ public class CssLexerTests {
 
 		Object[] expected = {
 				CssToken.atRule("media"),
-				CssToken.value("print"),
+				CssToken.ident("print"),
 				CssToken.blockBegin(),
-				CssToken.value("body"),
+				CssToken.ident("body"),
 				CssToken.blockBegin(),
-				CssToken.value("font-size"),
+				CssToken.ident("font-size"),
 				CssToken.value(":"),
 				CssToken.value("10pt"),
 				CssToken.blockEnd(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void complexSelectorTest() {
+
+		String input =
+			"p[example=\"public class foo\\\n" +
+			"{\\\n" +
+			"\tprivate int x;\\\n" +
+			"\\\n" +
+			"\tfoo(int x) {\\\n" +
+			"\t\tthis.x = x;\\\n" +
+			"\t}\\\n" +
+			"\\\n" +
+			"}\"] { color: red }";
+
+		Object[] expected = {
+				CssToken.ident("p"),
+				CssToken.value("["),
+				CssToken.ident("example"),
+				CssToken.value("="),
+				CssToken.value(
+					"\"public class foo\\\n" +
+					"{\\\n" +
+					"\tprivate int x;\\\n" +
+					"\\\n" +
+					"\tfoo(int x) {\\\n" +
+					"\t\tthis.x = x;\\\n" +
+					"\t}\\\n" +
+					"\\\n" +
+					"}\""),
+				CssToken.value("]"),
+				CssToken.blockBegin(),
+				CssToken.ident("color"),
+				CssToken.value(":"),
+				CssToken.ident("red"),
 				CssToken.blockEnd()
 			};
 
@@ -209,10 +251,49 @@ public class CssLexerTests {
 		String input = "body { /* font-size: 10pt */ }";
 
 		Object[] expected = {
-				CssToken.value("body"),
+				CssToken.ident("body"),
 				CssToken.blockBegin(),
 				CssToken.comment(" font-size: 10pt "),
 				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void commentLessTest() {
+
+		String input =
+			"body {\n" +
+			"\t// font-size: 10pt;\n" +
+			"}";
+
+		Object[] expected = {
+				CssToken.ident("body"),
+				CssToken.blockBegin(),
+				CssToken.comment(" font-size: 10pt;"),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void commentLessEOFTest() {
+
+		String input =
+			"body {}\n" +
+			"//trailing comment";
+
+		Object[] expected = {
+				CssToken.ident("body"),
+				CssToken.blockBegin(),
+				CssToken.blockEnd(),
+				CssToken.comment("trailing comment")
 			};
 
 		Object[] actual = new CssLexer(input).toList().toArray();
