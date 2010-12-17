@@ -721,7 +721,6 @@ public class CssLexerTests {
 
 		Object[] actual = new CssLexer(input).toList().toArray();
 
-//dumpLists(expected, actual);
 		assertArrayEquals(expected, actual);
 	}
 
@@ -740,6 +739,47 @@ public class CssLexerTests {
 				CssToken.value("#0FC\\0"),
 				CssToken.value("/"),
 				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+	
+	@Test
+	public void hacksNS4NotCommentTest() {
+
+		String input = "foo { /*/*/property:value;/* */ }";
+
+		Object[] expected = {
+				CssToken.ident("foo"),
+				CssToken.blockBegin(),
+				CssToken.comment("/"),
+				CssToken.ident("property"),
+				CssToken.value(":"),
+				CssToken.ident("value"),
+				CssToken.ruleDelim(),
+				CssToken.comment(" "),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+//dumpLists(expected, actual);
+		assertArrayEquals(expected, actual);
+	}
+	
+	@Test
+	public void hacksNS4CommentTest() {
+
+		String input = "foo { /*/*//*/property:value;/* */ }";
+
+		Object[] expected = {
+				CssToken.ident("foo"),
+				CssToken.blockBegin(),
+				CssToken.comment("/"),
+				CssToken.comment("/property:value;/* "),
 				CssToken.blockEnd()
 			};
 
