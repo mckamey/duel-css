@@ -110,9 +110,10 @@ public class CssLexerTests {
 	@Test
 	public void valueFloatBareTest() {
 
-		String input = "#bar{margin:.2em;}";
+		String input = "foo#bar{margin:.2em;}";
 
 		Object[] expected = {
+				CssToken.ident("foo"),
 				CssToken.value("#bar"),
 				CssToken.blockBegin(),
 				CssToken.ident("margin"),
@@ -165,7 +166,6 @@ public class CssLexerTests {
 
 		Object[] actual = new CssLexer(input).toList().toArray();
 
-//dumpLists(expected, actual);
 		assertArrayEquals(expected, actual);
 	}
 
@@ -511,6 +511,234 @@ public class CssLexerTests {
 				CssToken.ident("margin-right"),
 				CssToken.value(":"),
 				CssToken.value("3cm"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void declarationFilterTest() {
+
+		String input =
+			"div.1a {\r\n" +
+			"  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='foo.png', sizingMethod=\"scale\");\r\n" +
+			"}";
+
+		Object[] expected = {
+				CssToken.ident("div"),
+				CssToken.value(".1a"),
+				CssToken.blockBegin(),
+				CssToken.ident("filter"),
+				CssToken.value(":"),
+				CssToken.ident("progid"),
+				CssToken.value(":"),
+				CssToken.ident("DXImageTransform"),
+				CssToken.value("."),
+				CssToken.ident("Microsoft"),
+				CssToken.value("."),
+				CssToken.ident("AlphaImageLoader"),
+				CssToken.value("("),
+				CssToken.ident("src"),
+				CssToken.value("="),
+				CssToken.value("'foo.png'"),
+				CssToken.value(","),
+				CssToken.ident("sizingMethod"),
+				CssToken.value("="),
+				CssToken.value("\"scale\""),
+				CssToken.value(")"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	/* more hacks can be found at http://centricle.com/ref/css/filters/ */
+	
+	@Test
+	public void hacksIE6SelectorTest() {
+
+		String input = "* html div.blah { color:red; }";
+
+		Object[] expected = {
+				CssToken.value("*"),
+				CssToken.ident("html"),
+				CssToken.ident("div"),
+				CssToken.value("."),
+				CssToken.ident("blah"),
+				CssToken.blockBegin(),
+				CssToken.ident("color"),
+				CssToken.value(":"),
+				CssToken.ident("red"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void hacksIE6PropertyUnderscoreTest() {
+
+		String input = "div.blah { _color:red; }";
+
+		Object[] expected = {
+				CssToken.ident("div"),
+				CssToken.value("."),
+				CssToken.ident("blah"),
+				CssToken.blockBegin(),
+				CssToken.ident("_color"),
+				CssToken.value(":"),
+				CssToken.ident("red"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void hacksIE6PropertyDashTest() {
+
+		String input = "div.blah { -color:red; }";
+
+		Object[] expected = {
+				CssToken.ident("div"),
+				CssToken.value("."),
+				CssToken.ident("blah"),
+				CssToken.blockBegin(),
+				CssToken.ident("-color"),
+				CssToken.value(":"),
+				CssToken.ident("red"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void hacksIE7SelectorTest() {
+
+		String input = "*+html div.blah { color:yellow; }";
+
+		Object[] expected = {
+				CssToken.value("*"),
+				CssToken.value("+html"),
+				CssToken.ident("div"),
+				CssToken.value("."),
+				CssToken.ident("blah"),
+				CssToken.blockBegin(),
+				CssToken.ident("color"),
+				CssToken.value(":"),
+				CssToken.ident("yellow"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void hacksIE7PropertyStarTest() {
+
+		String input = "div.blah { *color:red; }";
+
+		Object[] expected = {
+				CssToken.ident("div"),
+				CssToken.value("."),
+				CssToken.ident("blah"),
+				CssToken.blockBegin(),
+				CssToken.value("*"),
+				CssToken.ident("color"),
+				CssToken.value(":"),
+				CssToken.ident("red"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void hacksIE7NotImportantTest() {
+
+		String input = "div.blah { color:red !ie; }";
+
+		Object[] expected = {
+				CssToken.ident("div"),
+				CssToken.value("."),
+				CssToken.ident("blah"),
+				CssToken.blockBegin(),
+				CssToken.ident("color"),
+				CssToken.value(":"),
+				CssToken.ident("red"),
+				CssToken.value("!"),
+				CssToken.ident("ie"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void hacksIE7ImportantTest() {
+
+		String input = "div.blah { color:red !important!; }";
+
+		Object[] expected = {
+				CssToken.ident("div"),
+				CssToken.value("."),
+				CssToken.ident("blah"),
+				CssToken.blockBegin(),
+				CssToken.ident("color"),
+				CssToken.value(":"),
+				CssToken.ident("red"),
+				CssToken.important(),
+				CssToken.value("!"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+//dumpLists(expected, actual);
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void hacksIE8Test() {
+
+		String input = "div.blah { color: #0FC\\0/; }";
+
+		Object[] expected = {
+				CssToken.ident("div"),
+				CssToken.value("."),
+				CssToken.ident("blah"),
+				CssToken.blockBegin(),
+				CssToken.ident("color"),
+				CssToken.value(":"),
+				CssToken.value("#0FC\\0"),
+				CssToken.value("/"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
