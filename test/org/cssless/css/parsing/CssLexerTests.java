@@ -30,11 +30,15 @@ public class CssLexerTests {
 	@Test
 	public void atRuleTest() {
 
-		String input = "@import \"reset.css\";";
+		String input = "@import url(\"reset.css\") screen;";
 
 		Object[] expected = {
 				CssToken.atRule("import"),
+				CssToken.ident("url"),
+				CssToken.value("("),
 				CssToken.value("\"reset.css\""),
+				CssToken.value(")"),
+				CssToken.ident("screen"),
 				CssToken.ruleDelim()
 			};
 
@@ -181,12 +185,41 @@ public class CssLexerTests {
 	}
 
 	@Test
+	public void complexValue2Test() {
+
+		String input = "h1 { font: bold 2em/1.2 Helvetica, Arial, sans-serif }";
+
+		Object[] expected = {
+				CssToken.ident("h1"),
+				CssToken.blockBegin(),
+				CssToken.ident("font"),
+				CssToken.value(":"),
+				CssToken.ident("bold"),
+				CssToken.value("2em"),
+				CssToken.value("/"),
+				CssToken.value("1.2"),
+				CssToken.ident("Helvetica"),
+				CssToken.value(","),
+				CssToken.ident("Arial"),
+				CssToken.value(","),
+				CssToken.ident("sans-serif"),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void mediaBlockTest() {
 
-		String input = "@media print {body {font-size: 10pt } }";
+		String input = "@media screen, print {body {font-size: 10pt } }";
 
 		Object[] expected = {
 				CssToken.atRule("media"),
+				CssToken.ident("screen"),
+				CssToken.value(","),
 				CssToken.ident("print"),
 				CssToken.blockBegin(),
 				CssToken.ident("body"),
