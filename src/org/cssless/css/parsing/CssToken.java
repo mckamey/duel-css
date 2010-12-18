@@ -147,6 +147,14 @@ public class CssToken {
 		return new CssToken(CssTokenType.NUMERIC, value, index, line, column);
 	}
 
+	public static CssToken color(String value) {
+		return new CssToken(CssTokenType.COLOR, value, -1, -1, -1);
+	}
+
+	public static CssToken color(String value, int index, int line, int column) {
+		return new CssToken(CssTokenType.COLOR, value, index, line, column);
+	}
+
 	public static CssToken string(String value) {
 		return new CssToken(CssTokenType.STRING, value, -1, -1, -1);
 	}

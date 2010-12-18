@@ -78,20 +78,20 @@ public class CssLexerTests {
 				CssToken.value("bottom"),
 				CssToken.operator(","),
 				CssToken.value("from("),
-				CssToken.value("#D5DDE5"),
+				CssToken.color("#D5DDE5"),
 				CssToken.operator(")"),
 				CssToken.operator(","),
 				CssToken.value("to("),
-				CssToken.value("#FFFFFF"),
+				CssToken.color("#FFFFFF"),
 				CssToken.operator(")"),
 				CssToken.operator(")"),
 				CssToken.ruleDelim(),
 				CssToken.value("background:-moz-linear-gradient("),
 				CssToken.value("top"),
 				CssToken.operator(","),
-				CssToken.value("#D5DDE5"),
+				CssToken.color("#D5DDE5"),
 				CssToken.operator(","),
-				CssToken.value("#FFFFFF"),
+				CssToken.color("#FFFFFF"),
 				CssToken.operator(")"),
 				CssToken.blockEnd()
 			};
@@ -323,7 +323,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.value("color"),
 				CssToken.operator(":"),
-				CssToken.value("#336699"),
+				CssToken.color("#336699"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};

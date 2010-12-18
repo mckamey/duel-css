@@ -473,7 +473,7 @@ public class CssLexer implements Iterator<CssToken> {
 			this.scanIdent(true);
 		}
 
-		return (this.token = CssToken.numeric(this.buffer.toString(), this.index, this.line, this.column));
+		return (this.token = CssToken.numeric(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 	}
 
 	/**
@@ -546,11 +546,28 @@ public class CssLexer implements Iterator<CssToken> {
 	}
 
 	private CssToken scanHash() throws IOException {
-		// consume hash
 		this.buffer.setLength(0);
 		this.buffer.append(CssGrammar.OP_HASH);
 
-		return (this.token = CssToken.value(this.scanName(), this.index, this.line, this.column));
+		// this will consume hash
+		String name = this.scanName();
+
+		int length = name.length()-1;
+		if (length == 3 || length == 6) {
+			while (length > 0) {
+				if (!CharUtility.isHexDigit(name.charAt(length))) {
+					break;
+				}
+
+				length--;
+			}
+
+			if (length == 0) {
+				return (this.token = CssToken.color(name, this.token_index, this.token_line, this.token_column));
+			}
+		}
+		
+		return (this.token = CssToken.value(name, this.token_index, this.token_line, this.token_column));
 	}
 
 	/**

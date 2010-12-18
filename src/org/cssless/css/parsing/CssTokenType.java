@@ -48,6 +48,11 @@ public enum CssTokenType {
 	NUMERIC,
 
 	/**
+	 * Color value
+	 */
+	COLOR,
+
+	/**
 	 * Priority flag
 	 */
 	IMPORTANT,
