@@ -546,6 +546,132 @@ public class CssLexerTests {
 	}
 
 	@Test
+	public void namespacePrefixDefaultTest() {
+
+		String input = "|p { color: silver; }";
+
+		Object[] expected = {
+				CssToken.value("|p"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.value("silver"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void namespacePrefixAnyTest() {
+
+		String input = "*|p { color: silver; }";
+
+		Object[] expected = {
+				CssToken.value("*|p"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.value("silver"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void namespacePrefixFooTest() {
+
+		String input = "foo|p { color: silver; }";
+
+		Object[] expected = {
+				CssToken.value("foo|p"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.value("silver"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void dashMatchTest() {
+
+		String input = "foo|=p { color: silver; }";
+
+		Object[] expected = {
+				CssToken.value("foo"),
+				CssToken.operator("|="),
+				CssToken.value("p"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.value("silver"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void dashMatchWhitespaceTest() {
+
+		String input = "foo |=p { color: silver; }";
+
+		Object[] expected = {
+				CssToken.value("foo"),
+				CssToken.operator("|="),
+				CssToken.value("p"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.value("silver"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void dashMatchWhitespace2Test() {
+
+		String input = "foo|= p { color: silver; }";
+
+		Object[] expected = {
+				CssToken.value("foo"),
+				CssToken.operator("|="),
+				CssToken.value("p"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.value("silver"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void declarationFilterTest() {
 
 		String input =

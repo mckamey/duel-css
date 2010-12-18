@@ -163,14 +163,6 @@ public class CssToken {
 		return new CssToken(CssTokenType.STRING, value, index, line, column);
 	}
 
-	public static CssToken ident(String value) {
-		return new CssToken(CssTokenType.IDENT, value, -1, -1, -1);
-	}
-
-	public static CssToken ident(String value, int index, int line, int column) {
-		return new CssToken(CssTokenType.IDENT, value, index, line, column);
-	}
-
 	public static CssToken important() {
 		return new CssToken(CssTokenType.IMPORTANT, -1, -1, -1);
 	}

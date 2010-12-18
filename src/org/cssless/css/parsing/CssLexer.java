@@ -231,17 +231,18 @@ public class CssLexer implements Iterator<CssToken> {
 
 				case CssGrammar.OP_STAR:
 					this.setMark(CAPACITY);
+					// consume '*'
 					this.nextChar();
 					if (this.ch == CssGrammar.OP_MATCH) {
+						// consume '='
 						this.nextChar();
 						String star = String.valueOf(CssGrammar.OP_STAR)+CssGrammar.OP_MATCH;
-						return (this.token = CssToken.ident(star, this.token_index, this.token_line, this.token_column));
+						return (this.token = CssToken.operator(star, this.token_index, this.token_line, this.token_column));
 					}
 					this.resetMark();
 					break;
 
 				case CssGrammar.OP_SIBLING: // "~" or "~="
-				case CssGrammar.OP_DASH_MATCH:
 				case CssGrammar.OP_PREFIX_MATCH:
 				case CssGrammar.OP_SUFFIX_MATCH:
 					// consume
@@ -252,6 +253,19 @@ public class CssLexer implements Iterator<CssToken> {
 						match += CssGrammar.OP_MATCH;
 					}
 					return (this.token = CssToken.operator(match, this.index, this.line, this.column));
+
+				case CssGrammar.OP_DASH_MATCH:
+					this.setMark(CAPACITY);
+					// consume '|'
+					this.nextChar();
+					if (this.ch == CssGrammar.OP_MATCH) {
+						// consume '='
+						this.nextChar();
+						String star = String.valueOf(CssGrammar.OP_DASH_MATCH)+CssGrammar.OP_MATCH;
+						return (this.token = CssToken.operator(star, this.token_index, this.token_line, this.token_column));
+					}
+					this.resetMark();
+					break;
 
 				case CssGrammar.OP_HASH:
 					return this.scanHash();
