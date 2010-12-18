@@ -116,12 +116,35 @@ public class CssToken {
 		return new CssToken(CssTokenType.RULE_DELIM, index, line, column);
 	}
 
+	public static CssToken itemDelim() {
+		return new CssToken(CssTokenType.ITEM_DELIM, -1, -1, -1);
+	}
+
+	public static CssToken itemDelim(int index, int line, int column) {
+		return new CssToken(CssTokenType.ITEM_DELIM, index, line, column);
+	}
+
 	public static CssToken value(String value) {
 		return new CssToken(CssTokenType.VALUE, value, -1, -1, -1);
 	}
 
 	public static CssToken value(String value, int index, int line, int column) {
 		return new CssToken(CssTokenType.VALUE, value, index, line, column);
+	}
+
+	static CssToken valueOrOp(String value, int index, int line, int column) {
+		if (CharUtility.isOperator(value)) {
+			return new CssToken(CssTokenType.OPERATOR, value, index, line, column);
+		}
+		return new CssToken(CssTokenType.VALUE, value, index, line, column);
+	}
+
+	public static CssToken operator(String value) {
+		return new CssToken(CssTokenType.OPERATOR, value, -1, -1, -1);
+	}
+
+	public static CssToken operator(String value, int index, int line, int column) {
+		return new CssToken(CssTokenType.OPERATOR, value, index, line, column);
 	}
 
 	public static CssToken numeric(String value) {
@@ -132,7 +155,7 @@ public class CssToken {
 		return new CssToken(CssTokenType.NUMERIC, value, index, line, column);
 	}
 
-	public static CssToken stringValue(String value) {
+	public static CssToken string(String value) {
 		return new CssToken(CssTokenType.STRING, value, -1, -1, -1);
 	}
 

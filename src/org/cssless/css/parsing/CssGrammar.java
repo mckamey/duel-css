@@ -19,6 +19,7 @@ final class CssGrammar {
 	public static final char OP_STRING_DELIM = '"';
 	public static final char OP_STRING_DELIM_ALT = '\'';
 
+	public static final char OP_STAR = '*';
 	public static final char OP_HASH = '#';
 	public static final char OP_DOT = '.';
 	public static final char OP_ADJACENT = '+';
@@ -26,8 +27,10 @@ final class CssGrammar {
 	public static final char OP_DESCENDANT = ' ';
 	public static final char OP_SIBLING = '~';
 
+	public static final char OP_NAMESPACE_DELIM = '|';
 	public static final char OP_ATTR_BEGIN = '[';
 	public static final char OP_ATTR_END = ']';
+
 	public static final char OP_MATCH = '=';
 	public static final char OP_INCLUDES_MATCH = '~';
 	public static final char OP_DASH_MATCH = '|';
@@ -37,7 +40,7 @@ final class CssGrammar {
 
 	public static final char OP_PAREN_BEGIN = '(';
 	public static final char OP_PAREN_END = ')';
-	public static final char OP_VALUE_DELIM = ',';
+	public static final char OP_ITEM_DELIM = ',';
 
 	public static final char OP_COMMENT = '/';
 	public static final String OP_COMMENT_BEGIN = "/*";

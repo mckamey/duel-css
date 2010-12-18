@@ -11,15 +11,15 @@ public class CssLexerTests {
 		String input = "\"Lucida Sans Unicode\" ,'Lucida Grande',Helvetica, Arial, sans-serif";
 
 		Object[] expected = {
-				CssToken.stringValue("\"Lucida Sans Unicode\""),
-				CssToken.value(","),
-				CssToken.stringValue("'Lucida Grande'"),
-				CssToken.value(","),
-				CssToken.ident("Helvetica"),
-				CssToken.value(","),
-				CssToken.ident("Arial"),
-				CssToken.value(","),
-				CssToken.ident("sans-serif")
+				CssToken.string("\"Lucida Sans Unicode\""),
+				CssToken.itemDelim(),
+				CssToken.string("'Lucida Grande'"),
+				CssToken.itemDelim(),
+				CssToken.value("Helvetica"),
+				CssToken.itemDelim(),
+				CssToken.value("Arial"),
+				CssToken.itemDelim(),
+				CssToken.value("sans-serif")
 			};
 
 		Object[] actual = new CssLexer(input).toList().toArray();
@@ -33,19 +33,19 @@ public class CssLexerTests {
 		String input = "h1 { font: bold 2.0em/120% Helvetica, Arial, sans-serif }";
 
 		Object[] expected = {
-				CssToken.ident("h1"),
+				CssToken.value("h1"),
 				CssToken.blockBegin(),
-				CssToken.ident("font"),
-				CssToken.value(":"),
-				CssToken.ident("bold"),
+				CssToken.value("font"),
+				CssToken.operator(":"),
+				CssToken.value("bold"),
 				CssToken.numeric("2.0em"),
-				CssToken.value("/"),
+				CssToken.operator("/"),
 				CssToken.numeric("120%"),
-				CssToken.ident("Helvetica"),
-				CssToken.value(","),
-				CssToken.ident("Arial"),
-				CssToken.value(","),
-				CssToken.ident("sans-serif"),
+				CssToken.value("Helvetica"),
+				CssToken.itemDelim(),
+				CssToken.value("Arial"),
+				CssToken.itemDelim(),
+				CssToken.value("sans-serif"),
 				CssToken.blockEnd()
 			};
 
@@ -64,41 +64,35 @@ public class CssLexerTests {
 			"}";
 
 		Object[] expected = {
-				CssToken.ident("body"),
+				CssToken.value("body"),
 				CssToken.blockBegin(),
-				CssToken.ident("background"),
-				CssToken.value(":"),
-				CssToken.ident("-webkit-gradient"),
-				CssToken.value("("),
-				CssToken.ident("linear"),
-				CssToken.value(","),
-				CssToken.ident("left"),
-				CssToken.ident("top"),
-				CssToken.value(","),
-				CssToken.ident("left"),
-				CssToken.ident("bottom"),
-				CssToken.value(","),
-				CssToken.ident("from"),
-				CssToken.value("("),
+				CssToken.value("background"),
+				CssToken.operator(":"),
+				CssToken.value("-webkit-gradient("),
+				CssToken.value("linear"),
+				CssToken.itemDelim(),
+				CssToken.value("left"),
+				CssToken.value("top"),
+				CssToken.itemDelim(),
+				CssToken.value("left"),
+				CssToken.value("bottom"),
+				CssToken.itemDelim(),
+				CssToken.value("from("),
 				CssToken.value("#D5DDE5"),
-				CssToken.value(")"),
-				CssToken.value(","),
-				CssToken.ident("to"),
-				CssToken.value("("),
+				CssToken.operator(")"),
+				CssToken.itemDelim(),
+				CssToken.value("to("),
 				CssToken.value("#FFFFFF"),
-				CssToken.value(")"),
-				CssToken.value(")"),
+				CssToken.operator(")"),
+				CssToken.operator(")"),
 				CssToken.ruleDelim(),
-				CssToken.ident("background"),
-				CssToken.value(":"),
-				CssToken.ident("-moz-linear-gradient"),
-				CssToken.value("("),
-				CssToken.ident("top"),
-				CssToken.value(","),
+				CssToken.value("background:-moz-linear-gradient("),
+				CssToken.value("top"),
+				CssToken.itemDelim(),
 				CssToken.value("#D5DDE5"),
-				CssToken.value(","),
+				CssToken.itemDelim(),
 				CssToken.value("#FFFFFF"),
-				CssToken.value(")"),
+				CssToken.operator(")"),
 				CssToken.blockEnd()
 			};
 
@@ -113,11 +107,10 @@ public class CssLexerTests {
 		String input = "foo#bar{margin:.2em;}";
 
 		Object[] expected = {
-				CssToken.ident("foo"),
-				CssToken.value("#bar"),
+				CssToken.value("foo#bar"),
 				CssToken.blockBegin(),
-				CssToken.ident("margin"),
-				CssToken.value(":"),
+				CssToken.value("margin"),
+				CssToken.operator(":"),
 				CssToken.numeric(".2em"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
@@ -134,11 +127,10 @@ public class CssLexerTests {
 		String input = ".bar{margin:-1.2em;}";
 
 		Object[] expected = {
-				CssToken.value("."),
-				CssToken.ident("bar"),
+				CssToken.value(".bar"),
 				CssToken.blockBegin(),
-				CssToken.ident("margin"),
-				CssToken.value(":"),
+				CssToken.value("margin"),
+				CssToken.operator(":"),
 				CssToken.numeric("-1.2em"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
@@ -155,10 +147,10 @@ public class CssLexerTests {
 		String input = "-bar{margin:-.2em;}";
 
 		Object[] expected = {
-				CssToken.ident("-bar"),
+				CssToken.value("-bar"),
 				CssToken.blockBegin(),
-				CssToken.ident("margin"),
-				CssToken.value(":"),
+				CssToken.value("margin"),
+				CssToken.operator(":"),
 				CssToken.numeric("-.2em"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
@@ -175,11 +167,10 @@ public class CssLexerTests {
 		String input = ".bar{margin:+1.2em;}";
 
 		Object[] expected = {
-				CssToken.value("."),
-				CssToken.ident("bar"),
+				CssToken.value(".bar"),
 				CssToken.blockBegin(),
-				CssToken.ident("margin"),
-				CssToken.value(":"),
+				CssToken.value("margin"),
+				CssToken.operator(":"),
 				CssToken.numeric("+1.2em"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
@@ -196,10 +187,10 @@ public class CssLexerTests {
 		String input = "-bar{margin:+.2em;}";
 
 		Object[] expected = {
-				CssToken.ident("-bar"),
+				CssToken.value("-bar"),
 				CssToken.blockBegin(),
-				CssToken.ident("margin"),
-				CssToken.value(":"),
+				CssToken.value("margin"),
+				CssToken.operator(":"),
 				CssToken.numeric("+.2em"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
@@ -216,7 +207,7 @@ public class CssLexerTests {
 		String input = "h1 {}";
 
 		Object[] expected = {
-				CssToken.ident("h1"),
+				CssToken.value("h1"),
 				CssToken.blockBegin(),
 				CssToken.blockEnd()
 			};
@@ -232,11 +223,11 @@ public class CssLexerTests {
 		String input = "h1 { color : blue }";
 
 		Object[] expected = {
-				CssToken.ident("h1"),
+				CssToken.value("h1"),
 				CssToken.blockBegin(),
-				CssToken.ident("color"),
-				CssToken.value(":"),
-				CssToken.ident("blue"),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.value("blue"),
 				CssToken.blockEnd()
 			};
 
@@ -251,15 +242,13 @@ public class CssLexerTests {
 		String input = "h1 { color : red; text-align:center; }";
 
 		Object[] expected = {
-				CssToken.ident("h1"),
+				CssToken.value("h1"),
 				CssToken.blockBegin(),
-				CssToken.ident("color"),
-				CssToken.value(":"),
-				CssToken.ident("red"),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.value("red"),
 				CssToken.ruleDelim(),
-				CssToken.ident("text-align"),
-				CssToken.value(":"),
-				CssToken.ident("center"),
+				CssToken.value("text-align:center"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -275,17 +264,13 @@ public class CssLexerTests {
 		String input = "q:before,q:after{content:''}";
 
 		Object[] expected = {
-				CssToken.ident("q"),
-				CssToken.value(":"),
-				CssToken.ident("before"),
-				CssToken.value(","),
-				CssToken.ident("q"),
-				CssToken.value(":"),
-				CssToken.ident("after"),
+				CssToken.value("q:before"),
+				CssToken.itemDelim(),
+				CssToken.value("q:after"),
 				CssToken.blockBegin(),
-				CssToken.ident("content"),
-				CssToken.value(":"),
-				CssToken.stringValue("''"),
+				CssToken.value("content"),
+				CssToken.operator(":"),
+				CssToken.string("''"),
 				CssToken.blockEnd()
 			};
 
@@ -297,23 +282,17 @@ public class CssLexerTests {
 	@Test
 	public void selectorCompoundTest() {
 
-		String input = "span.foo.bar[foo=bar]{ color : red}";
+		String input = "span.foo.bar[foo=bar]{ color :red}";
 
 		Object[] expected = {
-				CssToken.ident("span"),
-				CssToken.value("."),
-				CssToken.ident("foo"),
-				CssToken.value("."),
-				CssToken.ident("bar"),
-				CssToken.value("["),
-				CssToken.ident("foo"),
-				CssToken.value("="),
-				CssToken.ident("bar"),
-				CssToken.value("]"),
+				CssToken.value("span.foo.bar["),
+				CssToken.value("foo"),
+				CssToken.operator("="),
+				CssToken.value("bar"),
+				CssToken.operator("]"),
 				CssToken.blockBegin(),
-				CssToken.ident("color"),
-				CssToken.value(":"),
-				CssToken.ident("red"),
+				CssToken.value("color"),
+				CssToken.value(":red"),
 				CssToken.blockEnd()
 			};
 
@@ -328,31 +307,22 @@ public class CssLexerTests {
 		String input = "div#my-id *.myClass E[foo~=\"warning\"]>F:first-child + G:lang(en) { color : #336699;}";
 
 		Object[] expected = {
-				CssToken.ident("div"),
-				CssToken.value("#my-id"),
-				CssToken.value("*"),
-				CssToken.value("."),
-				CssToken.ident("myClass"),
-				CssToken.ident("E"),
-				CssToken.value("["),
-				CssToken.ident("foo"),
-				CssToken.value("~="),
-				CssToken.stringValue("\"warning\""),
-				CssToken.value("]"),
-				CssToken.value(">"),
-				CssToken.ident("F"),
-				CssToken.value(":"),
-				CssToken.ident("first-child"),
-				CssToken.value("+"),
-				CssToken.ident("G"),
-				CssToken.value(":"),
-				CssToken.ident("lang"),
-				CssToken.value("("),
-				CssToken.ident("en"),
-				CssToken.value(")"),
+				CssToken.value("div#my-id"),
+				CssToken.value("*.myClass"),
+				CssToken.value("E["),
+				CssToken.value("foo"),
+				CssToken.operator("~="),
+				CssToken.string("\"warning\""),
+				CssToken.operator("]"),
+				CssToken.operator(">"),
+				CssToken.value("F:first-child"),
+				CssToken.operator("+"),
+				CssToken.value("G:lang("),
+				CssToken.value("en"),
+				CssToken.operator(")"),
 				CssToken.blockBegin(),
-				CssToken.ident("color"),
-				CssToken.value(":"),
+				CssToken.value("color"),
+				CssToken.operator(":"),
 				CssToken.value("#336699"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
@@ -378,11 +348,10 @@ public class CssLexerTests {
 			"}\"] { color: red }";
 
 		Object[] expected = {
-				CssToken.ident("p"),
-				CssToken.value("["),
-				CssToken.ident("example"),
-				CssToken.value("="),
-				CssToken.stringValue(
+				CssToken.value("p["),
+				CssToken.value("example"),
+				CssToken.operator("="),
+				CssToken.string(
 					"\"public class foo\\\n" +
 					"{\\\n" +
 					"\tprivate int x;\\\n" +
@@ -392,11 +361,11 @@ public class CssLexerTests {
 					"\t}\\\n" +
 					"\\\n" +
 					"}\""),
-				CssToken.value("]"),
+				CssToken.operator("]"),
 				CssToken.blockBegin(),
-				CssToken.ident("color"),
-				CssToken.value(":"),
-				CssToken.ident("red"),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.value("red"),
 				CssToken.blockEnd()
 			};
 
@@ -411,11 +380,11 @@ public class CssLexerTests {
 		String input = "h1 { color : blue!important}";
 
 		Object[] expected = {
-				CssToken.ident("h1"),
+				CssToken.value("h1"),
 				CssToken.blockBegin(),
-				CssToken.ident("color"),
-				CssToken.value(":"),
-				CssToken.ident("blue"),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.value("blue"),
 				CssToken.important(),
 				CssToken.blockEnd()
 			};
@@ -431,11 +400,11 @@ public class CssLexerTests {
 		String input = "h1 { color : blue ! important ;}";
 
 		Object[] expected = {
-				CssToken.ident("h1"),
+				CssToken.value("h1"),
 				CssToken.blockBegin(),
-				CssToken.ident("color"),
-				CssToken.value(":"),
-				CssToken.ident("blue"),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.value("blue"),
 				CssToken.important(),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
@@ -453,11 +422,10 @@ public class CssLexerTests {
 
 		Object[] expected = {
 				CssToken.atRule("import"),
-				CssToken.ident("url"),
-				CssToken.value("("),
-				CssToken.stringValue("\"reset.css\""),
-				CssToken.value(")"),
-				CssToken.ident("screen"),
+				CssToken.value("url("),
+				CssToken.string("\"reset.css\""),
+				CssToken.operator(")"),
+				CssToken.value("screen"),
 				CssToken.ruleDelim()
 			};
 
@@ -473,14 +441,14 @@ public class CssLexerTests {
 
 		Object[] expected = {
 				CssToken.atRule("media"),
-				CssToken.ident("screen"),
-				CssToken.value(","),
-				CssToken.ident("print"),
+				CssToken.value("screen"),
+				CssToken.itemDelim(),
+				CssToken.value("print"),
 				CssToken.blockBegin(),
-				CssToken.ident("body"),
+				CssToken.value("body"),
 				CssToken.blockBegin(),
-				CssToken.ident("font-size"),
-				CssToken.value(":"),
+				CssToken.value("font-size"),
+				CssToken.operator(":"),
 				CssToken.numeric("10pt"),
 				CssToken.blockEnd(),
 				CssToken.blockEnd()
@@ -503,25 +471,22 @@ public class CssLexerTests {
 		Object[] expected = {
 				CssToken.atRule("font-face"),
 				CssToken.blockBegin(),
-				CssToken.ident("font-family"),
-				CssToken.value(":"),
-				CssToken.stringValue("'Foo'"),
+				CssToken.value("font-family"),
+				CssToken.operator(":"),
+				CssToken.string("'Foo'"),
 				CssToken.ruleDelim(),
-				CssToken.ident("src"),
-				CssToken.value(":"),
-				CssToken.ident("local"),
-				CssToken.value("("),
-				CssToken.stringValue("'Foo'"),
-				CssToken.value(")"),
-				CssToken.value(","),
-				CssToken.ident("url"),
-				CssToken.value("("),
-				CssToken.stringValue("'http://example.com/fonts/foo.tt'"),
-				CssToken.value(")"),
-				CssToken.ident("format"),
-				CssToken.value("("),
-				CssToken.stringValue("'truetype'"),
-				CssToken.value(")"),
+				CssToken.value("src"),
+				CssToken.operator(":"),
+				CssToken.value("local("),
+				CssToken.string("'Foo'"),
+				CssToken.operator(")"),
+				CssToken.itemDelim(),
+				CssToken.value("url("),
+				CssToken.string("'http://example.com/fonts/foo.tt'"),
+				CssToken.operator(")"),
+				CssToken.value("format("),
+				CssToken.string("'truetype'"),
+				CssToken.operator(")"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -542,15 +507,14 @@ public class CssLexerTests {
 
 		Object[] expected = {
 				CssToken.atRule("page"),
-				CssToken.value(":"),
-				CssToken.ident("left"),
+				CssToken.value(":left"),
 				CssToken.blockBegin(),
-				CssToken.ident("margin-left"),
-				CssToken.value(":"),
+				CssToken.value("margin-left"),
+				CssToken.operator(":"),
 				CssToken.numeric("4cm"),
 				CssToken.ruleDelim(),
-				CssToken.ident("margin-right"),
-				CssToken.value(":"),
+				CssToken.value("margin-right"),
+				CssToken.operator(":"),
 				CssToken.numeric("3cm"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
@@ -567,13 +531,11 @@ public class CssLexerTests {
 		String input = "p::first-line { text-transform: uppercase; }";
 
 		Object[] expected = {
-				CssToken.ident("p"),
-				CssToken.value("::"),
-				CssToken.ident("first-line"),
+				CssToken.value("p::first-line"),
 				CssToken.blockBegin(),
-				CssToken.ident("text-transform"),
-				CssToken.value(":"),
-				CssToken.ident("uppercase"),
+				CssToken.value("text-transform"),
+				CssToken.operator(":"),
+				CssToken.value("uppercase"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -587,32 +549,23 @@ public class CssLexerTests {
 	public void declarationFilterTest() {
 
 		String input =
-			"div.1a {\r\n" +
+			"div.foo .1a {\r\n" +
 			"  filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='foo.png', sizingMethod=\"scale\");\r\n" +
 			"}";
 
 		Object[] expected = {
-				CssToken.ident("div"),
-				CssToken.numeric(".1a"),// incorrect
+				CssToken.value("div.foo"),
+				CssToken.numeric(".1a"),// incorrect but context will fix
 				CssToken.blockBegin(),
-				CssToken.ident("filter"),
-				CssToken.value(":"),
-				CssToken.ident("progid"),
-				CssToken.value(":"),
-				CssToken.ident("DXImageTransform"),
-				CssToken.value("."),
-				CssToken.ident("Microsoft"),
-				CssToken.value("."),
-				CssToken.ident("AlphaImageLoader"),
-				CssToken.value("("),
-				CssToken.ident("src"),
-				CssToken.value("="),
-				CssToken.stringValue("'foo.png'"),
-				CssToken.value(","),
-				CssToken.ident("sizingMethod"),
-				CssToken.value("="),
-				CssToken.stringValue("\"scale\""),
-				CssToken.value(")"),
+				CssToken.value("filter:progid:DXImageTransform.Microsoft.AlphaImageLoader("),
+				CssToken.value("src"),
+				CssToken.operator("="),
+				CssToken.string("'foo.png'"),
+				CssToken.itemDelim(),
+				CssToken.value("sizingMethod"),
+				CssToken.operator("="),
+				CssToken.string("\"scale\""),
+				CssToken.operator(")"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -631,14 +584,10 @@ public class CssLexerTests {
 
 		Object[] expected = {
 				CssToken.value("*"),
-				CssToken.ident("html"),
-				CssToken.ident("div"),
-				CssToken.value("."),
-				CssToken.ident("blah"),
+				CssToken.value("html"),
+				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.ident("color"),
-				CssToken.value(":"),
-				CssToken.ident("red"),
+				CssToken.value("color:red"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -654,13 +603,9 @@ public class CssLexerTests {
 		String input = "div.blah { _color:red; }";
 
 		Object[] expected = {
-				CssToken.ident("div"),
-				CssToken.value("."),
-				CssToken.ident("blah"),
+				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.ident("_color"),
-				CssToken.value(":"),
-				CssToken.ident("red"),
+				CssToken.value("_color:red"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -676,13 +621,9 @@ public class CssLexerTests {
 		String input = "div.blah { -color:red; }";
 
 		Object[] expected = {
-				CssToken.ident("div"),
-				CssToken.value("."),
-				CssToken.ident("blah"),
+				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.ident("-color"),
-				CssToken.value(":"),
-				CssToken.ident("red"),
+				CssToken.value("-color:red"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -699,15 +640,11 @@ public class CssLexerTests {
 
 		Object[] expected = {
 				CssToken.value("*"),
-				CssToken.value("+"),
-				CssToken.ident("html"),
-				CssToken.ident("div"),
-				CssToken.value("."),
-				CssToken.ident("blah"),
+				CssToken.operator("+"),
+				CssToken.value("html"),
+				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.ident("color"),
-				CssToken.value(":"),
-				CssToken.ident("yellow"),
+				CssToken.value("color:yellow"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -720,17 +657,13 @@ public class CssLexerTests {
 	@Test
 	public void hacksIE7PropertyStarTest() {
 
-		String input = "div.blah { *color:red; }";
+		String input = "div .blah { *color:red; }";
 
 		Object[] expected = {
-				CssToken.ident("div"),
-				CssToken.value("."),
-				CssToken.ident("blah"),
+				CssToken.value("div"),
+				CssToken.value(".blah"),
 				CssToken.blockBegin(),
-				CssToken.value("*"),
-				CssToken.ident("color"),
-				CssToken.value(":"),
-				CssToken.ident("red"),
+				CssToken.value("*color:red"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -746,15 +679,11 @@ public class CssLexerTests {
 		String input = "div.blah { color:red !ie; }";
 
 		Object[] expected = {
-				CssToken.ident("div"),
-				CssToken.value("."),
-				CssToken.ident("blah"),
+				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.ident("color"),
-				CssToken.value(":"),
-				CssToken.ident("red"),
+				CssToken.value("color:red"),
 				CssToken.value("!"),
-				CssToken.ident("ie"),
+				CssToken.value("ie"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -770,13 +699,9 @@ public class CssLexerTests {
 		String input = "div.blah { color:red !important!; }";
 
 		Object[] expected = {
-				CssToken.ident("div"),
-				CssToken.value("."),
-				CssToken.ident("blah"),
+				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.ident("color"),
-				CssToken.value(":"),
-				CssToken.ident("red"),
+				CssToken.value("color:red"),
 				CssToken.important(),
 				CssToken.value("!"),
 				CssToken.ruleDelim(),
@@ -794,14 +719,12 @@ public class CssLexerTests {
 		String input = "div.blah { color: #0FC\\0/; }";
 
 		Object[] expected = {
-				CssToken.ident("div"),
-				CssToken.value("."),
-				CssToken.ident("blah"),
+				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.ident("color"),
-				CssToken.value(":"),
+				CssToken.value("color"),
+				CssToken.operator(":"),
 				CssToken.value("#0FC\\0"),
-				CssToken.value("/"),
+				CssToken.operator("/"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -817,12 +740,10 @@ public class CssLexerTests {
 		String input = "foo { /*/*/property:value;/* */ }";
 
 		Object[] expected = {
-				CssToken.ident("foo"),
+				CssToken.value("foo"),
 				CssToken.blockBegin(),
 				CssToken.comment("/"),
-				CssToken.ident("property"),
-				CssToken.value(":"),
-				CssToken.ident("value"),
+				CssToken.value("property:value"),
 				CssToken.ruleDelim(),
 				CssToken.comment(" "),
 				CssToken.blockEnd()
@@ -839,7 +760,7 @@ public class CssLexerTests {
 		String input = "foo { /*/*//*/property:value;/* */ }";
 
 		Object[] expected = {
-				CssToken.ident("foo"),
+				CssToken.value("foo"),
 				CssToken.blockBegin(),
 				CssToken.comment("/"),
 				CssToken.comment("/property:value;/* "),
@@ -857,7 +778,7 @@ public class CssLexerTests {
 		String input = "body { /* font-size: 10pt */ }";
 
 		Object[] expected = {
-				CssToken.ident("body"),
+				CssToken.value("body"),
 				CssToken.blockBegin(),
 				CssToken.comment(" font-size: 10pt "),
 				CssToken.blockEnd()
@@ -877,7 +798,7 @@ public class CssLexerTests {
 			"}";
 
 		Object[] expected = {
-				CssToken.ident("body"),
+				CssToken.value("body"),
 				CssToken.blockBegin(),
 				CssToken.comment(" font-size: 10pt;"),
 				CssToken.blockEnd()
@@ -896,7 +817,7 @@ public class CssLexerTests {
 			"//trailing comment";
 
 		Object[] expected = {
-				CssToken.ident("body"),
+				CssToken.value("body"),
 				CssToken.blockBegin(),
 				CssToken.blockEnd(),
 				CssToken.comment("trailing comment")

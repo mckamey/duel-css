@@ -53,6 +53,16 @@ public enum CssTokenType {
 	RULE_DELIM,
 
 	/**
+	 * Comma delimiter
+	 */
+	ITEM_DELIM,
+
+	/**
+	 * Operator
+	 */
+	OPERATOR,
+
+	/**
 	 * Priority marker
 	 */
 	IMPORTANT,

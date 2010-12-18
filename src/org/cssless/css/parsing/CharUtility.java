@@ -30,6 +30,38 @@ final class CharUtility {
 		}
 	}
 
+	public static boolean isOperator(String value) {
+		if (value != null) {
+			switch (value.length()) {
+				case 1:
+					switch (value.charAt(0)) {
+						case CssGrammar.OP_PAIR_DELIM:
+						case CssGrammar.OP_ITEM_DELIM:
+						case CssGrammar.OP_CHILD:
+						case CssGrammar.OP_ADJACENT:
+						case CssGrammar.OP_SIBLING:
+						case CssGrammar.OP_MATCH:
+						case CssGrammar.OP_PAREN_END:
+						case CssGrammar.OP_ATTR_END:
+						case CssGrammar.OP_NAMESPACE_DELIM:
+						case '/':
+							return true;
+					}
+					break;
+				case 2:
+					if ("~=".equals(value) ||
+						"|=".equals(value) ||
+						"^=".equals(value) ||
+						"$=".equals(value)) {
+						return true;
+					}
+					break;
+			}
+		}
+
+		return false;
+	}
+
 	public static boolean isWhiteSpace(int ch) {
 		switch (ch) {
 			case ' ':		// Space
