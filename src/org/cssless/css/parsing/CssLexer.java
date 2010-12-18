@@ -178,17 +178,13 @@ public class CssLexer implements Iterator<CssToken> {
 					return (this.token = CssToken.ruleDelim(this.index, this.line, this.column));
 
 				case CssGrammar.OP_ITEM_DELIM:
-					// consume ','
-					this.nextChar();
-					return (this.token = CssToken.itemDelim(this.index, this.line, this.column));
-
 				case CssGrammar.OP_CHILD:
 				case CssGrammar.OP_MATCH:
 				case CssGrammar.OP_ATTR_END:
 				case CssGrammar.OP_ATTR_BEGIN:
 				case CssGrammar.OP_PAREN_BEGIN:
 				case CssGrammar.OP_PAREN_END:
-					// consume
+					// consume char
 					String value = String.valueOf((char)this.ch);
 					this.nextChar();
 					return (this.token = CssToken.operator(value, this.index, this.line, this.column));

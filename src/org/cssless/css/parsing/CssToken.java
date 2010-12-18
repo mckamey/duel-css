@@ -81,7 +81,7 @@ public class CssToken {
 
 	/* reusable tokens and helper methods */
 
-	static final CssToken start = new CssToken(CssTokenType.START, -1, -1, -1);
+	static final CssToken start = new CssToken(CssTokenType.VALUE, -1, -1, -1);
 	static final CssToken end = new CssToken(CssTokenType.END, -1, -1, -1);
 
 	public static CssToken atRule(String keyword) {
@@ -114,14 +114,6 @@ public class CssToken {
 
 	public static CssToken ruleDelim(int index, int line, int column) {
 		return new CssToken(CssTokenType.RULE_DELIM, index, line, column);
-	}
-
-	public static CssToken itemDelim() {
-		return new CssToken(CssTokenType.ITEM_DELIM, -1, -1, -1);
-	}
-
-	public static CssToken itemDelim(int index, int line, int column) {
-		return new CssToken(CssTokenType.ITEM_DELIM, index, line, column);
 	}
 
 	public static CssToken value(String value) {

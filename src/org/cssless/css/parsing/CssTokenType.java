@@ -8,31 +8,6 @@ package org.cssless.css.parsing;
 public enum CssTokenType {
 
 	/**
-	 * Value
-	 */
-	START,
-
-	/**
-	 * General value
-	 */
-	VALUE,
-
-	/**
-	 * Identifier value
-	 */
-	IDENT,
-
-	/**
-	 * String value
-	 */
-	STRING,
-
-	/**
-	 * Numeric value
-	 */
-	NUMERIC,
-
-	/**
 	 * At-rule keyword
 	 */
 	AT_RULE,
@@ -53,17 +28,27 @@ public enum CssTokenType {
 	RULE_DELIM,
 
 	/**
-	 * Comma delimiter
-	 */
-	ITEM_DELIM,
-
-	/**
 	 * Operator
 	 */
 	OPERATOR,
 
 	/**
-	 * Priority marker
+	 * General value
+	 */
+	VALUE,
+
+	/**
+	 * String value
+	 */
+	STRING,
+
+	/**
+	 * Numeric value
+	 */
+	NUMERIC,
+
+	/**
+	 * Priority flag
 	 */
 	IMPORTANT,
 
