@@ -143,7 +143,7 @@ final class CssGrammar {
 
 		// CSS3 at-rule keywords
 		tags = (config != null) && config.containsKey("atRules") ?
-				config.getString("Rules").split(",") : new String[0];
+				config.getString("atRules").split(",") : new String[0];
 		map = new HashMap<String, Boolean>(tags.length);
 		for (String value : tags) {
 			map.put(value, true);

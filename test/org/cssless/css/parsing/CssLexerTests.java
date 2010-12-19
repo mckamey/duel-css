@@ -86,7 +86,9 @@ public class CssLexerTests {
 				CssToken.operator(")"),
 				CssToken.operator(")"),
 				CssToken.ruleDelim(),
-				CssToken.value("background:-moz-linear-gradient("),
+				CssToken.value("background"),
+				CssToken.operator(":"),
+				CssToken.value("-moz-linear-gradient("),
 				CssToken.value("top"),
 				CssToken.operator(","),
 				CssToken.color("#D5DDE5"),
@@ -171,7 +173,8 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.value("margin"),
 				CssToken.operator(":"),
-				CssToken.numeric("+1.2em"),
+				CssToken.operator("+"),
+				CssToken.numeric("1.2em"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -191,7 +194,8 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.value("margin"),
 				CssToken.operator(":"),
-				CssToken.numeric("+.2em"),
+				CssToken.operator("+"),
+				CssToken.numeric(".2em"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -248,7 +252,9 @@ public class CssLexerTests {
 				CssToken.operator(":"),
 				CssToken.color("red"),
 				CssToken.ruleDelim(),
-				CssToken.value("text-align:center"),
+				CssToken.value("text-align"),
+				CssToken.operator(":"),
+				CssToken.value("center"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -292,7 +298,8 @@ public class CssLexerTests {
 				CssToken.operator("]"),
 				CssToken.blockBegin(),
 				CssToken.value("color"),
-				CssToken.value(":red"),
+				CssToken.operator(":"),
+				CssToken.color("red"),
 				CssToken.blockEnd()
 			};
 
@@ -507,7 +514,8 @@ public class CssLexerTests {
 
 		Object[] expected = {
 				CssToken.atRule("page"),
-				CssToken.value(":left"),
+				CssToken.operator(":"),// technically is ":left" pseudo-class
+				CssToken.value("left"),
 				CssToken.blockBegin(),
 				CssToken.value("margin-left"),
 				CssToken.operator(":"),
@@ -516,6 +524,50 @@ public class CssLexerTests {
 				CssToken.value("margin-right"),
 				CssToken.operator(":"),
 				CssToken.numeric("3cm"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void pseudoClassTest() {
+
+		String input = "a:visited.className#id { color: #69C; }";
+
+		Object[] expected = {
+				CssToken.value("a:visited.className#id"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("#69C"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void pseudoClassFunctionTest() {
+
+		String input = "p:nth-last-of-type(n+2) { color: #69C; }";
+
+		Object[] expected = {
+				CssToken.value("p:nth-last-of-type("),
+				CssToken.value("n"),
+				CssToken.operator("+"),
+				CssToken.numeric("2"),
+				CssToken.operator(")"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("#69C"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -683,7 +735,11 @@ public class CssLexerTests {
 				CssToken.value("div.foo"),
 				CssToken.numeric(".1a"),// incorrect but context will fix
 				CssToken.blockBegin(),
-				CssToken.value("filter:progid:DXImageTransform.Microsoft.AlphaImageLoader("),
+				CssToken.value("filter"),
+				CssToken.operator(":"),
+				CssToken.value("progid"),
+				CssToken.operator(":"),
+				CssToken.value("DXImageTransform.Microsoft.AlphaImageLoader("),
 				CssToken.value("src"),
 				CssToken.operator("="),
 				CssToken.string("'foo.png'"),
@@ -713,7 +769,9 @@ public class CssLexerTests {
 				CssToken.value("html"),
 				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.value("color:red"),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("red"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -731,7 +789,9 @@ public class CssLexerTests {
 		Object[] expected = {
 				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.value("_color:red"),
+				CssToken.value("_color"),
+				CssToken.operator(":"),
+				CssToken.color("red"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -749,7 +809,9 @@ public class CssLexerTests {
 		Object[] expected = {
 				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.value("-color:red"),
+				CssToken.value("-color"),
+				CssToken.operator(":"),
+				CssToken.color("red"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -770,7 +832,9 @@ public class CssLexerTests {
 				CssToken.value("html"),
 				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.value("color:yellow"),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("yellow"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -789,7 +853,9 @@ public class CssLexerTests {
 				CssToken.value("div"),
 				CssToken.value(".blah"),
 				CssToken.blockBegin(),
-				CssToken.value("*color:red"),
+				CssToken.value("*color"),
+				CssToken.operator(":"),
+				CssToken.color("red"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -807,7 +873,9 @@ public class CssLexerTests {
 		Object[] expected = {
 				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.value("color:red"),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("red"),
 				CssToken.value("!"),
 				CssToken.value("ie"),
 				CssToken.ruleDelim(),
@@ -827,7 +895,9 @@ public class CssLexerTests {
 		Object[] expected = {
 				CssToken.value("div.blah"),
 				CssToken.blockBegin(),
-				CssToken.value("color:red"),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("red"),
 				CssToken.important(),
 				CssToken.value("!"),
 				CssToken.ruleDelim(),
@@ -869,7 +939,9 @@ public class CssLexerTests {
 				CssToken.value("foo"),
 				CssToken.blockBegin(),
 				CssToken.comment("/"),
-				CssToken.value("property:value"),
+				CssToken.value("property"),
+				CssToken.operator(":"),
+				CssToken.value("value"),
 				CssToken.ruleDelim(),
 				CssToken.comment(" "),
 				CssToken.blockEnd()

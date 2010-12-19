@@ -165,17 +165,17 @@ public class CssLexer implements Iterator<CssToken> {
 				case CssGrammar.OP_BLOCK_BEGIN:
 					// consume '{'
 					this.nextChar();
-					return (this.token = CssToken.blockBegin(this.index, this.line, this.column));
+					return (this.token = CssToken.blockBegin(this.token_index, this.token_line, this.token_column));
 
 				case CssGrammar.OP_BLOCK_END:
 					// consume '}'
 					this.nextChar();
-					return (this.token = CssToken.blockEnd(this.index, this.line, this.column));
+					return (this.token = CssToken.blockEnd(this.token_index, this.token_line, this.token_column));
 
 				case CssGrammar.OP_DECL_DELIM:
 					// consume ';'
 					this.nextChar();
-					return (this.token = CssToken.ruleDelim(this.index, this.line, this.column));
+					return (this.token = CssToken.ruleDelim(this.token_index, this.token_line, this.token_column));
 
 				case CssGrammar.OP_ITEM_DELIM:
 				case CssGrammar.OP_CHILD:
@@ -187,7 +187,7 @@ public class CssLexer implements Iterator<CssToken> {
 					// consume char
 					String value = String.valueOf((char)this.ch);
 					this.nextChar();
-					return (this.token = CssToken.operator(value, this.index, this.line, this.column));
+					return (this.token = CssToken.operator(value, this.token_index, this.token_line, this.token_column));
 
 				case CssGrammar.OP_STRING_DELIM:
 				case CssGrammar.OP_STRING_DELIM_ALT:
@@ -213,17 +213,9 @@ public class CssLexer implements Iterator<CssToken> {
 					break;
 
 				case CssGrammar.OP_PLUS:
-					this.setMark(CAPACITY);
+					// consume '+' adjacent combinator
 					this.nextChar();
-
-					// negative number or identifier
-					isNumber = CharUtility.isNumeric(this.ch);
-					if (!isNumber) {
-						// consume '+' adjacent combinator
-						return (this.token = CssToken.operator(String.valueOf(CssGrammar.OP_ADJACENT), this.index, this.line, this.column));
-					}
-					this.resetMark();
-					break;
+					return (this.token = CssToken.operator(String.valueOf(CssGrammar.OP_ADJACENT), this.token_index, this.token_line, this.token_column));
 
 				case CssGrammar.OP_STAR:
 					this.setMark(CAPACITY);
@@ -248,7 +240,7 @@ public class CssLexer implements Iterator<CssToken> {
 						this.nextChar();
 						match += CssGrammar.OP_MATCH;
 					}
-					return (this.token = CssToken.operator(match, this.index, this.line, this.column));
+					return (this.token = CssToken.operator(match, this.token_index, this.token_line, this.token_column));
 
 				case CssGrammar.OP_DASH_MATCH:
 					this.setMark(CAPACITY);
@@ -274,7 +266,7 @@ public class CssLexer implements Iterator<CssToken> {
 						return this.token;
 					}
 					this.nextChar();
-					return (this.token = CssToken.operator(String.valueOf(CssGrammar.OP_COMMENT), this.index, this.line, this.column));
+					return (this.token = CssToken.operator(String.valueOf(CssGrammar.OP_COMMENT), this.token_index, this.token_line, this.token_column));
 					
 				case EOF:
 					return (this.token = CssToken.end);
@@ -415,27 +407,42 @@ public class CssLexer implements Iterator<CssToken> {
 					continue;
 
 				case CssGrammar.OP_PAIR_DELIM:
-					if (this.buffer.length() > 0) {
-						this.setMark(CAPACITY);
+					this.setMark(CAPACITY);
 
-						// property or pseudo-class/element 
-						if (this.nextChar() == CssGrammar.OP_MINUS) {
-							this.nextChar();
+					int start = this.buffer.length(), shift = 1;
+					this.buffer.append(CssGrammar.OP_PAIR_DELIM);
+
+					// check if pseudo-class or pseudo-element
+					if (this.nextChar() == CssGrammar.OP_PAIR_DELIM) {
+						// potential pseudo-element
+						this.buffer.append(CssGrammar.OP_PAIR_DELIM);
+						this.nextChar();
+						shift++;
+					}
+					if (CharUtility.isNameStartChar(this.ch)) {
+						this.buffer.append((char)this.ch);
+						for (int i=1; i<=CAPACITY && CharUtility.isNameChar(this.nextChar()); i++) {
+							this.buffer.append((char)this.ch);
 						}
-						if (!CharUtility.isNameStartChar(this.ch) &&
-							this.ch != CssGrammar.OP_PAIR_DELIM) {
-							this.resetMark();
-							// end of property token
-							// flush the buffer
-							return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
-						}
-						this.resetMark();
 					}
 
-					// continue consuming
-					this.nextChar();
-					this.buffer.append(CssGrammar.OP_PAIR_DELIM);
-					continue;
+					if (CssGrammar.isPseudoKeyword(this.buffer.substring(start+shift))) {
+						// continue consuming
+						continue;
+					}
+
+					this.resetMark();
+					this.buffer.setLength(start);
+
+					if (this.buffer.length() == 0) {
+						// consume ':'
+						this.nextChar();
+						return (this.token = CssToken.operator(String.valueOf(CssGrammar.OP_PAIR_DELIM), this.token_index, this.token_line, this.token_column));
+					}
+
+					// end of property token
+					// flush the buffer
+					return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 
 				default:
 					// consume until reach a special char
@@ -505,7 +512,7 @@ public class CssLexer implements Iterator<CssToken> {
 
 		this.nextChar();
 		this.buffer.append((char)delim);
-		return (this.token = CssToken.stringValue(this.buffer.toString(), this.index, this.line, this.column));
+		return (this.token = CssToken.stringValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 	}
 
 	/**
