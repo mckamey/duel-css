@@ -556,10 +556,62 @@ public class CssLexerTests {
 	@Test
 	public void pseudoClassFunctionTest() {
 
-		String input = "p:nth-last-of-type(n+2) { color: #69C; }";
+		String input = "p:nth-last-of-type(n+2) { color:#69C; }";
 
 		Object[] expected = {
 				CssToken.value("p:nth-last-of-type("),
+				CssToken.value("n"),
+				CssToken.operator("+"),
+				CssToken.numeric("2"),
+				CssToken.operator(")"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("#69C"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void pseudoClassInvalidTest() {
+
+		String input = "p:not-last-of-type(n+2) { color:#69C; }";
+
+		Object[] expected = {
+				CssToken.value("p"),
+				CssToken.operator(":"),
+				CssToken.value("not-last-of-type("),
+				CssToken.value("n"),
+				CssToken.operator("+"),
+				CssToken.numeric("2"),
+				CssToken.operator(")"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("#69C"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void pseudoClassInvalidSuffixTest() {
+
+		String input = "p:nth-last-of-type-fake(n+2) { color:#69C; }";
+
+		Object[] expected = {
+				CssToken.value("p"),
+				CssToken.operator(":"),
+				CssToken.value("nth-last-of-type-fake("),
 				CssToken.value("n"),
 				CssToken.operator("+"),
 				CssToken.numeric("2"),
