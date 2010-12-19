@@ -82,6 +82,7 @@ public class ContainerNode extends CssNode {
 		if (!this.children.isEmpty()) {
 			for (CssNode child : this.children) {
 				buffer.append(child);
+				buffer.append('\n');
 			}
 		}
 

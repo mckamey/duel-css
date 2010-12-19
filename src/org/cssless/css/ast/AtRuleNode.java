@@ -7,6 +7,7 @@ import org.cssless.css.parsing.InvalidNodeException;
  */
 public class AtRuleNode extends ContainerNode {
 
+	private static final String OPERATOR = "@";
 	private BlockNode block;
 	private String keyword;
 
@@ -52,5 +53,23 @@ public class AtRuleNode extends ContainerNode {
 		}
 
 		super.appendChild(value);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder buffer = new StringBuilder(OPERATOR)
+			.append(this.keyword)
+			.append(" ");
+
+		if (this.block != null) {
+			buffer.append(this.block.toString());
+		} else {
+			if (this.hasChildren()) {
+				buffer.append(super.toString());
+			}
+			buffer.append(';');
+		}
+		
+		return buffer.toString();
 	}
 }
