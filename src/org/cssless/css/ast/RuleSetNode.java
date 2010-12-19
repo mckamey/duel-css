@@ -2,6 +2,8 @@ package org.cssless.css.ast;
 
 import java.util.*;
 
+import org.cssless.css.parsing.InvalidNodeException;
+
 /**
  * Represents a rule set block
  */
@@ -13,7 +15,7 @@ public class RuleSetNode extends BlockNode {
 		super(index, line, column);
 	}
 
-	public RuleSetNode(SelectorNode selector, CssNode... children) {
+	public RuleSetNode(SelectorNode selector, DeclarationNode... children) {
 		super(children);
 
 		if (selector != null) {
@@ -21,7 +23,7 @@ public class RuleSetNode extends BlockNode {
 		}
 	}
 
-	public RuleSetNode(SelectorNode[] selectors, CssNode... children) {
+	public RuleSetNode(SelectorNode[] selectors, DeclarationNode... children) {
 		super(children);
 
 		if (selectors != null) {
@@ -33,6 +35,15 @@ public class RuleSetNode extends BlockNode {
 
 	public List<SelectorNode> getSelectors() {
 		return selectors;
+	}
+
+	@Override
+	public void appendChild(CssNode value) {
+		if (!(value instanceof DeclarationNode || value instanceof CommentNode)) {
+			throw new InvalidNodeException("Rule-sets may only directly hold declarations", value);
+		}
+
+		super.appendChild(value);
 	}
 
 	@Override

@@ -106,7 +106,6 @@ public class CssParser {
 						this.next.getIndex(),
 						this.next.getLine(),
 						this.next.getColumn()));
-
 				// consume token
 				this.next = null;
 				break;

@@ -2,7 +2,7 @@ package org.cssless.css.parsing;
 
 import java.io.IOException;
 
-import org.cssless.css.ast.StyleSheetNode;
+import org.cssless.css.ast.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -28,7 +28,20 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(new ValueNode("h1")),
+				new DeclarationNode(
+					"font",
+					new ValueNode("bold"),
+					new NumericNode("2.0em"),
+					new OperatorNode("/"),
+					new NumericNode("120%"),
+					new ValueNode("Helvetica"),
+					new OperatorNode(","),
+					new ValueNode("Arial"),
+					new OperatorNode(","),
+					new ValueNode("sans-serif"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 

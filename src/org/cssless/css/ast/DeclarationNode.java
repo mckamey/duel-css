@@ -16,7 +16,7 @@ public class DeclarationNode extends ContainerNode {
 		this.ident = ident;
 	}
 
-	public DeclarationNode(String ident, CssNode... expression) {
+	public DeclarationNode(String ident, ValueNode... expression) {
 		super(expression);
 
 		this.ident = ident;
