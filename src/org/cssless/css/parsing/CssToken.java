@@ -116,18 +116,22 @@ public class CssToken {
 		return new CssToken(CssTokenType.RULE_DELIM, index, line, column);
 	}
 
+	static CssToken typedValue(String value, int index, int line, int column) {
+		if (CharUtility.isOperator(value)) {
+			return new CssToken(CssTokenType.OPERATOR, value, index, line, column);
+
+		} else if (CssGrammar.decodeColor(value) != null) {
+			return new CssToken(CssTokenType.COLOR, value, index, line, column);
+		}
+
+		return new CssToken(CssTokenType.VALUE, value, index, line, column);
+	}
+
 	public static CssToken value(String value) {
 		return new CssToken(CssTokenType.VALUE, value, -1, -1, -1);
 	}
 
 	public static CssToken value(String value, int index, int line, int column) {
-		return new CssToken(CssTokenType.VALUE, value, index, line, column);
-	}
-
-	static CssToken valueOrOp(String value, int index, int line, int column) {
-		if (CharUtility.isOperator(value)) {
-			return new CssToken(CssTokenType.OPERATOR, value, index, line, column);
-		}
 		return new CssToken(CssTokenType.VALUE, value, index, line, column);
 	}
 

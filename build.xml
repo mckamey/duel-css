@@ -38,9 +38,11 @@
 		/>
 		<!-- debug="${javac.debug}" -->
 
-		<!-- copy configs into output
-		<copy file="${src.dir}/org/cssless/*.properties"
-			todir="${bin.dir}/org/cssless"/> -->
+		<!-- copy configs into output -->
+		<copy file="${src.dir}/org/cssless/css/parsing/CssColors.properties"
+			todir="${bin.dir}/org/cssless/css/parsing"/>
+		<copy file="${src.dir}/org/cssless/css/parsing/CssKeywords.properties"
+			todir="${bin.dir}/org/cssless/css/parsing"/>
 	</target>
 
 	<target name="jar.runtime" depends="compile.src" description="Package runtime as a jar">

@@ -227,7 +227,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.value("color"),
 				CssToken.operator(":"),
-				CssToken.value("blue"),
+				CssToken.color("blue"),
 				CssToken.blockEnd()
 			};
 
@@ -246,7 +246,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.value("color"),
 				CssToken.operator(":"),
-				CssToken.value("red"),
+				CssToken.color("red"),
 				CssToken.ruleDelim(),
 				CssToken.value("text-align:center"),
 				CssToken.ruleDelim(),
@@ -365,7 +365,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.value("color"),
 				CssToken.operator(":"),
-				CssToken.value("red"),
+				CssToken.color("red"),
 				CssToken.blockEnd()
 			};
 
@@ -384,7 +384,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.value("color"),
 				CssToken.operator(":"),
-				CssToken.value("blue"),
+				CssToken.color("blue"),
 				CssToken.important(),
 				CssToken.blockEnd()
 			};
@@ -404,7 +404,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.value("color"),
 				CssToken.operator(":"),
-				CssToken.value("blue"),
+				CssToken.color("blue"),
 				CssToken.important(),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
@@ -555,7 +555,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.value("color"),
 				CssToken.operator(":"),
-				CssToken.value("silver"),
+				CssToken.color("silver"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -568,14 +568,14 @@ public class CssLexerTests {
 	@Test
 	public void namespacePrefixAnyTest() {
 
-		String input = "*|p { color: silver; }";
+		String input = "*|p { color: purple; }";
 
 		Object[] expected = {
 				CssToken.value("*|p"),
 				CssToken.blockBegin(),
 				CssToken.value("color"),
 				CssToken.operator(":"),
-				CssToken.value("silver"),
+				CssToken.color("purple"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -588,14 +588,14 @@ public class CssLexerTests {
 	@Test
 	public void namespacePrefixFooTest() {
 
-		String input = "foo|p { color: silver; }";
+		String input = "foo|p { color: palevioletred; }";
 
 		Object[] expected = {
 				CssToken.value("foo|p"),
 				CssToken.blockBegin(),
 				CssToken.value("color"),
 				CssToken.operator(":"),
-				CssToken.value("silver"),
+				CssToken.color("palevioletred"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -608,7 +608,7 @@ public class CssLexerTests {
 	@Test
 	public void dashMatchTest() {
 
-		String input = "foo|=p { color: silver; }";
+		String input = "foo|=p { color: lightslategrey; }";
 
 		Object[] expected = {
 				CssToken.value("foo"),
@@ -617,7 +617,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.value("color"),
 				CssToken.operator(":"),
-				CssToken.value("silver"),
+				CssToken.color("lightslategrey"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -630,7 +630,7 @@ public class CssLexerTests {
 	@Test
 	public void dashMatchWhitespaceTest() {
 
-		String input = "foo |=p { color: silver; }";
+		String input = "foo |=p { color: lime; }";
 
 		Object[] expected = {
 				CssToken.value("foo"),
@@ -639,7 +639,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.value("color"),
 				CssToken.operator(":"),
-				CssToken.value("silver"),
+				CssToken.color("lime"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -652,7 +652,7 @@ public class CssLexerTests {
 	@Test
 	public void dashMatchWhitespace2Test() {
 
-		String input = "foo|= p { color: silver; }";
+		String input = "foo|= p { color: mediumturquoise; }";
 
 		Object[] expected = {
 				CssToken.value("foo"),
@@ -661,7 +661,7 @@ public class CssLexerTests {
 				CssToken.blockBegin(),
 				CssToken.value("color"),
 				CssToken.operator(":"),
-				CssToken.value("silver"),
+				CssToken.color("mediumturquoise"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};

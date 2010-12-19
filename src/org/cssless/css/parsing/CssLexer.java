@@ -327,7 +327,7 @@ public class CssLexer implements Iterator<CssToken> {
 				}
 
 				// flush the buffer
-				return (this.token = CssToken.valueOrOp(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+				return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 			}
 
 			switch (this.ch) {
@@ -355,7 +355,7 @@ public class CssLexer implements Iterator<CssToken> {
 				case EOF:
 					// these chars are start of other tokens
 					// flush the buffer
-					return (this.token = CssToken.valueOrOp(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+					return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 
 				case CssGrammar.OP_DASH_MATCH:
 					this.setMark(CAPACITY);
@@ -366,7 +366,7 @@ public class CssLexer implements Iterator<CssToken> {
 						this.resetMark();
 						// start of numeric token
 						// flush the buffer
-						return (this.token = CssToken.valueOrOp(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+						return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 					}
 
 					// consume until reach a special char
@@ -380,7 +380,7 @@ public class CssLexer implements Iterator<CssToken> {
 					this.nextChar();
 
 					// flush the buffer
-					return (this.token = CssToken.valueOrOp(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+					return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 
 				case CssGrammar.OP_MINUS:
 					this.setMark(CAPACITY);
@@ -391,7 +391,7 @@ public class CssLexer implements Iterator<CssToken> {
 						this.resetMark();
 						// start of numeric token
 						// flush the buffer
-						return (this.token = CssToken.valueOrOp(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+						return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 					}
 
 					// continue consuming
@@ -407,7 +407,7 @@ public class CssLexer implements Iterator<CssToken> {
 						this.resetMark();
 						// start of numeric token
 						// flush the buffer
-						return (this.token = CssToken.valueOrOp(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+						return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 					}
 
 					// continue consuming
@@ -427,7 +427,7 @@ public class CssLexer implements Iterator<CssToken> {
 							this.resetMark();
 							// end of property token
 							// flush the buffer
-							return (this.token = CssToken.valueOrOp(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+							return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 						}
 						this.resetMark();
 					}
