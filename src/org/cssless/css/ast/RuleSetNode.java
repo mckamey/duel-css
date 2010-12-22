@@ -15,7 +15,7 @@ public class RuleSetNode extends BlockNode {
 		super(index, line, column);
 	}
 
-	public RuleSetNode(SelectorNode selector, DeclarationNode... children) {
+	public RuleSetNode(SelectorNode selector, CssNode... children) {
 		super(children);
 
 		if (selector != null) {
@@ -23,7 +23,7 @@ public class RuleSetNode extends BlockNode {
 		}
 	}
 
-	public RuleSetNode(SelectorNode[] selectors, DeclarationNode... children) {
+	public RuleSetNode(SelectorNode[] selectors, CssNode... children) {
 		super(children);
 
 		if (selectors != null) {

@@ -17,6 +17,10 @@ public class SelectorNode extends ContainerNode {
 		super(sequence);
 	}
 
+	public SelectorNode(String value) {
+		super(new ValueNode(value));
+	}
+
 	@Override
 	public void appendChild(CssNode value) {
 		if (!(value instanceof ValueNode)) {

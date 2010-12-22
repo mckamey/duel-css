@@ -1,10 +1,9 @@
 package org.cssless.css.parsing;
 
+import static org.junit.Assert.*;
 import java.io.IOException;
-
 import org.cssless.css.ast.*;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class CssParserTests {
 
@@ -30,7 +29,7 @@ public class CssParserTests {
 
 		StyleSheetNode expected = new StyleSheetNode(
 			new RuleSetNode(
-				new SelectorNode(new ValueNode("h1")),
+				new SelectorNode("h1"),
 				new DeclarationNode(
 					"font",
 					new ValueNode("bold"),
@@ -86,7 +85,38 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("body"),
+				new DeclarationNode(
+					"background",
+					new ValueNode("-webkit-gradient("),
+					new ValueNode("linear"),
+					new OperatorNode(","),
+					new ValueNode("left"),
+					new ValueNode("top"),
+					new OperatorNode(","),
+					new ValueNode("left"),
+					new ValueNode("bottom"),
+					new OperatorNode(","),
+					new ValueNode("from("),
+					new ColorNode("#D5DDE5"),
+					new OperatorNode(")"),
+					new OperatorNode(","),
+					new ValueNode("to("),
+					new ColorNode("#FFFFFF"),
+					new OperatorNode(")"),
+					new OperatorNode(")")),
+				new DeclarationNode(
+					"background",
+					new ValueNode("-moz-linear-gradient("),
+					new ValueNode("top"),
+					new OperatorNode(","),
+					new ColorNode("#D5DDE5"),
+					new OperatorNode(","),
+					new ColorNode("#FFFFFF"),
+					new OperatorNode(")"))
+			));
 		
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -106,7 +136,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("foo#bar"),
+				new DeclarationNode(
+					"margin",
+					new NumericNode(".2em"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -126,7 +161,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+				new RuleSetNode(
+					new SelectorNode(".bar"),
+					new DeclarationNode(
+						"margin",
+						new NumericNode("-1.2em"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -146,7 +186,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("-bar"),
+				new DeclarationNode(
+					"margin",
+					new NumericNode("-.2em"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -167,7 +212,13 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(".bar"),
+				new DeclarationNode(
+					"margin",
+					new OperatorNode("+"),
+					new NumericNode("1.2em"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -188,7 +239,13 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(".bar"),
+				new DeclarationNode(
+					"margin",
+					new OperatorNode("+"),
+					new NumericNode(".2em"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -204,7 +261,9 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("h1")));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -223,7 +282,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("h1"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("blue"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -247,7 +311,15 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("h1"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("red")),
+				new DeclarationNode(
+					"text-align",
+					new ColorNode("center"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -268,7 +340,15 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode[] {
+					new SelectorNode("q:before"),
+					new SelectorNode("q:after")
+				},
+				new DeclarationNode(
+					"content",
+					new StringNode("''"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -291,7 +371,17 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("span.foo.bar["),
+					new ValueNode("bar"),
+					new OperatorNode("="),
+					new ValueNode("foo"),
+					new OperatorNode("]")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("red"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -323,7 +413,25 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("div#my-id"),
+					new ValueNode("*.myClass"),
+					new ValueNode("E["),
+					new ValueNode("foo"),
+					new OperatorNode("~="),
+					new StringNode("\"warning\""),
+					new OperatorNode("]"),
+					new OperatorNode(">"),
+					new ValueNode("F:first-child"),
+					new OperatorNode("+"),
+					new ValueNode("G:lang("),
+					new ValueNode("en"),
+					new OperatorNode(")")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("#336699"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -355,7 +463,26 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+				new RuleSetNode(
+					new SelectorNode(
+						new ValueNode("p["),
+						new ValueNode("example"),
+						new OperatorNode("="),
+						new StringNode(
+							"\"public class foo\\\n" +
+							"{\\\n" +
+							"\tprivate int x;\\\n" +
+							"\\\n" +
+							"\tfoo(int x) {\\\n" +
+							"\t\tthis.x = x;\\\n" +
+							"\t}\\\n" +
+							"\\\n" +
+							"}\""),
+						new OperatorNode("]")),
+					new DeclarationNode(
+						"color",
+						new ColorNode("red"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -375,28 +502,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
-
-		StyleSheetNode actual = new CssParser().parse(input);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void importantWhitespaceTest() throws IOException {
-
-		CssToken[] input = {
-				CssToken.value("h1"),
-				CssToken.blockBegin(),
-				CssToken.value("color"),
-				CssToken.operator(":"),
-				CssToken.color("blue"),
-				CssToken.important(),
-				CssToken.ruleDelim(),
-				CssToken.blockEnd()
-			};
-
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("h1"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("blue")).withImportant()));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -415,7 +526,13 @@ public class CssParserTests {
 				CssToken.ruleDelim()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new AtRuleNode(
+				"import",
+				new ValueNode("url("),
+				new StringNode("\"reset.css\""),
+				new OperatorNode(")"),
+				new ValueNode("screen")));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -440,7 +557,19 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new AtRuleNode(
+				"media",
+				new ValueNode[] {
+					new ValueNode("screen"),
+					new OperatorNode(","),
+					new ValueNode("print")
+				},
+				new RuleSetNode(
+					new SelectorNode("body"),
+					new DeclarationNode(
+						"font-size",
+						new NumericNode("10pt")))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -473,7 +602,26 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+				new AtRuleNode(
+					"font-face",
+					null,
+					new BlockNode(
+						new DeclarationNode(
+							"font-family",
+							new StringNode("'Foo'")),
+						new DeclarationNode(
+							"src",
+							new ValueNode("local("),
+							new StringNode("'Foo'"),
+							new OperatorNode(")"),
+							new OperatorNode(","),
+							new ValueNode("url("),
+							new StringNode("'http://example.com/fonts/foo.tt'"),
+							new OperatorNode(")"),
+							new ValueNode("format("),
+							new StringNode("'truetype'"),
+							new OperatorNode(")")))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -499,7 +647,20 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new AtRuleNode(
+				"page",
+				new ValueNode[] {
+					new OperatorNode(":"),
+					new ValueNode("left")
+				},
+				new BlockNode(
+					new DeclarationNode(
+						"margin-left",
+						new NumericNode("4cm")),
+					new DeclarationNode(
+						"margin-left",
+						new NumericNode("4cm")))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -519,7 +680,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("a:visited.className#id"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("#69C"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -543,7 +709,17 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("p:nth-last-of-type("),
+					new ValueNode("n"),
+					new OperatorNode("+"),
+					new NumericNode("2"),
+					new OperatorNode(")")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("#69C"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -569,7 +745,19 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("p"),
+					new OperatorNode(":"),
+					new ValueNode("not-last-of-type("),
+					new ValueNode("n"),
+					new OperatorNode("+"),
+					new NumericNode("2"),
+					new OperatorNode(")")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("#69C"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -595,7 +783,19 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("p"),
+					new OperatorNode(":"),
+					new ValueNode("nth-last-of-type-fake("),
+					new ValueNode("n"),
+					new OperatorNode("+"),
+					new NumericNode("2"),
+					new OperatorNode(")")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("#69C"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -615,7 +815,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("p::first-line"),
+				new DeclarationNode(
+					"text-transform",
+					new ValueNode("uppercase"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -635,7 +840,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("|p"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("silver"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -655,7 +865,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("*|p"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("purple"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -675,7 +890,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("foo|p"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("palevioletred"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -697,51 +917,15 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
-
-		StyleSheetNode actual = new CssParser().parse(input);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void dashMatchWhitespaceTest() throws IOException {
-
-		CssToken[] input = {
-				CssToken.value("foo"),
-				CssToken.operator("|="),
-				CssToken.value("p"),
-				CssToken.blockBegin(),
-				CssToken.value("color"),
-				CssToken.operator(":"),
-				CssToken.color("lime"),
-				CssToken.ruleDelim(),
-				CssToken.blockEnd()
-			};
-
-		StyleSheetNode expected = new StyleSheetNode();
-
-		StyleSheetNode actual = new CssParser().parse(input);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void dashMatchWhitespace2Test() throws IOException {
-
-		CssToken[] input = {
-				CssToken.value("foo"),
-				CssToken.operator("|="),
-				CssToken.value("p"),
-				CssToken.blockBegin(),
-				CssToken.value("color"),
-				CssToken.operator(":"),
-				CssToken.color("mediumturquoise"),
-				CssToken.ruleDelim(),
-				CssToken.blockEnd()
-			};
-
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("foo"),
+					new OperatorNode("|="),
+					new ValueNode("p")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("lightslategrey"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -753,7 +937,7 @@ public class CssParserTests {
 
 		CssToken[] input = {
 				CssToken.value("div.foo"),
-				CssToken.numeric(".1a"),// incorrect but context will fix
+				CssToken.numeric(".1a"),// incorrect but context will fix?
 				CssToken.blockBegin(),
 				CssToken.value("filter"),
 				CssToken.operator(":"),
@@ -772,7 +956,24 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("div.foo"),
+					new NumericNode(".1a")),
+				new DeclarationNode(
+					"filter",
+					new ValueNode("progid"),
+					new OperatorNode(":"),
+					new ValueNode("DXImageTransform.Microsoft.AlphaImageLoader("),
+					new ValueNode("src"),
+					new OperatorNode("="),
+					new StringNode("'foo.png'"),
+					new OperatorNode(","),
+					new ValueNode("sizingMethod"),
+					new OperatorNode("="),
+					new StringNode("\"scale\""),
+					new OperatorNode(")"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -796,7 +997,15 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("*"),
+					new ValueNode("html"),
+					new ValueNode("div.blah")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("red"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -816,7 +1025,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("div.blah"),
+				new DeclarationNode(
+					"_color",
+					new ColorNode("red"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -836,7 +1050,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("div.blah"),
+				new DeclarationNode(
+					"-color",
+					new ColorNode("red"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -859,7 +1078,16 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("*"),
+					new OperatorNode("+"),
+					new ValueNode("html"),
+					new ValueNode("div.blah")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("yellow"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -880,7 +1108,14 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("div"),
+					new ValueNode(".blah")),
+				new DeclarationNode(
+					"*color",
+					new ColorNode("red"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -902,7 +1137,15 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("div.blah")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("red"),
+					new ValueNode("!"),
+					new ValueNode("ie"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -924,7 +1167,14 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("div.blah")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("red"),
+					new ValueNode("!")).withImportant()));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -945,7 +1195,14 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("div.blah")),
+				new DeclarationNode(
+					"color",
+					new ValueNode("#0FC\\0"),
+					new OperatorNode("/"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -967,7 +1224,15 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("foo")),
+				new CommentNode("/"),
+				new DeclarationNode(
+					"property",
+					new ValueNode("value")),
+				new CommentNode(" ")));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -985,7 +1250,12 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("foo")),
+				new CommentNode("/"),
+				new CommentNode("/property:value;/* ")));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -1002,7 +1272,11 @@ public class CssParserTests {
 				CssToken.blockEnd()
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("body")),
+				new CommentNode(" font-size: 10pt ")));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -1010,24 +1284,7 @@ public class CssParserTests {
 	}
 
 	@Test
-	public void commentLessTest() throws IOException {
-
-		CssToken[] input = {
-				CssToken.value("body"),
-				CssToken.blockBegin(),
-				CssToken.comment(" font-size: 10pt;"),
-				CssToken.blockEnd()
-			};
-
-		StyleSheetNode expected = new StyleSheetNode();
-
-		StyleSheetNode actual = new CssParser().parse(input);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void commentLessEOFTest() throws IOException {
+	public void commentTrailingTest() throws IOException {
 
 		CssToken[] input = {
 				CssToken.value("body"),
@@ -1036,7 +1293,11 @@ public class CssParserTests {
 				CssToken.comment("trailing comment")
 			};
 
-		StyleSheetNode expected = new StyleSheetNode();
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("body"))),
+			new CommentNode("trailing comment"));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
