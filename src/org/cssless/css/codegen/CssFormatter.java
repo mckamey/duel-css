@@ -134,7 +134,13 @@ public class CssFormatter {
 
 		BlockNode block = node.getBlock();
 		if (block != null) {
-			this.writeln(output, depth);
+			if (this.prettyPrint) {
+				if (this.settings.useInlineBraces()) {
+					output.append(' ');
+				} else {
+					this.writeln(output, depth);
+				}
+			}
 			this.writeBlock(output, block, depth);
 		} else {
 			output.append(';');
@@ -157,7 +163,13 @@ public class CssFormatter {
 			this.writeExpression(output, selector, depth);
 		}
 
-		this.writeln(output, depth);
+		if (this.prettyPrint) {
+			if (this.settings.useInlineBraces()) {
+				output.append(' ');
+			} else {
+				this.writeln(output, depth);
+			}
+		}
 		this.writeBlock(output, node, depth);
 	}
 

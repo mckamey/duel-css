@@ -447,7 +447,17 @@ System.err.println(actual);
 						new SelectorNode("body"),
 						new DeclarationNode(
 							"font-size",
-							new NumericNode("10pt"))))));
+							new NumericNode("10pt"))),
+					new RuleSetNode(
+						new SelectorNode("h1"),
+						new DeclarationNode(
+							"font-size",
+							new NumericNode("14pt"))),
+					new RuleSetNode(
+						new SelectorNode("h2"),
+						new DeclarationNode(
+							"font-size",
+							new NumericNode("12pt"))))));
 
 		String expected =
 			"";

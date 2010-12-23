@@ -5,6 +5,7 @@ package org.cssless.css.codegen;
  */
 public class CodeGenSettings {
 
+	private boolean inlineBraces;
 	private String indent = "\t";
 	private String newline = "\n";
 
@@ -38,5 +39,21 @@ public class CodeGenSettings {
 	 */
 	public void setNewline(String value) {
 		this.newline = (value != null) ? value : "";
+	}
+
+	/**
+	 * Gets if braces should be placed inline (rather than on own line) 
+	 * @return
+	 */
+	public boolean useInlineBraces() {
+		return this.inlineBraces;
+	}
+
+	/**
+	 * Sets if braces should be placed inline (rather than on own line)
+	 * @param inlineBraces
+	 */
+	public void setInlineBraces(boolean inlineBraces) {
+		this.inlineBraces = inlineBraces;
 	}
 }
