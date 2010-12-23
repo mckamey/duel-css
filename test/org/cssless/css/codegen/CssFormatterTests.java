@@ -26,14 +26,15 @@ public class CssFormatterTests {
 					new ValueNode("sans-serif"))));
 
 		String expected =
-			"";
+			"h1\n" +
+			"{\n" +
+			"\tfont: bold 2.0em/120% Helvetica, Arial, sans-serif;\n" +
+			"}";
 
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -74,14 +75,16 @@ System.err.println(actual);
 			));
 
 		String expected =
-			"";
+			"body\n" +
+			"{\n" +
+			"\tbackground: -webkit-gradient(linear, left top, left bottom, from(#D5DDE5), to(#FFFFFF));\n" +
+			"\tbackground: -moz-linear-gradient(top, #D5DDE5, #FFFFFF);\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -96,14 +99,15 @@ System.err.println(actual);
 					new NumericNode(".2em"))));
 
 		String expected =
-			"";
+			"foo#bar\n" +
+			"{\n" +
+			"\tmargin: .2em;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -118,14 +122,15 @@ System.err.println(actual);
 						new NumericNode("-1.2em"))));
 
 		String expected =
-			"";
+			".bar\n" +
+			"{\n" +
+			"\tmargin: -1.2em;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -140,14 +145,15 @@ System.err.println(actual);
 					new NumericNode("-.2em"))));
 
 		String expected =
-			"";
+			"-bar\n" +
+			"{\n" +
+			"\tmargin: -.2em;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -163,14 +169,15 @@ System.err.println(actual);
 					new NumericNode("1.2em"))));
 
 		String expected =
-			"";
+			".bar\n" +
+			"{\n" +
+			"\tmargin: +1.2em;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -186,14 +193,15 @@ System.err.println(actual);
 					new NumericNode(".2em"))));
 
 		String expected =
-			"";
+			"-bar\n" +
+			"{\n" +
+			"\tmargin: +.2em;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -205,14 +213,14 @@ System.err.println(actual);
 				new SelectorNode("h1")));
 
 		String expected =
-			"";
+			"h1\n" +
+			"{\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -227,14 +235,15 @@ System.err.println(actual);
 					new ColorNode("blue"))));
 
 		String expected =
-			"";
+			"h1\n" +
+			"{\n" +
+			"\tcolor: blue;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -252,14 +261,16 @@ System.err.println(actual);
 					new ValueNode("center"))));
 
 		String expected =
-			"";
+			"h1\n" +
+			"{\n" +
+			"\tcolor: red;\n" +
+			"\ttext-align: center;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -277,14 +288,15 @@ System.err.println(actual);
 					new StringNode("''"))));
 
 		String expected =
-			"";
-		
+			"q:before, q:after\n" +
+			"{\n" +
+			"\tcontent: '';\n" +
+			"}";
+	
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -304,14 +316,15 @@ System.err.println(actual);
 					new ColorNode("red"))));
 
 		String expected =
-			"";
+			"span.foo.bar[foo=bar]\n" +
+			"{\n" +
+			"\tcolor: red;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -339,14 +352,15 @@ System.err.println(actual);
 					new ColorNode("#336699"))));
 
 		String expected =
-			"";
-		
+			"div#my-id *.myClass E[foo~=\"warning\"] > F:first-child + G:lang(en)\n" +
+			"{\n" +
+			"\tcolor: #336699;\n" +
+			"}";
+
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -375,14 +389,23 @@ System.err.println(actual);
 						new ColorNode("red"))));
 
 		String expected =
-			"";
+			"p[example=\"public class foo\\\n" +
+			"{\\\n" +
+			"\tprivate int x;\\\n" +
+			"\\\n" +
+			"\tfoo(int x) {\\\n" +
+			"\t\tthis.x = x;\\\n" +
+			"\t}\\\n" +
+			"\\\n" +
+			"}\"]\n" +
+			"{\n" +
+			"\tcolor: red;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -397,14 +420,15 @@ System.err.println(actual);
 					new ColorNode("blue")).withImportant()));
 
 		String expected =
-			"";
-		
+			"h1\n" +
+			"{\n" +
+			"\tcolor: blue !important;\n" +
+			"}";
+
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -420,14 +444,12 @@ System.err.println(actual);
 				new ValueNode("screen")));
 
 		String expected =
-			"";
+			"@import url(\"reset.css\") screen;";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -460,14 +482,28 @@ System.err.println(actual);
 							new NumericNode("12pt"))))));
 
 		String expected =
-			"";
+			"@media screen, print\n" +
+			"{\n" +
+			"\tbody\n" +
+			"\t{\n" +
+			"\t\tfont-size: 10pt;\n" +
+			"\t}\n" +
+			"\n" +
+			"\th1\n" +
+			"\t{\n" +
+			"\t\tfont-size: 14pt;\n" +
+			"\t}\n" +
+			"\n" +
+			"\th2\n" +
+			"\t{\n" +
+			"\t\tfont-size: 12pt;\n" +
+			"\t}\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -496,14 +532,16 @@ System.err.println(actual);
 						new OperatorNode(")")))));
 
 		String expected =
-			"";
+			"@font-face\n" +
+			"{\n" +
+			"\tfont-family: 'Foo';\n" +
+			"\tsrc: local('Foo'), url('http://example.com/fonts/foo.tt') format('truetype');\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -526,14 +564,16 @@ System.err.println(actual);
 						new NumericNode("3cm")))));
 
 		String expected =
-			"";
+			"@page :left\n" +
+			"{\n" +
+			"\tmargin-left: 4cm;\n" +
+			"\tmargin-right: 3cm;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -548,14 +588,15 @@ System.err.println(actual);
 					new ColorNode("#69C"))));
 
 		String expected =
-			"";
+			"a:visited.className#id\n" +
+			"{\n" +
+			"\tcolor: #69C;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -575,14 +616,15 @@ System.err.println(actual);
 					new ColorNode("#69C"))));
 
 		String expected =
-			"";
+			"p:nth-last-of-type(n + 2)\n" +
+			"{\n" +
+			"\tcolor: #69C;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -604,14 +646,15 @@ System.err.println(actual);
 					new ColorNode("#69C"))));
 
 		String expected =
-			"";
+			"p:not-last-of-type(n + 2)\n" +
+			"{\n" +
+			"\tcolor: #69C;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -633,14 +676,15 @@ System.err.println(actual);
 					new ColorNode("#69C"))));
 
 		String expected =
-			"";
+			"p:nth-last-of-type-fake(n + 2)\n" +
+			"{\n" +
+			"\tcolor: #69C;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -655,14 +699,15 @@ System.err.println(actual);
 					new ValueNode("uppercase"))));
 
 		String expected =
-			"";
+			"p::first-line\n" +
+			"{\n" +
+			"\ttext-transform: uppercase;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -677,14 +722,15 @@ System.err.println(actual);
 					new ColorNode("silver"))));
 
 		String expected =
-			"";
+			"|p\n" +
+			"{\n" +
+			"\tcolor: silver;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -699,14 +745,15 @@ System.err.println(actual);
 					new ColorNode("purple"))));
 
 		String expected =
-			"";
+			"*|p\n" +
+			"{\n" +
+			"\tcolor: purple;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -721,14 +768,15 @@ System.err.println(actual);
 					new ColorNode("palevioletred"))));
 
 		String expected =
-			"";
+			"foo|p\n" +
+			"{\n" +
+			"\tcolor: palevioletred;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -746,14 +794,15 @@ System.err.println(actual);
 					new ColorNode("lightslategrey"))));
 
 		String expected =
-			"";
+			"foo|=p\n" +
+			"{\n" +
+			"\tcolor: lightslategrey;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -780,14 +829,15 @@ System.err.println(actual);
 					new OperatorNode(")"))));
 
 		String expected =
-			"";
+			"div.foo .1a\n" +
+			"{\n" +
+			"\tfilter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='foo.png', sizingMethod=\"scale\");\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -807,14 +857,15 @@ System.err.println(actual);
 					new ColorNode("red"))));
 
 		String expected =
-			"";
+			"* html div.blah\n" +
+			"{\n" +
+			"\tcolor: red;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -829,14 +880,15 @@ System.err.println(actual);
 					new ColorNode("red"))));
 
 		String expected =
-			"";
+			"div.blah\n" +
+			"{\n" +
+			"\t_color: red;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -851,14 +903,15 @@ System.err.println(actual);
 					new ColorNode("red"))));
 
 		String expected =
-			"";
+			"div.blah\n" +
+			"{\n" +
+			"\t-color: red;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -877,14 +930,15 @@ System.err.println(actual);
 					new ColorNode("yellow"))));
 
 		String expected =
-			"";
+			"* + html div.blah\n" +
+			"{\n" +
+			"\tcolor: yellow;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -901,14 +955,15 @@ System.err.println(actual);
 					new ColorNode("red"))));
 
 		String expected =
-			"";
+			"div .blah\n" +
+			"{\n" +
+			"\t*color: red;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -926,14 +981,15 @@ System.err.println(actual);
 					new ValueNode("ie"))));
 
 		String expected =
-			"";
+			"div.blah\n" +
+			"{\n" +
+			"\tcolor: red!ie;\n" +
+			"}";
 
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -950,14 +1006,15 @@ System.err.println(actual);
 					new OperatorNode("!")).withImportant()));
 
 		String expected =
-			"";
+			"div.blah\n" +
+			"{\n" +
+			"\tcolor: red! !important;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -974,14 +1031,15 @@ System.err.println(actual);
 					new OperatorNode("/"))));
 
 		String expected =
-			"";
+			"div.blah\n" +
+			"{\n" +
+			"\tcolor: #0FC\\0/;\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 	
@@ -999,14 +1057,17 @@ System.err.println(actual);
 				new CommentNode(" ")));
 
 		String expected =
-			"";
+			"foo\n" +
+			"{\n" +
+			"\t/*/*/\n" +
+			"\tproperty: value;\n" +
+			"\t/* */\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 	
@@ -1021,14 +1082,16 @@ System.err.println(actual);
 				new CommentNode("/property:value;/* ")));
 
 		String expected =
-			"";
+			"foo\n" +
+			"{\n" +
+			"\t/*/*/\n" +
+			"\t/*/property:value;/* */\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -1042,14 +1105,15 @@ System.err.println(actual);
 				new CommentNode(" font-size: 10pt ")));
 
 		String expected =
-			"";
+			"body\n" +
+			"{\n" +
+			"\t/* font-size: 10pt */\n" +
+			"}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -1063,14 +1127,16 @@ System.err.println(actual);
 			new CommentNode("trailing comment"));
 
 		String expected =
-			"";
+			"body\n" +
+			"{\n" +
+			"}\n" +
+			"\n" +
+			"/*trailing comment*/";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 }

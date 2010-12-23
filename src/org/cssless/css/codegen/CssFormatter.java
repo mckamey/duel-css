@@ -182,6 +182,12 @@ public class CssFormatter {
 			output.append(' ');
 		}
 		this.writeExpression(output, node, depth);
+		if (node.isImportant()) {
+			if (this.prettyPrint) {
+				output.append(' ');
+			}
+			output.append("!important");
+		}
 		output.append(';');
 	}
 
@@ -271,19 +277,30 @@ public class CssFormatter {
 		} else if (node instanceof OperatorNode) {
 			String value = ((OperatorNode)node).getValue();
 			char end = (value != null && value.length() == 1) ? value.charAt(0) : '\0'; 
-			if (end == ',' || end == ')' || end == ']') {
-				return WordBreak.POST;
-			}
 
-			return WordBreak.NONE;
+			switch (end) {
+				case ',':
+				case ')':
+				case ']':
+					return WordBreak.POST;
+				case '(':
+				case '[':
+					return WordBreak.PRE;
+				default:
+					return WordBreak.NONE;
+			}
 
 		} else if (node instanceof ValueNode) {
 			String value = ((ValueNode)node).getValue();
 			char end = (value != null && !value.isEmpty()) ? value.charAt(value.length()-1) : '\0'; 
-			if (end == '(' || end == '[') {
-				return WordBreak.PRE;
+
+			switch (end) {
+				case '(':
+				case '[':
+					return WordBreak.PRE;
+				default:
+					return WordBreak.BOTH;
 			}
-			return WordBreak.BOTH;
 
 		} else {
 			return WordBreak.NONE;
