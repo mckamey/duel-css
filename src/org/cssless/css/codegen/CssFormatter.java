@@ -49,10 +49,12 @@ public class CssFormatter {
 			throw new NullPointerException("stylesheet");
 		}
 
+		// TODO: expose another setting for spacing?
+		int spacing = this.settings.useInlineBraces() ? 1 : 2; 
 		boolean needsDelim = false;
 		for (CssNode node : stylesheet.getChildren()) {
 			if (needsDelim) {
-				this.writeln(output, 0, 2);
+				this.writeln(output, 0, spacing);
 			} else {
 				needsDelim = true;
 			}
@@ -150,6 +152,11 @@ public class CssFormatter {
 	private void writeRuleSet(Appendable output, RuleSetNode node, int depth)
 		throws IOException {
 
+		// remove empty rule-sets in compact mode
+		if (!this.prettyPrint && !node.hasChildren()) {
+			return;
+		}
+		
 		boolean needsDelim = false;
 		for (SelectorNode selector : node.getSelectors()) {
 			if (needsDelim) {

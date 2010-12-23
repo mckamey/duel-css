@@ -270,6 +270,27 @@ public class CssFormatterTests {
 	}
 
 	@Test
+	public void ruleSetEmptyCompactTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode[] {
+					new SelectorNode("h1"),
+					new SelectorNode("h2"),
+					new SelectorNode("h3"),
+					new SelectorNode("h4")
+				}));
+
+		String expected = "";
+		
+		StringBuilder output = new StringBuilder();
+		new CssFormatter(new CodeGenSettings()).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void ruleSetSingleTest() throws IOException {
 
 		StyleSheetNode input = new StyleSheetNode(
