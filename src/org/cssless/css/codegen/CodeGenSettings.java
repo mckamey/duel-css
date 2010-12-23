@@ -6,9 +6,23 @@ package org.cssless.css.codegen;
 public class CodeGenSettings {
 
 	private boolean inlineBraces;
-	private String indent = "\t";
-	private String newline = "\n";
+	private String indent;
+	private String newline;
 
+	public CodeGenSettings() {
+		this(null, null, false);
+	}
+
+	public CodeGenSettings(String indent, String newline) {
+		this(indent, newline, false);
+	}
+
+	public CodeGenSettings(String indent, String newline, boolean inlineBraces) {
+		this.setIndent(indent);
+		this.setNewline(newline);
+		this.setInlineBraces(inlineBraces);
+	}
+	
 	/**
 	 * Gets the string used for source indentation
 	 * @return

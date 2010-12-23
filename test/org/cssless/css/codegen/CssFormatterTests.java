@@ -32,7 +32,7 @@ public class CssFormatterTests {
 			"}";
 
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -82,7 +82,52 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void valueListComplexCompactTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("body"),
+				new DeclarationNode(
+					"background",
+					new ValueNode("-webkit-gradient("),
+					new ValueNode("linear"),
+					new OperatorNode(","),
+					new ValueNode("left"),
+					new ValueNode("top"),
+					new OperatorNode(","),
+					new ValueNode("left"),
+					new ValueNode("bottom"),
+					new OperatorNode(","),
+					new ValueNode("from("),
+					new ColorNode("#D5DDE5"),
+					new OperatorNode(")"),
+					new OperatorNode(","),
+					new ValueNode("to("),
+					new ColorNode("#FFFFFF"),
+					new OperatorNode(")"),
+					new OperatorNode(")")),
+				new DeclarationNode(
+					"background",
+					new ValueNode("-moz-linear-gradient("),
+					new ValueNode("top"),
+					new OperatorNode(","),
+					new ColorNode("#D5DDE5"),
+					new OperatorNode(","),
+					new ColorNode("#FFFFFF"),
+					new OperatorNode(")"))
+			));
+
+		String expected = "body{background:-webkit-gradient(linear,left top,left bottom,from(#D5DDE5),to(#FFFFFF));background:-moz-linear-gradient(top,#D5DDE5,#FFFFFF);}";
+		
+		StringBuilder output = new StringBuilder();
+		new CssFormatter(new CodeGenSettings()).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -105,7 +150,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -128,7 +173,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -151,7 +196,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -175,7 +220,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -199,7 +244,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -218,7 +263,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -241,7 +286,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -268,7 +313,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -294,7 +339,7 @@ public class CssFormatterTests {
 			"}";
 	
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -322,7 +367,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -358,7 +403,39 @@ public class CssFormatterTests {
 			"}";
 
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void selectorComplexCompactTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("div#my-id"),
+					new ValueNode("*.myClass"),
+					new ValueNode("E["),
+					new ValueNode("foo"),
+					new OperatorNode("~="),
+					new StringNode("\"warning\""),
+					new OperatorNode("]"),
+					new CombinatorNode(CombinatorType.CHILD),
+					new ValueNode("F:first-child"),
+					new CombinatorNode(CombinatorType.ADJACENT),
+					new ValueNode("G:lang("),
+					new ValueNode("en"),
+					new OperatorNode(")")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("#336699"))));
+
+		String expected = "div#my-id *.myClass E[foo~=\"warning\"]>F:first-child+G:lang(en){color:#336699;}";
+
+		StringBuilder output = new StringBuilder();
+		new CssFormatter(new CodeGenSettings()).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -403,7 +480,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -426,7 +503,27 @@ public class CssFormatterTests {
 			"}";
 
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void importantCompactTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("h1"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("blue")).withImportant()));
+
+		String expected =
+			"h1{color:blue!important;}";
+
+		StringBuilder output = new StringBuilder();
+		new CssFormatter(new CodeGenSettings()).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -447,7 +544,7 @@ public class CssFormatterTests {
 			"@import url(\"reset.css\") screen;";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -501,7 +598,95 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void atRuleMediaBracesTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new AtRuleNode(
+				"media",
+				new ValueNode[] {
+					new ValueNode("screen"),
+					new OperatorNode(","),
+					new ValueNode("print")
+				},
+				new BlockNode(
+					new RuleSetNode(
+						new SelectorNode("body"),
+						new DeclarationNode(
+							"font-size",
+							new NumericNode("10pt"))),
+					new RuleSetNode(
+						new SelectorNode("h1"),
+						new DeclarationNode(
+							"font-size",
+							new NumericNode("14pt"))),
+					new RuleSetNode(
+						new SelectorNode("h2"),
+						new DeclarationNode(
+							"font-size",
+							new NumericNode("12pt"))))));
+
+		String expected =
+			"@media screen, print {\r\n" +
+			"  body {\r\n" +
+			"    font-size: 10pt;\r\n" +
+			"  }\r\n" +
+			"\r\n" +
+			"  h1 {\r\n" +
+			"    font-size: 14pt;\r\n" +
+			"  }\r\n" +
+			"\r\n" +
+			"  h2 {\r\n" +
+			"    font-size: 12pt;\r\n" +
+			"  }\r\n" +
+			"}";
+
+		StringBuilder output = new StringBuilder();
+		new CssFormatter(new CodeGenSettings("  ", "\r\n", true)).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void atRuleMediaCompactTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new AtRuleNode(
+				"media",
+				new ValueNode[] {
+					new ValueNode("screen"),
+					new OperatorNode(","),
+					new ValueNode("print")
+				},
+				new BlockNode(
+					new RuleSetNode(
+						new SelectorNode("body"),
+						new DeclarationNode(
+							"font-size",
+							new NumericNode("10pt"))),
+					new RuleSetNode(
+						new SelectorNode("h1"),
+						new DeclarationNode(
+							"font-size",
+							new NumericNode("14pt"))),
+					new RuleSetNode(
+						new SelectorNode("h2"),
+						new DeclarationNode(
+							"font-size",
+							new NumericNode("12pt"))))));
+
+		String expected =
+			"@media screen,print{body{font-size:10pt;}h1{font-size:14pt;}h2{font-size:12pt;}}";
+		
+		StringBuilder output = new StringBuilder();
+		new CssFormatter(new CodeGenSettings()).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -539,7 +724,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -571,7 +756,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -594,7 +779,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -622,7 +807,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -652,7 +837,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -682,7 +867,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -705,7 +890,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -728,7 +913,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -751,7 +936,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -774,7 +959,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -800,7 +985,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -835,7 +1020,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -863,7 +1048,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -886,7 +1071,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -909,7 +1094,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -936,7 +1121,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -961,7 +1146,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -987,7 +1172,7 @@ public class CssFormatterTests {
 			"}";
 
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1012,7 +1197,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1037,7 +1222,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1065,7 +1250,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1089,7 +1274,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1111,7 +1296,7 @@ public class CssFormatterTests {
 			"}";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);
@@ -1134,7 +1319,7 @@ public class CssFormatterTests {
 			"/*trailing comment*/";
 		
 		StringBuilder output = new StringBuilder();
-		new CssFormatter().write(output, input);
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);

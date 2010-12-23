@@ -278,17 +278,18 @@ public class CssFormatter {
 			String value = ((OperatorNode)node).getValue();
 			char end = (value != null && value.length() == 1) ? value.charAt(0) : '\0'; 
 
-			switch (end) {
-				case ',':
-				case ')':
-				case ']':
-					return WordBreak.POST;
-				case '(':
-				case '[':
-					return WordBreak.PRE;
-				default:
-					return WordBreak.NONE;
+			if (this.prettyPrint) {
+				switch (end) {
+					case ',':
+					case ')':
+					case ']':
+						return WordBreak.POST;
+					case '(':
+					case '[':
+						return WordBreak.PRE;
+				}
 			}
+			return WordBreak.NONE;
 
 		} else if (node instanceof ValueNode) {
 			String value = ((ValueNode)node).getValue();
