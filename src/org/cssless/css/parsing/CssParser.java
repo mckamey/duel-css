@@ -115,6 +115,7 @@ public class CssParser {
 
 			case RULE_DELIM:
 				// consume extraneous ';'
+				this.next = null;
 				break;
 
 			default:

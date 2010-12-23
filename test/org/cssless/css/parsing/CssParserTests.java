@@ -271,6 +271,26 @@ public class CssParserTests {
 	}
 
 	@Test
+	public void ruleSetEmptyWithDelimsTest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.value("h1"),
+				CssToken.blockBegin(),
+				CssToken.ruleDelim(),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("h1")));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void ruleSetSingleTest() throws IOException {
 
 		CssToken[] input = {
