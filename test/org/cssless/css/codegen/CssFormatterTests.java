@@ -637,11 +637,9 @@ public class CssFormatterTests {
 			"  body {\r\n" +
 			"    font-size: 10pt;\r\n" +
 			"  }\r\n" +
-			"\r\n" +
 			"  h1 {\r\n" +
 			"    font-size: 14pt;\r\n" +
 			"  }\r\n" +
-			"\r\n" +
 			"  h2 {\r\n" +
 			"    font-size: 12pt;\r\n" +
 			"  }\r\n" +

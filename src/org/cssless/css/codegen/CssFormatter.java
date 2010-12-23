@@ -218,15 +218,23 @@ public class CssFormatter {
 		output.append('{');
 		depth++;
 
-		boolean needsDelim = false;
-		for (CssNode child : node.getChildren()) {
-			if (needsDelim && !(child instanceof DeclarationNode) && !(child instanceof CommentNode)) {
-				this.writeln(output, depth, 2);
-			} else {
-				needsDelim = true;
+		// TODO: expose another setting for spacing?
+		if (this.settings.useInlineBraces()) {
+			for (CssNode child : node.getChildren()) {
 				this.writeln(output, depth);
+				this.writeNode(output, child, depth);
 			}
-			this.writeNode(output, child, depth);
+		} else {
+			boolean needsDelim = false;
+			for (CssNode child : node.getChildren()) {
+				if (needsDelim && !(child instanceof DeclarationNode) && !(child instanceof CommentNode)) {
+					this.writeln(output, depth, 2);
+				} else {
+					needsDelim = true;
+					this.writeln(output, depth);
+				}
+				this.writeNode(output, child, depth);
+			}
 		}
 
 		this.writeln(output, --depth);
