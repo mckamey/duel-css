@@ -329,6 +329,13 @@ public class CssLexer implements Iterator<CssToken> {
 			}
 
 			switch (this.ch) {
+				case CssGrammar.OP_HASH:
+				case CssGrammar.OP_DOT:
+					this.buffer.append((char)this.ch);
+					// consume until reach end of name
+					this.scanName();
+					continue;
+
 				case CssGrammar.OP_BLOCK_END:
 				case CssGrammar.OP_BLOCK_BEGIN:
 				case CssGrammar.OP_DECL_DELIM:
