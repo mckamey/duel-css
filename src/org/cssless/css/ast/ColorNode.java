@@ -32,6 +32,16 @@ public class ColorNode extends ValueNode {
 		return this.blue;
 	}
 
+	public void setChannels(int r, int g, int b) {
+		this.hasChannels = true;
+		this.red = r;
+		this.green = g;
+		this.blue = b;
+
+		// hex notation
+		super.setValue("#" + toHex(r) + toHex(g) + toHex(b));
+	}
+	
 	@Override
 	public String getValue(boolean compact) {
 		String color = super.getValue(compact);

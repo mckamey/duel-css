@@ -794,7 +794,7 @@ public class CssFormatterTests {
 					new ValueNode("p:nth-last-of-type("),
 					new ValueNode("n"),
 					new OperatorNode("+"),
-					new NumericNode("2"),
+					new ValueNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
 					"color",
@@ -824,7 +824,7 @@ public class CssFormatterTests {
 					new ValueNode("not-last-of-type("),
 					new ValueNode("n"),
 					new OperatorNode("+"),
-					new NumericNode("2"),
+					new ValueNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
 					"color",
@@ -854,7 +854,7 @@ public class CssFormatterTests {
 					new ValueNode("nth-last-of-type-fake("),
 					new ValueNode("n"),
 					new OperatorNode("+"),
-					new NumericNode("2"),
+					new ValueNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
 					"color",
@@ -865,7 +865,7 @@ public class CssFormatterTests {
 			"{\n" +
 			"\tcolor: #69C;\n" +
 			"}";
-		
+
 		StringBuilder output = new StringBuilder();
 		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
 		String actual = output.toString();
@@ -998,7 +998,7 @@ public class CssFormatterTests {
 			new RuleSetNode(
 				new SelectorNode(
 					new ValueNode("div.foo"),
-					new NumericNode(".1a")),
+					new ValueNode(".1a")),
 				new DeclarationNode(
 					"filter",
 					new ValueNode("progid"),
@@ -1021,6 +1021,37 @@ public class CssFormatterTests {
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void declarationFilterCompactTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("div.foo"),
+					new ValueNode(".1a")),
+				new DeclarationNode(
+					"filter",
+					new ValueNode("progid"),
+					new OperatorNode(":"),
+					new ValueNode("DXImageTransform.Microsoft.AlphaImageLoader("),
+					new ValueNode("src"),
+					new OperatorNode("="),
+					new StringNode("'foo.png'"),
+					new OperatorNode(","),
+					new ValueNode("sizingMethod"),
+					new OperatorNode("="),
+					new StringNode("\"scale\""),
+					new OperatorNode(")"))));
+
+		String expected = "div.foo .1a{filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='foo.png',sizingMethod=\"scale\");}";
+		
+		StringBuilder output = new StringBuilder();
+		new CssFormatter(new CodeGenSettings()).write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);

@@ -293,26 +293,15 @@ public class CssParser {
 					continue;
 
 				case NUMERIC:
-					// these are potentially just class selectors
-					selector.appendChild(new NumericNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
-					// consume token
-					this.next = null;
-					continue;
-
 				case COLOR:
-					// these are potentially just ID selectors
-					selector.appendChild(new ColorNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					// these are typically ID and class selectors
+					selector.appendChild(new ValueNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
 					continue;
 
 				case COMMENT:
-					ruleSet.appendChild(
-						new CommentNode(
-							this.next.getValue(),
-							this.next.getIndex(),
-							this.next.getLine(),
-							this.next.getColumn()));
+					ruleSet.appendChild(new CommentNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
 					continue;

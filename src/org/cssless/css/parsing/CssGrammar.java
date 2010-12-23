@@ -82,7 +82,7 @@ public final class CssGrammar {
 	 * @param keyword
 	 * @return
 	 */
-	static boolean isAtRuleKeyword(String keyword) {
+	public static boolean isAtRuleKeyword(String keyword) {
 		if (keyword == null || keyword.isEmpty()) {
 			return false;
 		}

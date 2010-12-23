@@ -716,7 +716,7 @@ public class CssParserTests {
 					new ValueNode("p:nth-last-of-type("),
 					new ValueNode("n"),
 					new OperatorNode("+"),
-					new NumericNode("2"),
+					new ValueNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
 					"color",
@@ -754,7 +754,7 @@ public class CssParserTests {
 					new ValueNode("not-last-of-type("),
 					new ValueNode("n"),
 					new OperatorNode("+"),
-					new NumericNode("2"),
+					new ValueNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
 					"color",
@@ -792,7 +792,7 @@ public class CssParserTests {
 					new ValueNode("nth-last-of-type-fake("),
 					new ValueNode("n"),
 					new OperatorNode("+"),
-					new NumericNode("2"),
+					new ValueNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
 					"color",
@@ -961,7 +961,7 @@ public class CssParserTests {
 			new RuleSetNode(
 				new SelectorNode(
 					new ValueNode("div.foo"),
-					new NumericNode(".1a")),
+					new ValueNode(".1a")),
 				new DeclarationNode(
 					"filter",
 					new ValueNode("progid"),
