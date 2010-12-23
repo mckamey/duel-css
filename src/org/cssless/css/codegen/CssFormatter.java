@@ -308,6 +308,15 @@ public class CssFormatter {
 								return WordBreak.NONE;
 						}
 						return WordBreak.POST;
+					case '(':
+					case '[':
+						ch = value.charAt(value.length()-1);
+						switch (ch) {
+							case '(':
+							case '[':
+								return WordBreak.PRE;
+						}
+						return WordBreak.BOTH;
 					default:
 						ch = value.charAt(value.length()-1);
 						switch (ch) {

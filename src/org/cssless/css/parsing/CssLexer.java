@@ -324,14 +324,6 @@ public class CssLexer implements Iterator<CssToken> {
 
 		while (true) {
 			if (CharUtility.isWhiteSpace(this.ch)) {
-				while (CharUtility.isWhiteSpace(this.nextChar()));
-
-				if (this.ch == CssGrammar.OP_PAREN_BEGIN) { //CssGrammar.OP_ATTR_BEGIN ?
-					// these chars get appended (with optional whitespace) but signal the end of the token
-					this.buffer.append((char)this.ch);
-					this.nextChar();
-				}
-
 				// flush the buffer
 				return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 			}
