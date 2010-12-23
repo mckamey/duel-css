@@ -110,7 +110,7 @@ public class CssFormatterTests {
 					new OperatorNode(")"),
 					new OperatorNode(","),
 					new ValueNode("to("),
-					new ColorNode("#FFFFFF"),
+					new ColorNode("cornflowerblue"),
 					new OperatorNode(")"),
 					new OperatorNode(")")),
 				new DeclarationNode(
@@ -118,13 +118,13 @@ public class CssFormatterTests {
 					new ValueNode("-moz-linear-gradient("),
 					new ValueNode("top"),
 					new OperatorNode(","),
-					new ColorNode("#D5DDE5"),
+					new ColorNode("silver"),
 					new OperatorNode(","),
-					new ColorNode("#FFFFFF"),
+					new ColorNode("white"),
 					new OperatorNode(")"))
 			));
 
-		String expected = "body{background:-webkit-gradient(linear,left top,left bottom,from(#D5DDE5),to(#FFFFFF));background:-moz-linear-gradient(top,#D5DDE5,#FFFFFF);}";
+		String expected = "body{background:-webkit-gradient(linear,left top,left bottom,from(#D5DDE5),to(#6495ED));background:-moz-linear-gradient(top,silver,#FFF);}";
 		
 		StringBuilder output = new StringBuilder();
 		new CssFormatter(new CodeGenSettings()).write(output, input);
@@ -432,14 +432,12 @@ public class CssFormatterTests {
 					"color",
 					new ColorNode("#336699"))));
 
-		String expected = "div#my-id *.myClass E[foo~=\"warning\"]>F:first-child+G:lang(en){color:#336699;}";
+		String expected = "div#my-id *.myClass E[foo~=\"warning\"]>F:first-child+G:lang(en){color:#369;}";
 
 		StringBuilder output = new StringBuilder();
 		new CssFormatter(new CodeGenSettings()).write(output, input);
 		String actual = output.toString();
 
-System.out.println(expected);
-System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 

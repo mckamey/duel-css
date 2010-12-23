@@ -10,11 +10,11 @@ public class ValueNode extends CssNode {
 	public ValueNode(String value, int index, int line, int column) {
 		super(index, line, column);
 
-		this.value = value;
+		this.setValue(value);
 	}
 
 	public ValueNode(String value) {
-		this.value = value;
+		this.setValue(value);
 	}
 
 	public void setValue(String value) {
@@ -22,6 +22,10 @@ public class ValueNode extends CssNode {
 	}
 
 	public String getValue() {
+		return this.getValue(false);
+	}
+
+	public String getValue(boolean compact) {
 		return this.value;
 	}
 

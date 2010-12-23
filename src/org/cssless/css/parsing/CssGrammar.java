@@ -2,7 +2,7 @@ package org.cssless.css.parsing;
 
 import java.util.*;
 
-final class CssGrammar {
+public final class CssGrammar {
 
 	private static final String KEYWORDS_RESOURCE = "org.cssless.css.parsing.CssKeywords"; //CssKeywords.properties
 	private static final String COLOR_RESOURCE = "org.cssless.css.parsing.CssColors"; //CssColors.properties
@@ -14,58 +14,58 @@ final class CssGrammar {
 	// static class
 	private CssGrammar() {}
 
-	public static final char OP_AT_RULE = '@';
-	public static final char OP_BLOCK_BEGIN = '{';
-	public static final char OP_BLOCK_END = '}';
-	public static final char OP_PAIR_DELIM = ':';
-	public static final char OP_DECL_DELIM = ';';
+	static final char OP_AT_RULE = '@';
+	static final char OP_BLOCK_BEGIN = '{';
+	static final char OP_BLOCK_END = '}';
+	static final char OP_PAIR_DELIM = ':';
+	static final char OP_DECL_DELIM = ';';
 
-	public static final char OP_MINUS = '-';
-	public static final char OP_PLUS = '+';
-	public static final char OP_PERCENT = '%';
-	public static final char OP_ESCAPE = '\\';
+	static final char OP_MINUS = '-';
+	static final char OP_PLUS = '+';
+	static final char OP_PERCENT = '%';
+	static final char OP_ESCAPE = '\\';
 
-	public static final char OP_STRING_DELIM = '"';
-	public static final char OP_STRING_DELIM_ALT = '\'';
+	static final char OP_STRING_DELIM = '"';
+	static final char OP_STRING_DELIM_ALT = '\'';
 
-	public static final char OP_STAR = '*';
-	public static final char OP_HASH = '#';
-	public static final char OP_DOT = '.';
-	public static final char OP_ADJACENT = '+';
-	public static final char OP_CHILD = '>';
-	public static final char OP_DESCENDANT = ' ';
-	public static final char OP_SIBLING = '~';
+	static final char OP_STAR = '*';
+	static final char OP_HASH = '#';
+	static final char OP_DOT = '.';
+	static final char OP_ADJACENT = '+';
+	static final char OP_CHILD = '>';
+	static final char OP_DESCENDANT = ' ';
+	static final char OP_SIBLING = '~';
 
-	public static final char OP_NAMESPACE_DELIM = '|';
-	public static final char OP_ATTR_BEGIN = '[';
-	public static final char OP_ATTR_END = ']';
+	static final char OP_NAMESPACE_DELIM = '|';
+	static final char OP_ATTR_BEGIN = '[';
+	static final char OP_ATTR_END = ']';
 
-	public static final char OP_MATCH = '=';
-	public static final char OP_INCLUDES_MATCH = '~';
-	public static final char OP_DASH_MATCH = '|';
-	public static final char OP_PREFIX_MATCH = '^';
-	public static final char OP_SUFFIX_MATCH = '$';
-	public static final char OP_SUBSTR_MATCH = '*';
+	static final char OP_MATCH = '=';
+	static final char OP_INCLUDES_MATCH = '~';
+	static final char OP_DASH_MATCH = '|';
+	static final char OP_PREFIX_MATCH = '^';
+	static final char OP_SUFFIX_MATCH = '$';
+	static final char OP_SUBSTR_MATCH = '*';
 
-	public static final char OP_PAREN_BEGIN = '(';
-	public static final char OP_PAREN_END = ')';
-	public static final char OP_ITEM_DELIM = ',';
+	static final char OP_PAREN_BEGIN = '(';
+	static final char OP_PAREN_END = ')';
+	static final char OP_ITEM_DELIM = ',';
 
-	public static final char OP_COMMENT = '/';
-	public static final String OP_COMMENT_BEGIN = "/*";
-	public static final String OP_COMMENT_END = "*/";
-	public static final String OP_COMMENT_ALT_BEGIN = "//";
-	public static final String OP_COMMENT_ALT_END = "\n";
+	static final char OP_COMMENT = '/';
+	static final String OP_COMMENT_BEGIN = "/*";
+	static final String OP_COMMENT_END = "*/";
+	static final String OP_COMMENT_ALT_BEGIN = "//";
+	static final String OP_COMMENT_ALT_END = "\n";
 
-	public static final char OP_IMPORTANT_BEGIN = '!';
-	public static final String OP_IMPORTANT = "important";
+	static final char OP_IMPORTANT_BEGIN = '!';
+	static final String OP_IMPORTANT = "important";
 
 	/**
 	 * Checks if keyword is a CSS3 pseudo-class or pseudo-element keyword
 	 * @param keyword
 	 * @return
 	 */
-	public static boolean isPseudoKeyword(String keyword) {
+	static boolean isPseudoKeyword(String keyword) {
 		if (keyword == null || keyword.isEmpty()) {
 			return false;
 		}
@@ -82,7 +82,7 @@ final class CssGrammar {
 	 * @param keyword
 	 * @return
 	 */
-	public static boolean isAtRuleKeyword(String keyword) {
+	static boolean isAtRuleKeyword(String keyword) {
 		if (keyword == null || keyword.isEmpty()) {
 			return false;
 		}

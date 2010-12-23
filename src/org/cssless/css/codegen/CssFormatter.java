@@ -236,7 +236,7 @@ public class CssFormatter {
 	private void writeValue(Appendable output, ValueNode node)
 		throws IOException {
 
-		output.append(node.getValue());
+		output.append(node.getValue(!this.prettyPrint));
 	}
 
 	private void writeComment(Appendable output, CommentNode node, int depth)
@@ -271,11 +271,14 @@ public class CssFormatter {
 		if (node == null) {
 			return WordBreak.NONE;
 
-		} else if (node instanceof CombinatorNode || node instanceof StringNode) {
+		} else if (node instanceof CombinatorNode) {
 			return this.prettyPrint ? WordBreak.BOTH : WordBreak.NONE;
 
+		} else if (node instanceof ColorNode || node instanceof NumericNode || node instanceof StringNode) {
+			return WordBreak.BOTH;
+
 		} else if (node instanceof ValueNode) {
-			String value = ((ValueNode)node).getValue();
+			String value = ((ValueNode)node).getValue(!this.prettyPrint);
 			if (value != null) {
 				char ch = value.charAt(0);
 				switch (ch) {
