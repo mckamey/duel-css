@@ -7,8 +7,8 @@ import org.cssless.css.parsing.InvalidNodeException;
  */
 public class AtRuleNode extends ContainerNode {
 
-	private BlockNode block;
 	private String keyword;
+	private BlockNode block;
 
 	public AtRuleNode(String keyword, int index, int line, int column) {
 		super(index, line, column);
@@ -52,5 +52,23 @@ public class AtRuleNode extends ContainerNode {
 		}
 
 		super.appendChild(value);
+	}
+
+	@Override
+	public boolean equals(Object arg) {
+		if (!(arg instanceof AtRuleNode)) {
+			// includes null
+			return false;
+		}
+
+		AtRuleNode that = (AtRuleNode)arg;
+		if (this.keyword == null ? that.keyword != null : !this.keyword.equals(that.keyword)) {
+			return false;
+		}
+		if (this.block == null ? that.block != null : !this.block.equals(that.block)) {
+			return false;
+		}
+
+		return super.equals(arg);
 	}
 }

@@ -179,7 +179,7 @@ System.err.println(actual);
 
 		StyleSheetNode input = new StyleSheetNode(
 			new RuleSetNode(
-				new SelectorNode(".bar"),
+				new SelectorNode("-bar"),
 				new DeclarationNode(
 					"margin",
 					new OperatorNode("+"),
@@ -249,7 +249,7 @@ System.err.println(actual);
 					new ColorNode("red")),
 				new DeclarationNode(
 					"text-align",
-					new ColorNode("center"))));
+					new ValueNode("center"))));
 
 		String expected =
 			"";
@@ -295,9 +295,9 @@ System.err.println(actual);
 			new RuleSetNode(
 				new SelectorNode(
 					new ValueNode("span.foo.bar["),
-					new ValueNode("bar"),
-					new OperatorNode("="),
 					new ValueNode("foo"),
+					new OperatorNode("="),
+					new ValueNode("bar"),
 					new OperatorNode("]")),
 				new DeclarationNode(
 					"color",
@@ -328,9 +328,9 @@ System.err.println(actual);
 					new OperatorNode("~="),
 					new StringNode("\"warning\""),
 					new OperatorNode("]"),
-					new OperatorNode(">"),
+					new CombinatorNode(CombinatorType.CHILD),
 					new ValueNode("F:first-child"),
-					new OperatorNode("+"),
+					new CombinatorNode(CombinatorType.ADJACENT),
 					new ValueNode("G:lang("),
 					new ValueNode("en"),
 					new OperatorNode(")")),
@@ -442,11 +442,12 @@ System.err.println(actual);
 					new OperatorNode(","),
 					new ValueNode("print")
 				},
-				new RuleSetNode(
-					new SelectorNode("body"),
-					new DeclarationNode(
-						"font-size",
-						new NumericNode("10pt")))));
+				new BlockNode(
+					new RuleSetNode(
+						new SelectorNode("body"),
+						new DeclarationNode(
+							"font-size",
+							new NumericNode("10pt"))))));
 
 		String expected =
 			"";
@@ -511,8 +512,8 @@ System.err.println(actual);
 						"margin-left",
 						new NumericNode("4cm")),
 					new DeclarationNode(
-						"margin-left",
-						new NumericNode("4cm")))));
+						"margin-right",
+						new NumericNode("3cm")))));
 
 		String expected =
 			"";
@@ -556,7 +557,7 @@ System.err.println(actual);
 				new SelectorNode(
 					new ValueNode("p:nth-last-of-type("),
 					new ValueNode("n"),
-					new OperatorNode("+"),
+					new CombinatorNode(CombinatorType.ADJACENT),
 					new NumericNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
@@ -585,7 +586,7 @@ System.err.println(actual);
 					new OperatorNode(":"),
 					new ValueNode("not-last-of-type("),
 					new ValueNode("n"),
-					new OperatorNode("+"),
+					new CombinatorNode(CombinatorType.ADJACENT),
 					new NumericNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
@@ -614,7 +615,7 @@ System.err.println(actual);
 					new OperatorNode(":"),
 					new ValueNode("nth-last-of-type-fake("),
 					new ValueNode("n"),
-					new OperatorNode("+"),
+					new CombinatorNode(CombinatorType.ADJACENT),
 					new NumericNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
@@ -858,7 +859,7 @@ System.err.println(actual);
 			new RuleSetNode(
 				new SelectorNode(
 					new ValueNode("*"),
-					new OperatorNode("+"),
+					new CombinatorNode(CombinatorType.ADJACENT),
 					new ValueNode("html"),
 					new ValueNode("div.blah")),
 				new DeclarationNode(
@@ -911,12 +912,12 @@ System.err.println(actual);
 				new DeclarationNode(
 					"color",
 					new ColorNode("red"),
-					new ValueNode("!"),
+					new OperatorNode("!"),
 					new ValueNode("ie"))));
 
 		String expected =
 			"";
-		
+
 		StringBuilder output = new StringBuilder();
 		new CssFormatter().write(output, input);
 		String actual = output.toString();
@@ -936,7 +937,7 @@ System.err.println(actual);
 				new DeclarationNode(
 					"color",
 					new ColorNode("red"),
-					new ValueNode("!")).withImportant()));
+					new OperatorNode("!")).withImportant()));
 
 		String expected =
 			"";

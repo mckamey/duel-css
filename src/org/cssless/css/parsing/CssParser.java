@@ -136,11 +136,8 @@ public class CssParser {
 				case BLOCK_BEGIN:
 					BlockNode block = new BlockNode(this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 					atRule.setBlock(block);
-					boolean isRuleSet = true;
-					if ("media".equals(atRule.getKeyword())) {
-						isRuleSet = false;
-					}
-					this.parseBlock(block, isRuleSet);
+					boolean asRuleSet = !"media".equals(atRule.getKeyword());
+					this.parseBlock(block, asRuleSet);
 					return;
 
 				case RULE_DELIM:
@@ -179,12 +176,7 @@ public class CssParser {
 					continue;
 
 				case COMMENT:
-					atRule.appendChild(
-						new CommentNode(
-							this.next.getValue(),
-							this.next.getIndex(),
-							this.next.getLine(),
-							this.next.getColumn()));
+					atRule.appendChild(new CommentNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 
 					// consume token
 					this.next = null;
@@ -258,14 +250,20 @@ public class CssParser {
 					continue;
 
 				case OPERATOR:
-					if (",".equals(this.next.getValue())) {
+					String value = this.next.getValue();
+					if (",".equals(value)) {
 						// consume token
 						this.next = null;
 						// terminate selector
 						return;
 					}
 
-					selector.appendChild(new OperatorNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					CombinatorType combinator = CombinatorNode.getCombinator(value);
+					if (combinator != null) {
+						selector.appendChild(new CombinatorNode(combinator, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					} else {
+						selector.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					}
 					// consume token
 					this.next = null;
 					continue;

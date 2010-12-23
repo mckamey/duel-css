@@ -241,7 +241,7 @@ public class CssParserTests {
 
 		StyleSheetNode expected = new StyleSheetNode(
 			new RuleSetNode(
-				new SelectorNode(".bar"),
+				new SelectorNode("-bar"),
 				new DeclarationNode(
 					"margin",
 					new OperatorNode("+"),
@@ -319,7 +319,7 @@ public class CssParserTests {
 					new ColorNode("red")),
 				new DeclarationNode(
 					"text-align",
-					new ColorNode("center"))));
+					new ValueNode("center"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -375,9 +375,9 @@ public class CssParserTests {
 			new RuleSetNode(
 				new SelectorNode(
 					new ValueNode("span.foo.bar["),
-					new ValueNode("bar"),
-					new OperatorNode("="),
 					new ValueNode("foo"),
+					new OperatorNode("="),
+					new ValueNode("bar"),
 					new OperatorNode("]")),
 				new DeclarationNode(
 					"color",
@@ -423,9 +423,9 @@ public class CssParserTests {
 					new OperatorNode("~="),
 					new StringNode("\"warning\""),
 					new OperatorNode("]"),
-					new OperatorNode(">"),
+					new CombinatorNode(CombinatorType.CHILD),
 					new ValueNode("F:first-child"),
-					new OperatorNode("+"),
+					new CombinatorNode(CombinatorType.ADJACENT),
 					new ValueNode("G:lang("),
 					new ValueNode("en"),
 					new OperatorNode(")")),
@@ -565,11 +565,12 @@ public class CssParserTests {
 					new OperatorNode(","),
 					new ValueNode("print")
 				},
-				new RuleSetNode(
-					new SelectorNode("body"),
-					new DeclarationNode(
-						"font-size",
-						new NumericNode("10pt")))));
+				new BlockNode(
+					new RuleSetNode(
+						new SelectorNode("body"),
+						new DeclarationNode(
+							"font-size",
+							new NumericNode("10pt"))))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -659,8 +660,8 @@ public class CssParserTests {
 						"margin-left",
 						new NumericNode("4cm")),
 					new DeclarationNode(
-						"margin-left",
-						new NumericNode("4cm")))));
+						"margin-right",
+						new NumericNode("3cm")))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -714,7 +715,7 @@ public class CssParserTests {
 				new SelectorNode(
 					new ValueNode("p:nth-last-of-type("),
 					new ValueNode("n"),
-					new OperatorNode("+"),
+					new CombinatorNode(CombinatorType.ADJACENT),
 					new NumericNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
@@ -752,7 +753,7 @@ public class CssParserTests {
 					new OperatorNode(":"),
 					new ValueNode("not-last-of-type("),
 					new ValueNode("n"),
-					new OperatorNode("+"),
+					new CombinatorNode(CombinatorType.ADJACENT),
 					new NumericNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
@@ -790,7 +791,7 @@ public class CssParserTests {
 					new OperatorNode(":"),
 					new ValueNode("nth-last-of-type-fake("),
 					new ValueNode("n"),
-					new OperatorNode("+"),
+					new CombinatorNode(CombinatorType.ADJACENT),
 					new NumericNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
@@ -1082,7 +1083,7 @@ public class CssParserTests {
 			new RuleSetNode(
 				new SelectorNode(
 					new ValueNode("*"),
-					new OperatorNode("+"),
+					new CombinatorNode(CombinatorType.ADJACENT),
 					new ValueNode("html"),
 					new ValueNode("div.blah")),
 				new DeclarationNode(
@@ -1131,7 +1132,7 @@ public class CssParserTests {
 				CssToken.value("color"),
 				CssToken.operator(":"),
 				CssToken.color("red"),
-				CssToken.value("!"),
+				CssToken.operator("!"),
 				CssToken.value("ie"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
@@ -1144,7 +1145,7 @@ public class CssParserTests {
 				new DeclarationNode(
 					"color",
 					new ColorNode("red"),
-					new ValueNode("!"),
+					new OperatorNode("!"),
 					new ValueNode("ie"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
@@ -1162,7 +1163,7 @@ public class CssParserTests {
 				CssToken.operator(":"),
 				CssToken.color("red"),
 				CssToken.important(),
-				CssToken.value("!"),
+				CssToken.operator("!"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
@@ -1174,7 +1175,7 @@ public class CssParserTests {
 				new DeclarationNode(
 					"color",
 					new ColorNode("red"),
-					new ValueNode("!")).withImportant()));
+					new OperatorNode("!")).withImportant()));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 

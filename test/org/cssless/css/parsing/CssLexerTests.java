@@ -928,7 +928,7 @@ public class CssLexerTests {
 				CssToken.value("color"),
 				CssToken.operator(":"),
 				CssToken.color("red"),
-				CssToken.value("!"),
+				CssToken.operator("!"),
 				CssToken.value("ie"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
@@ -951,7 +951,7 @@ public class CssLexerTests {
 				CssToken.operator(":"),
 				CssToken.color("red"),
 				CssToken.important(),
-				CssToken.value("!"),
+				CssToken.operator("!"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};

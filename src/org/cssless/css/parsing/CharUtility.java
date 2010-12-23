@@ -41,10 +41,14 @@ final class CharUtility {
 						case CssGrammar.OP_ADJACENT:
 						case CssGrammar.OP_SIBLING:
 						case CssGrammar.OP_MATCH:
+						case CssGrammar.OP_PAREN_BEGIN:
 						case CssGrammar.OP_PAREN_END:
+						case CssGrammar.OP_ATTR_BEGIN:
 						case CssGrammar.OP_ATTR_END:
 						case CssGrammar.OP_NAMESPACE_DELIM:
+						case CssGrammar.OP_IMPORTANT_BEGIN:
 						case '/':
+						case '-':
 							return true;
 					}
 					break;

@@ -27,7 +27,7 @@ public class ValueNode extends CssNode {
 
 	@Override
 	public boolean equals(Object arg) {
-		if (!(arg instanceof ValueNode)) {
+		if (!(arg instanceof ValueNode) || !this.getClass().equals(arg.getClass())) {
 			// includes null
 			return false;
 		}

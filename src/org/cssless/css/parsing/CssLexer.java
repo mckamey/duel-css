@@ -543,7 +543,7 @@ public class CssLexer implements Iterator<CssToken> {
 				// didn't match important
 				// NOTE: this may throw an exception if block was unterminated
 				this.resetMark();
-				return (this.token = CssToken.value("!", this.token_index, this.token_line, this.token_column));
+				return (this.token = CssToken.typedValue("!", this.token_index, this.token_line, this.token_column));
 			}
 
 			this.nextChar();

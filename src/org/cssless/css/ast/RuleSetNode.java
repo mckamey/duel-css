@@ -45,4 +45,27 @@ public class RuleSetNode extends BlockNode {
 
 		super.appendChild(value);
 	}
+
+	@Override
+	public boolean equals(Object arg) {
+		if (!(arg instanceof RuleSetNode)) {
+			// includes null
+			return false;
+		}
+
+		RuleSetNode that = (RuleSetNode)arg;
+		if (this.selectors.size() != that.selectors.size()) {
+			return false;
+		}
+
+		for (int i=0, length=this.selectors.size(); i<length; i++) {
+			CssNode a = this.selectors.get(i);
+			CssNode b = that.selectors.get(i);
+			if (a == null ? b != null : !a.equals(b)) {
+				return false;
+			}
+		}
+
+		return super.equals(arg);
+	}
 }

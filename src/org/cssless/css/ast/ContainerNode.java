@@ -80,7 +80,7 @@ public class ContainerNode extends CssNode {
 
 	@Override
 	public boolean equals(Object arg) {
-		if (!(arg instanceof ContainerNode)) {
+		if (!(arg instanceof ContainerNode) || !this.getClass().equals(arg.getClass())) {
 			// includes null
 			return false;
 		}

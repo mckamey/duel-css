@@ -49,7 +49,13 @@ public class CssFormatter {
 			throw new NullPointerException("stylesheet");
 		}
 
+		boolean needsDelim = false;
 		for (CssNode node : stylesheet.getChildren()) {
+			if (needsDelim) {
+				this.writeln(output, 0, 2);
+			} else {
+				needsDelim = true;
+			}
 			this.writeNode(output, node, 0);
 		}
 	}
@@ -76,7 +82,7 @@ public class CssFormatter {
 			this.writeDeclaration(output, (DeclarationNode)node, 0);
 
 		} else if (node instanceof CommentNode) {
-			this.writeComment(output, (CommentNode)node);
+			this.writeComment(output, (CommentNode)node, 0);
 
 		} else if (node instanceof ValueNode) {
 			this.writeValue(output, (ValueNode)node);
@@ -105,7 +111,7 @@ public class CssFormatter {
 			this.writeDeclaration(output, (DeclarationNode)node, depth);
 
 		} else if (node instanceof CommentNode) {
-			this.writeComment(output, (CommentNode)node);
+			this.writeComment(output, (CommentNode)node, depth);
 
 		} else if (node instanceof ValueNode) {
 			this.writeValue(output, (ValueNode)node);
@@ -118,7 +124,6 @@ public class CssFormatter {
 	private void writeAtRule(Appendable output, AtRuleNode node, int depth)
 		throws IOException {
 
-		this.writeln(output, depth);
 		output.append('@');
 		output.append(node.getKeyword());
 
@@ -129,17 +134,16 @@ public class CssFormatter {
 
 		BlockNode block = node.getBlock();
 		if (block != null) {
+			this.writeln(output, depth);
 			this.writeBlock(output, block, depth);
 		} else {
 			output.append(';');
 		}
-		this.writeln(output, depth);
 	}
 
 	private void writeRuleSet(Appendable output, RuleSetNode node, int depth)
 		throws IOException {
 
-		this.writeln(output, depth);
 		boolean needsDelim = false;
 		for (SelectorNode selector : node.getSelectors()) {
 			if (needsDelim) {
@@ -153,13 +157,13 @@ public class CssFormatter {
 			this.writeExpression(output, selector, depth);
 		}
 
+		this.writeln(output, depth);
 		this.writeBlock(output, node, depth);
 	}
 
 	private void writeDeclaration(Appendable output, DeclarationNode node, int depth)
 		throws IOException {
 
-		this.writeln(output, depth);
 		output.append(node.getIdent());
 		output.append(':');
 		if (this.prettyPrint) {
@@ -193,16 +197,22 @@ public class CssFormatter {
 	private void writeBlock(Appendable output, BlockNode node, int depth)
 		throws IOException {
 
-		this.writeln(output, depth++);
 		output.append('{');
+		depth++;
 
+		boolean needsDelim = false;
 		for (CssNode child : node.getChildren()) {
+			if (needsDelim && !(child instanceof DeclarationNode) && !(child instanceof CommentNode)) {
+				this.writeln(output, depth, 2);
+			} else {
+				needsDelim = true;
+				this.writeln(output, depth);
+			}
 			this.writeNode(output, child, depth);
 		}
 
 		this.writeln(output, --depth);
 		output.append('}');
-		this.writeln(output, depth);
 	}
 
 	private void writeValue(Appendable output, ValueNode node)
@@ -211,7 +221,7 @@ public class CssFormatter {
 		output.append(node.getValue());
 	}
 
-	private void writeComment(Appendable output, CommentNode node)
+	private void writeComment(Appendable output, CommentNode node, int depth)
 		throws IOException {
 
 		if (this.prettyPrint) {
@@ -243,13 +253,13 @@ public class CssFormatter {
 		if (node == null) {
 			return WordBreak.NONE;
 
-		} else if (node instanceof CombinatorNode) {
-			return WordBreak.NONE;
+		} else if (node instanceof CombinatorNode || node instanceof StringNode) {
+			return this.prettyPrint ? WordBreak.BOTH : WordBreak.NONE;
 
 		} else if (node instanceof OperatorNode) {
 			String value = ((OperatorNode)node).getValue();
 			char end = (value != null && value.length() == 1) ? value.charAt(0) : '\0'; 
-			if (end == ',' || end == ')' || end == ')') {
+			if (end == ',' || end == ')' || end == ']') {
 				return WordBreak.POST;
 			}
 
@@ -262,9 +272,6 @@ public class CssFormatter {
 				return WordBreak.PRE;
 			}
 			return WordBreak.BOTH;
-
-		} else if (node instanceof StringNode) {
-			return this.prettyPrint ? WordBreak.BOTH : WordBreak.NONE;
 
 		} else {
 			return WordBreak.NONE;
