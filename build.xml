@@ -48,6 +48,9 @@
 	<target name="jar.runtime" depends="compile.src" description="Package runtime as a jar">
 		<jar destfile="${jarfile.runtime}" update="true">
 			<fileset dir="${bin.dir}" />
+			<manifest>
+				<attribute name="Main-Class" value="org.cssless.css.compiler.CssCompiler" />
+			</manifest>
 		</jar>
 	</target>
 
@@ -100,7 +103,7 @@
 			<bottom><![CDATA[
 				<div id="footer">
 					<div id="copyright">
-						<p>&copy; 2010 <a href="http://cssless.org">duel</a></p>
+						<p>&copy; 2010 <a href="http://cssless.org">CSS/{LESS}</a></p>
 					</div>
 				</div>
 			]]></bottom>
