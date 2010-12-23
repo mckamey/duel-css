@@ -117,6 +117,21 @@ public class CssToken {
 	}
 
 	static CssToken typedValue(String value, int index, int line, int column) {
+		int length = value != null ? value.length()-1 : -1;
+		if ((length == 3 || length == 6) && value.charAt(0) == CssGrammar.OP_HASH) {
+			while (length > 0) {
+				if (!CharUtility.isHexDigit(value.charAt(length))) {
+					break;
+				}
+
+				length--;
+			}
+
+			if (length == 0) {
+				return CssToken.color(value, index, line, column);
+			}
+		}
+
 		if (CharUtility.isOperator(value)) {
 			return new CssToken(CssTokenType.OPERATOR, value, index, line, column);
 

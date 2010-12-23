@@ -272,9 +272,6 @@ public class CssLexer implements Iterator<CssToken> {
 					this.resetMark();
 					break;
 
-				case CssGrammar.OP_HASH:
-					return this.scanHash();
-
 				case CssGrammar.OP_IMPORTANT_BEGIN:
 					return this.scanImportant();
 
@@ -546,31 +543,6 @@ public class CssLexer implements Iterator<CssToken> {
 		}
 
 		return (this.token = CssToken.important(this.token_index, this.token_line, this.token_column));
-	}
-
-	private CssToken scanHash() throws IOException {
-		this.buffer.setLength(0);
-		this.buffer.append(CssGrammar.OP_HASH);
-
-		// this will consume hash
-		String name = this.scanName();
-
-		int length = name.length()-1;
-		if (length == 3 || length == 6) {
-			while (length > 0) {
-				if (!CharUtility.isHexDigit(name.charAt(length))) {
-					break;
-				}
-
-				length--;
-			}
-
-			if (length == 0) {
-				return (this.token = CssToken.color(name, this.token_index, this.token_line, this.token_column));
-			}
-		}
-		
-		return (this.token = CssToken.value(name, this.token_index, this.token_line, this.token_column));
 	}
 
 	/**

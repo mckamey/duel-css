@@ -570,6 +570,28 @@ public class CssLexerTests {
 	}
 
 	@Test
+	public void pseudoClassIDTest() {
+
+		String input = "#FFF:visited, #123456:hover { color: #69C; }";
+
+		Object[] expected = {
+				CssToken.value("#FFF:visited"),
+				CssToken.operator(","),
+				CssToken.value("#123456:hover"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("#69C"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void pseudoClassFunctionTest() {
 
 		String input = "p:nth-last-of-type(n+2) { color:#69C; }";
