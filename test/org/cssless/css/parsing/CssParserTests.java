@@ -715,7 +715,7 @@ public class CssParserTests {
 				new SelectorNode(
 					new ValueNode("p:nth-last-of-type("),
 					new ValueNode("n"),
-					new CombinatorNode(CombinatorType.ADJACENT),
+					new OperatorNode("+"),
 					new NumericNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
@@ -753,7 +753,7 @@ public class CssParserTests {
 					new OperatorNode(":"),
 					new ValueNode("not-last-of-type("),
 					new ValueNode("n"),
-					new CombinatorNode(CombinatorType.ADJACENT),
+					new OperatorNode("+"),
 					new NumericNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
@@ -791,7 +791,7 @@ public class CssParserTests {
 					new OperatorNode(":"),
 					new ValueNode("nth-last-of-type-fake("),
 					new ValueNode("n"),
-					new CombinatorNode(CombinatorType.ADJACENT),
+					new OperatorNode("+"),
 					new NumericNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(

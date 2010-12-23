@@ -274,35 +274,38 @@ public class CssFormatter {
 		} else if (node instanceof CombinatorNode || node instanceof StringNode) {
 			return this.prettyPrint ? WordBreak.BOTH : WordBreak.NONE;
 
-		} else if (node instanceof OperatorNode) {
-			String value = ((OperatorNode)node).getValue();
-			char end = (value != null && value.length() == 1) ? value.charAt(0) : '\0'; 
-
-			if (this.prettyPrint) {
-				switch (end) {
-					case ',':
-					case ')':
-					case ']':
-						return WordBreak.POST;
-					case '(':
-					case '[':
-						return WordBreak.PRE;
-				}
-			}
-			return WordBreak.NONE;
-
 		} else if (node instanceof ValueNode) {
 			String value = ((ValueNode)node).getValue();
-			char end = (value != null && !value.isEmpty()) ? value.charAt(value.length()-1) : '\0'; 
-
-			switch (end) {
-				case '(':
-				case '[':
-					return WordBreak.PRE;
-				default:
-					return WordBreak.BOTH;
+			if (value != null) {
+				char ch = value.charAt(0);
+				switch (ch) {
+					case ',':
+						return this.prettyPrint ? WordBreak.POST : WordBreak.NONE;
+					case ')':
+					case ']':
+						ch = value.charAt(value.length()-1);
+						switch (ch) {
+							case '(':
+							case '[':
+								return WordBreak.NONE;
+						}
+						return WordBreak.POST;
+					default:
+						ch = value.charAt(value.length()-1);
+						switch (ch) {
+							case '(':
+							case '[':
+								return WordBreak.PRE;
+						}
+				}
 			}
 
+			if (node instanceof OperatorNode) {
+				return WordBreak.NONE;
+
+			} else {
+				return WordBreak.BOTH;
+			}
 		} else {
 			return WordBreak.NONE;
 		}

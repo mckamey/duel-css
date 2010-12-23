@@ -438,6 +438,8 @@ public class CssFormatterTests {
 		new CssFormatter(new CodeGenSettings()).write(output, input);
 		String actual = output.toString();
 
+System.out.println(expected);
+System.err.println(actual);
 		assertEquals(expected, actual);
 	}
 
@@ -793,7 +795,7 @@ public class CssFormatterTests {
 				new SelectorNode(
 					new ValueNode("p:nth-last-of-type("),
 					new ValueNode("n"),
-					new CombinatorNode(CombinatorType.ADJACENT),
+					new OperatorNode("+"),
 					new NumericNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
@@ -801,7 +803,7 @@ public class CssFormatterTests {
 					new ColorNode("#69C"))));
 
 		String expected =
-			"p:nth-last-of-type(n + 2)\n" +
+			"p:nth-last-of-type(n+2)\n" +
 			"{\n" +
 			"\tcolor: #69C;\n" +
 			"}";
@@ -823,7 +825,7 @@ public class CssFormatterTests {
 					new OperatorNode(":"),
 					new ValueNode("not-last-of-type("),
 					new ValueNode("n"),
-					new CombinatorNode(CombinatorType.ADJACENT),
+					new OperatorNode("+"),
 					new NumericNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
@@ -831,7 +833,7 @@ public class CssFormatterTests {
 					new ColorNode("#69C"))));
 
 		String expected =
-			"p:not-last-of-type(n + 2)\n" +
+			"p:not-last-of-type(n+2)\n" +
 			"{\n" +
 			"\tcolor: #69C;\n" +
 			"}";
@@ -853,7 +855,7 @@ public class CssFormatterTests {
 					new OperatorNode(":"),
 					new ValueNode("nth-last-of-type-fake("),
 					new ValueNode("n"),
-					new CombinatorNode(CombinatorType.ADJACENT),
+					new OperatorNode("+"),
 					new NumericNode("2"),
 					new OperatorNode(")")),
 				new DeclarationNode(
@@ -861,7 +863,7 @@ public class CssFormatterTests {
 					new ColorNode("#69C"))));
 
 		String expected =
-			"p:nth-last-of-type-fake(n + 2)\n" +
+			"p:nth-last-of-type-fake(n+2)\n" +
 			"{\n" +
 			"\tcolor: #69C;\n" +
 			"}";

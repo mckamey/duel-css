@@ -65,9 +65,9 @@ public class CodeGenSettings {
 
 	/**
 	 * Sets if braces should be placed inline (rather than on own line)
-	 * @param inlineBraces
+	 * @param value
 	 */
-	public void setInlineBraces(boolean inlineBraces) {
-		this.inlineBraces = inlineBraces;
+	public void setInlineBraces(boolean value) {
+		this.inlineBraces = value;
 	}
 }

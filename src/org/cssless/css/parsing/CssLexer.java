@@ -12,6 +12,7 @@ public class CssLexer implements Iterator<CssToken> {
 	private static final int CAPACITY = 16;
 
 	private final LineNumberReader reader;
+	private boolean lineComments;
 	private final StringBuilder buffer = new StringBuilder(512);
 	private CssToken token = CssToken.start;
 	private boolean hasToken;
@@ -93,6 +94,22 @@ public class CssLexer implements Iterator<CssToken> {
 		if (this.ensureToken().getToken().equals(CssTokenType.ERROR)) {
 			this.token = CssToken.start;
 		}
+	}
+
+	/**
+	 * Gets if line comments are allowed 
+	 * @return
+	 */
+	public boolean allowLineComments() {
+		return this.lineComments;
+	}
+
+	/**
+	 * Sets if line comments are allowed
+	 * @param value
+	 */
+	public void setLineComments(boolean value) {
+		this.lineComments = value;
 	}
 
 	/**
@@ -180,10 +197,10 @@ public class CssLexer implements Iterator<CssToken> {
 				case CssGrammar.OP_ITEM_DELIM:
 				case CssGrammar.OP_CHILD:
 				case CssGrammar.OP_MATCH:
-				case CssGrammar.OP_ATTR_END:
 				case CssGrammar.OP_ATTR_BEGIN:
 				case CssGrammar.OP_PAREN_BEGIN:
-				case CssGrammar.OP_PAREN_END:
+//				case CssGrammar.OP_ATTR_END:
+//				case CssGrammar.OP_PAREN_END:
 					// consume char
 					String value = String.valueOf((char)this.ch);
 					this.nextChar();
@@ -328,9 +345,6 @@ public class CssLexer implements Iterator<CssToken> {
 				case CssGrammar.OP_DECL_DELIM:
 				case CssGrammar.OP_ITEM_DELIM:
 
-				case CssGrammar.OP_PAREN_END:
-				case CssGrammar.OP_ATTR_END:
-
 				case CssGrammar.OP_STRING_DELIM:
 				case CssGrammar.OP_STRING_DELIM_ALT:
 
@@ -348,6 +362,18 @@ public class CssLexer implements Iterator<CssToken> {
 					// these chars are start of other tokens
 					// flush the buffer
 					return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+
+				case CssGrammar.OP_PAREN_END:
+				case CssGrammar.OP_ATTR_END:
+					if (this.buffer.length() > 0) {
+						// these chars are start of next token
+						// flush the buffer
+						return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+					}
+					// consume until reach a special char
+					this.buffer.append((char)this.ch);
+					this.nextChar();
+					continue;
 
 				case CssGrammar.OP_DASH_MATCH:
 					this.setMark(CAPACITY);
@@ -640,12 +666,16 @@ public class CssLexer implements Iterator<CssToken> {
 			// NOTE: this may throw an exception if block was unterminated
 			this.resetMark();
 
-			this.setMark(CAPACITY);
-			value = this.tryScanBlockValue(CssGrammar.OP_COMMENT_ALT_BEGIN, CssGrammar.OP_COMMENT_ALT_END);
+			if (this.lineComments) {
+				this.setMark(CAPACITY);
+				value = this.tryScanBlockValue(CssGrammar.OP_COMMENT_ALT_BEGIN, CssGrammar.OP_COMMENT_ALT_END);
 
-			if (value == null) {
-				// NOTE: this may throw an exception if block was unterminated
-				this.resetMark();
+				if (value == null) {
+					// NOTE: this may throw an exception if block was unterminated
+					this.resetMark();
+					return false;
+				}
+			} else {
 				return false;
 			}
 		}

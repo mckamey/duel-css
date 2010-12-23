@@ -1054,7 +1054,9 @@ public class CssLexerTests {
 				CssToken.blockEnd()
 			};
 
-		Object[] actual = new CssLexer(input).toList().toArray();
+		CssLexer lexer = new CssLexer(input);
+		lexer.setLineComments(true);
+		Object[] actual = lexer.toList().toArray();
 
 		assertArrayEquals(expected, actual);
 	}
@@ -1073,7 +1075,9 @@ public class CssLexerTests {
 				CssToken.comment("trailing comment")
 			};
 
-		Object[] actual = new CssLexer(input).toList().toArray();
+		CssLexer lexer = new CssLexer(input);
+		lexer.setLineComments(true);
+		Object[] actual = lexer.toList().toArray();
 
 		assertArrayEquals(expected, actual);
 	}

@@ -237,6 +237,9 @@ public class CssParser {
 		SelectorNode selector = new SelectorNode(this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 		ruleSet.getSelectors().add(selector);
 
+		char ch;
+		String value;
+		int funcDepth = 0;
 		while (this.hasNext()) {
 			switch (this.next.getToken()) {
 				case BLOCK_BEGIN:
@@ -244,26 +247,41 @@ public class CssParser {
 					return;
 
 				case VALUE:
+					value = this.next.getValue();
+					ch = (value != null) ? value.charAt(value.length()-1) : '\0';
+					if (ch == CssGrammar.OP_PAREN_BEGIN || ch == CssGrammar.OP_ATTR_BEGIN) {
+						funcDepth++;
+					}
 					selector.appendChild(new ValueNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
 					continue;
 
 				case OPERATOR:
-					String value = this.next.getValue();
-					if (",".equals(value)) {
-						// consume token
-						this.next = null;
-						// terminate selector
-						return;
+					value = this.next.getValue();
+					if (funcDepth <= 0) {
+						if (",".equals(value)) {
+							// consume token
+							this.next = null;
+							// terminate selector
+							return;
+						}
+
+						CombinatorType combinator = CombinatorNode.getCombinator(value);
+						if (combinator != null) {
+							selector.appendChild(new CombinatorNode(combinator, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+							// consume token
+							this.next = null;
+							continue;
+						}
 					}
 
-					CombinatorType combinator = CombinatorNode.getCombinator(value);
-					if (combinator != null) {
-						selector.appendChild(new CombinatorNode(combinator, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
-					} else {
-						selector.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					ch = (value != null) ? value.charAt(0) : '\0';
+					if (ch == CssGrammar.OP_PAREN_END || ch == CssGrammar.OP_ATTR_END) {
+						funcDepth--;
 					}
+					selector.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+
 					// consume token
 					this.next = null;
 					continue;
@@ -322,18 +340,34 @@ public class CssParser {
 		// consume ':'
 		this.next = null;
 
+		char ch;
+		String value;
+		int funcDepth = 0;
 		while (this.hasNext()) {
 			switch (this.next.getToken()) {
 				case BLOCK_END:
 					return;
 
 				case RULE_DELIM:
-					// consume ';'
+					if (funcDepth <= 0) {
+						// consume ';' as end of declaration
+						this.next = null;
+						return;
+					}
+					// still within function
+					declaration.appendChild(new OperatorNode(";", this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					// consume token
 					this.next = null;
-					return;
+					continue;
+		
 
 				case VALUE:
-					declaration.appendChild(new ValueNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					value = this.next.getValue();
+					ch = (value != null) ? value.charAt(value.length()-1) : '\0';
+					if (ch == CssGrammar.OP_PAREN_BEGIN || ch == CssGrammar.OP_ATTR_BEGIN) {
+						funcDepth++;
+					}
+					declaration.appendChild(new ValueNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
 					continue;
@@ -357,7 +391,12 @@ public class CssParser {
 					continue;
 
 				case OPERATOR:
-					declaration.appendChild(new OperatorNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					value = this.next.getValue();
+					ch = (value != null) ? value.charAt(0) : '\0';
+					if (ch == CssGrammar.OP_PAREN_END || ch == CssGrammar.OP_ATTR_END) {
+						funcDepth--;
+					}
+					declaration.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
 					continue;
@@ -369,13 +408,7 @@ public class CssParser {
 					continue;
 
 				case COMMENT:
-					declaration.appendChild(
-						new CommentNode(
-							this.next.getValue(),
-							this.next.getIndex(),
-							this.next.getLine(),
-							this.next.getColumn()));
-
+					declaration.appendChild(new CommentNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
 					continue;
