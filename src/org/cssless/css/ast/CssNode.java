@@ -38,4 +38,15 @@ public abstract class CssNode {
 	void setParent(ContainerNode parent) {
 		this.parent = parent;
 	}
+
+	@Override
+	public String toString() {
+		try {
+			StringBuilder buffer = new StringBuilder();
+			new org.cssless.css.codegen.CssFormatter().writeNode(buffer, this);
+			return buffer.toString();
+		} catch (Exception ex) {
+			return super.toString()+'\n'+ex.getMessage();
+		}
+	}
 }

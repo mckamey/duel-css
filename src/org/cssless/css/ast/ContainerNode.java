@@ -78,22 +78,6 @@ public class ContainerNode extends CssNode {
 		return false;
 	}
 
-	StringBuilder toString(StringBuilder buffer) {
-		if (!this.children.isEmpty()) {
-			for (CssNode child : this.children) {
-				buffer.append(child);
-				buffer.append('\n');
-			}
-		}
-
-		return buffer;
-	}
-
-	@Override
-	public String toString() {
-		return this.toString(new StringBuilder()).toString();
-	}
-
 	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof ContainerNode)) {

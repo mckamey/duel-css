@@ -53,15 +53,6 @@ public class DeclarationNode extends ContainerNode {
 	}
 
 	@Override
-	public String toString() {
-		StringBuilder buffer = new StringBuilder(this.ident).append(" : ");
-		for (CssNode value : this.getChildren()) {
-			buffer.append(value.toString());
-		}
-		return buffer.toString();
-	}
-
-	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof DeclarationNode)) {
 			// includes null

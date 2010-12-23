@@ -45,23 +45,4 @@ public class RuleSetNode extends BlockNode {
 
 		super.appendChild(value);
 	}
-
-	@Override
-	public String toString() {
-		StringBuilder buffer = new StringBuilder();
-
-		boolean needsDelim = false;
-		for (SelectorNode selector : this.selectors) {
-			if (needsDelim) {
-				buffer.append(", ");
-			} else {
-				needsDelim = true;
-			}
-			buffer.append(selector.toString());
-		}
-
-		buffer.append(super.toString());
-		
-		return buffer.toString();
-	}
 }
