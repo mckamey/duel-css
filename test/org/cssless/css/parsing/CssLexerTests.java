@@ -28,6 +28,22 @@ public class CssLexerTests {
 	}
 
 	@Test
+	public void stringEscapeTest() {
+
+		String input = "\"'\\\" \\\"'\",'\"\"\"\"'";
+
+		Object[] expected = {
+				CssToken.string("\"'\\\" \\\"'\""),
+				CssToken.operator(","),
+				CssToken.string("'\"\"\"\"'")
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void valueListMixedTest() {
 
 		String input = "h1 { font: bold 2.0em/120% Helvetica, Arial, sans-serif }";

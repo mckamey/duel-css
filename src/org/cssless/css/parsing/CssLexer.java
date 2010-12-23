@@ -531,7 +531,9 @@ public class CssLexer implements Iterator<CssToken> {
 				}
 				this.buffer.append((char)this.ch);
 
-			} else if (!CharUtility.isStringChar(this.ch)) {
+			} else if (!CharUtility.isStringChar(this.ch) &&
+					this.ch != CssGrammar.OP_STRING_DELIM &&
+					this.ch != CssGrammar.OP_STRING_DELIM_ALT) {
 				throw new SyntaxException("Unterminated string value", this.token_index, this.token_line, this.token_column);
 			}
 		}
