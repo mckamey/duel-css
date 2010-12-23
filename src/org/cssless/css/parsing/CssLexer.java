@@ -400,38 +400,6 @@ public class CssLexer implements Iterator<CssToken> {
 					// flush the buffer
 					return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 
-				case CssGrammar.OP_MINUS:
-					this.setMark(CAPACITY);
-					this.nextChar();
-
-					// negative number or identifier?
-					if (CharUtility.isNumeric(this.ch)) {
-						this.resetMark();
-						// start of numeric token
-						// flush the buffer
-						return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
-					}
-
-					// continue consuming
-					this.buffer.append(CssGrammar.OP_MINUS);
-					continue;
-
-				case CssGrammar.OP_DOT:
-					this.setMark(CAPACITY);
-					this.nextChar();
-
-					// number or identifier?
-					if (CharUtility.isDigit(this.ch)) {
-						this.resetMark();
-						// start of numeric token
-						// flush the buffer
-						return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
-					}
-
-					// continue consuming
-					this.buffer.append(CssGrammar.OP_DOT);
-					continue;
-
 				case CssGrammar.OP_PAIR_DELIM:
 					this.setMark(CAPACITY);
 
