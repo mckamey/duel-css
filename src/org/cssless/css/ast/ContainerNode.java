@@ -4,6 +4,7 @@ import java.util.*;
 
 public class ContainerNode extends CssNode {
 	private final List<CssNode> children = new ArrayList<CssNode>();
+	private Map<String, ValueNode> variables;
 
 	public ContainerNode(int index, int line, int column) {
 		super(index, line, column);
@@ -38,6 +39,16 @@ public class ContainerNode extends CssNode {
 	}
 
 	public void appendChild(CssNode child) {
+		while (child instanceof LessNode) {
+			// evaluate LESS expressions before insertion
+			child = ((LessNode)child).eval(this);
+		}
+
+		if (child == null) {
+			// variable declarations do not generate content
+			return;
+		}
+
 		this.children.add(child);
 		child.setParent(this);
 	}
@@ -78,6 +89,26 @@ public class ContainerNode extends CssNode {
 		return false;
 	}
 
+	public boolean containsVariable(String name) {
+		return (this.variables != null) && this.variables.containsKey(name);
+	}
+	
+	public void putVariable(String name, ValueNode value) {
+		if (this.variables == null) {
+			this.variables = new HashMap<String, ValueNode>();
+		}
+
+		this.variables.put(name, value);
+	}
+
+	public ValueNode getVariable(String name) {
+		if (this.variables == null || !this.variables.containsKey(name)) {
+			return null;
+		}
+
+		return this.variables.get(name);
+	}
+	
 	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof ContainerNode) || !this.getClass().equals(arg.getClass())) {

@@ -29,6 +29,34 @@ public class ValueNode extends CssNode {
 		return this.value;
 	}
 
+	public ValueNode add(ValueNode operand) {
+		if (operand == null) {
+			throw new NullPointerException("operand");
+		}
+		throw new UnsupportedOperationException(this.getClass().getName()+" does not support addition with "+operand.getClass().getName());
+	}
+
+	public ValueNode subtract(ValueNode operand) {
+		if (operand == null) {
+			throw new NullPointerException("operand");
+		}
+		throw new UnsupportedOperationException(this.getClass().getName()+" does not support subtraction with "+operand.getClass().getName());
+	}
+
+	public ValueNode multiply(ValueNode operand) {
+		if (operand == null) {
+			throw new NullPointerException("operand");
+		}
+		throw new UnsupportedOperationException(this.getClass().getName()+" does not support multiplication with "+operand.getClass().getName());
+	}
+
+	public ValueNode divide(ValueNode operand) {
+		if (operand == null) {
+			throw new NullPointerException("operand");
+		}
+		throw new UnsupportedOperationException(this.getClass().getName()+" does not support division with "+operand.getClass().getName());
+	}
+
 	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof ValueNode) || !this.getClass().equals(arg.getClass())) {

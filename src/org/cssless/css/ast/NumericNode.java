@@ -12,8 +12,24 @@ public class NumericNode extends ValueNode {
 		super(value, index, line, column);
 	}
 
+	public NumericNode(double number, String units, int index, int line, int column) {
+		super(null, index, line, column);
+
+		this.number = number;
+		this.units = units;
+		super.setValue(this.formatNumber(this.number)+this.units);
+	}
+
 	public NumericNode(String value) {
 		super(value);
+	}
+
+	public NumericNode(double number, String units) {
+		super(null);
+
+		this.number = number;
+		this.units = units;
+		super.setValue(this.formatNumber(this.number)+this.units);
 	}
 
 	public double getNumber() {
@@ -74,6 +90,104 @@ public class NumericNode extends ValueNode {
 		} catch (NumberFormatException ex) {
 			this.number = 0.0;
 		}
+	}
+
+	@Override
+	public ValueNode add(ValueNode operand) {
+		while (operand instanceof LessBinaryOperatorNode) {
+			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
+		}
+		
+		if (operand instanceof NumericNode) {
+			NumericNode that = (NumericNode)operand;
+			String units = this.units;
+			if (units == null || units.isEmpty()) {
+				units = that.units;
+			}
+			return new NumericNode(this.number + that.number, units, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		if (operand instanceof ColorNode) {
+			// leverage commutative nature of addition
+			return operand.add(this);
+		}
+
+		return super.add(operand);
+	}
+
+	@Override
+	public ValueNode subtract(ValueNode operand) {
+		while (operand instanceof LessBinaryOperatorNode) {
+			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
+		}
+		
+		if (operand instanceof NumericNode) {
+			NumericNode that = (NumericNode)operand;
+			String units = this.units;
+			if (units == null || units.isEmpty()) {
+				units = that.units;
+			}
+			return new NumericNode(this.number + that.number, units, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		if (operand instanceof ColorNode) {
+			ColorNode that = (ColorNode)operand;
+			int r = (int)(this.number - that.getRedChannel());
+			int g = (int)(this.number - that.getGreenChannel());
+			int b = (int)(this.number - that.getBlueChannel());
+			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		return super.subtract(operand);
+	}
+
+	@Override
+	public ValueNode multiply(ValueNode operand) {
+		while (operand instanceof LessBinaryOperatorNode) {
+			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
+		}
+		
+		if (operand instanceof NumericNode) {
+			NumericNode that = (NumericNode)operand;
+			String units = this.units;
+			if (units == null || units.isEmpty()) {
+				units = that.units;
+			}
+			return new NumericNode(this.number * that.number, units, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		if (operand instanceof ColorNode) {
+			// leverage commutative nature of multiplication
+			return operand.multiply(this);
+		}
+
+		return super.multiply(operand);
+	}
+
+	@Override
+	public ValueNode divide(ValueNode operand) {
+		while (operand instanceof LessBinaryOperatorNode) {
+			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
+		}
+		
+		if (operand instanceof NumericNode) {
+			NumericNode that = (NumericNode)operand;
+			String units = this.units;
+			if (units == null || units.isEmpty()) {
+				units = that.units;
+			}
+			return new NumericNode(this.number / that.number, units, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		if (operand instanceof ColorNode) {
+			ColorNode that = (ColorNode)operand;
+			int r = (int)(this.number - that.getRedChannel());
+			int g = (int)(this.number - that.getGreenChannel());
+			int b = (int)(this.number - that.getBlueChannel());
+			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		return super.divide(operand);
 	}
 
 	private String formatNumber(double value) {

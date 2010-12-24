@@ -16,8 +16,20 @@ public class ColorNode extends ValueNode {
 		super(value, index, line, column);
 	}
 
+	public ColorNode(int r, int g, int b, int index, int line, int column) {
+		super(null, index, line, column);
+
+		this.setChannels(r, g, b);
+	}
+
 	public ColorNode(String value) {
 		super(value);
+	}
+
+	public ColorNode(int r, int g, int b) {
+		super(null);
+
+		this.setChannels(r, g, b);
 	}
 
 	public int getRedChannel() {
@@ -103,6 +115,110 @@ public class ColorNode extends ValueNode {
 			this.green = fromHex(color.substring(3, 5));
 			this.blue = fromHex(color.substring(5, 7));
 		}
+	}
+
+	@Override
+	public ValueNode add(ValueNode operand) {
+		while (operand instanceof LessBinaryOperatorNode) {
+			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
+		}
+		
+		if (operand instanceof ColorNode) {
+			ColorNode that = (ColorNode)operand;
+			int r = this.red + that.red;
+			int g = this.green + that.green;
+			int b = this.blue + that.blue;
+			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		if (operand instanceof NumericNode) {
+			NumericNode that = (NumericNode)operand;
+			double number = that.getNumber();
+			int r = (int)(this.red + number);
+			int g = (int)(this.green + number);
+			int b = (int)(this.blue + number);
+			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		return super.add(operand);
+	}
+
+	@Override
+	public ValueNode subtract(ValueNode operand) {
+		while (operand instanceof LessBinaryOperatorNode) {
+			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
+		}
+		
+		if (operand instanceof ColorNode) {
+			ColorNode that = (ColorNode)operand;
+			int r = this.red - that.red;
+			int g = this.green - that.green;
+			int b = this.blue - that.blue;
+			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		if (operand instanceof NumericNode) {
+			NumericNode that = (NumericNode)operand;
+			double number = that.getNumber();
+			int r = (int)(this.red - number);
+			int g = (int)(this.green - number);
+			int b = (int)(this.blue - number);
+			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		return super.subtract(operand);
+	}
+
+	@Override
+	public ValueNode multiply(ValueNode operand) {
+		while (operand instanceof LessBinaryOperatorNode) {
+			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
+		}
+		
+		if (operand instanceof ColorNode) {
+			ColorNode that = (ColorNode)operand;
+			int r = this.red * that.red;
+			int g = this.green * that.green;
+			int b = this.blue * that.blue;
+			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		if (operand instanceof NumericNode) {
+			NumericNode that = (NumericNode)operand;
+			double number = that.getNumber();
+			int r = (int)(this.red * number);
+			int g = (int)(this.green * number);
+			int b = (int)(this.blue * number);
+			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		return super.multiply(operand);
+	}
+
+	@Override
+	public ValueNode divide(ValueNode operand) {
+		while (operand instanceof LessBinaryOperatorNode) {
+			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
+		}
+		
+		if (operand instanceof ColorNode) {
+			ColorNode that = (ColorNode)operand;
+			int r = this.red / that.red;
+			int g = this.green / that.green;
+			int b = this.blue / that.blue;
+			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		if (operand instanceof NumericNode) {
+			NumericNode that = (NumericNode)operand;
+			double number = that.getNumber();
+			int r = (int)(this.red / number);
+			int g = (int)(this.green / number);
+			int b = (int)(this.blue / number);
+			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+		}
+
+		return super.divide(operand);
 	}
 
 	private static int fromHex(String channel) {

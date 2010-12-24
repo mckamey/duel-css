@@ -100,12 +100,7 @@ public class CssParser {
 				break;
 
 			case COMMENT:
-				parent.appendChild(
-					new CommentNode(
-						this.next.getValue(),
-						this.next.getIndex(),
-						this.next.getLine(),
-						this.next.getColumn()));
+				parent.appendChild(new CommentNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 				// consume token
 				this.next = null;
 				break;
@@ -126,7 +121,13 @@ public class CssParser {
 	private void parseAtRule(ContainerNode parent)
 		throws IOException {
 
-		AtRuleNode atRule = new AtRuleNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+		String keyword = this.next.getValue();
+		if (!CssGrammar.isAtRuleKeyword(keyword)) {
+			this.parseLessVarDecl(parent);
+			return;
+		}
+
+		AtRuleNode atRule = new AtRuleNode(keyword, this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 		parent.appendChild(atRule);
 		// consume at-rule
 		this.next = null;
@@ -178,7 +179,6 @@ public class CssParser {
 
 				case COMMENT:
 					atRule.appendChild(new CommentNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
-
 					// consume token
 					this.next = null;
 					continue;
@@ -190,6 +190,11 @@ public class CssParser {
 					throw new InvalidTokenException("Invalid token in at-rule: "+this.next, this.next);
 			}
 		}
+	}
+
+	private void parseLessVarDecl(ContainerNode parent) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void parseRuleSet(ContainerNode parent)
@@ -213,12 +218,7 @@ public class CssParser {
 					continue;
 
 				case COMMENT:
-					ruleSet.appendChild(
-						new CommentNode(
-							this.next.getValue(),
-							this.next.getIndex(),
-							this.next.getLine(),
-							this.next.getColumn()));
+					ruleSet.appendChild(new CommentNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
 					continue;
