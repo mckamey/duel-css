@@ -37,16 +37,11 @@ public class ArithmeticEvaluator {
 		}
 
 		while (!operators.isEmpty()) {
-			OperatorNode op = operators.pop();
-			String operator = op.getValue();
-			if ("(".equals(operator) || ")".equals(operator)) {
-				continue;
-			}
-
 			// evaluate remaining operators
-			ValueNode right = operands.pop();
-			ValueNode left = operands.pop();
-			operands.push(this.evalOp(op, left, right));
+			ValueNode result = this.evalOp(operators.pop(), operands);
+			if (result != null) {
+				operands.push(result);
+			}
 		}
 
 		if (operands.size() != 1) {
@@ -73,28 +68,44 @@ public class ArithmeticEvaluator {
 			}
 
 			// eval top operator, push result on operand stack
-			ValueNode right = operands.pop();
-			ValueNode left = operands.pop();
-			operands.push(this.evalOp(op, left, right));
+			ValueNode result = this.evalOp(op, operands);
+			if (result != null) {
+				operands.push(result);
+			}
 		}
 	}
 
-	private ValueNode evalOp(OperatorNode op, ValueNode left, ValueNode right) {
+	private ValueNode evalOp(OperatorNode op, Stack<ValueNode> operands) {
+
 		String operator = op.getValue();
-
 		if (operator != null && operator.length() == 1) {
-			switch (operator.charAt(0)) {
+			char opCh = operator.charAt(0);
+			switch (opCh) {
+				case '(':
+				case ')':
+					return null;
 				case '+':
-					return left.add(right);
-
 				case '-':
-					return left.subtract(right);
-
 				case '*':
-					return left.multiply(right);
-
 				case '/':
-					return left.divide(right);
+					// pop order is very important
+					ValueNode right = operands.pop();
+					ValueNode left = operands.pop();
+
+					switch (opCh) {
+						case '+':
+							return left.add(right);
+
+						case '-':
+							return left.subtract(right);
+
+						case '*':
+							return left.multiply(right);
+
+						case '/':
+							return left.divide(right);
+					}
+					break;
 			}
 		}
 
