@@ -366,7 +366,7 @@ public class ArithmeticEvaluatorTests {
 			new ColorNode("#231")
 		};
 
-		ValueNode expected = new ColorNode("#669933");
+		ValueNode expected = new ColorNode("#693");
 
 		ValueNode actual = new ArithmeticEvaluator().eval(input);
 
@@ -399,6 +399,86 @@ public class ArithmeticEvaluatorTests {
 		};
 
 		ValueNode expected = new ColorNode("#010508");
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void evalAddColorsTest() throws IOException {
+
+		CssNode[] input = {
+			new ColorNode("springgreen"),
+			new OperatorNode("+"),
+			new ColorNode("maroon")
+		};
+
+		ValueNode expected = new ColorNode("#80FF7F");
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void evalAddColors2Test() throws IOException {
+
+		CssNode[] input = {
+			new ColorNode("#123"),
+			new OperatorNode("+"),
+			new ColorNode("#321")
+		};
+
+		ValueNode expected = new ColorNode("#444444");
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void evalSubtractColorsTest() throws IOException {
+
+		CssNode[] input = {
+			new ColorNode("#123"),
+			new OperatorNode("+"),
+			new ColorNode("#321")
+		};
+
+		ValueNode expected = new ColorNode("#444444");
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void evalMultiplyColorsTest() throws IOException {
+
+		CssNode[] input = {
+			new ColorNode("#123456"),
+			new OperatorNode("*"),
+			new ColorNode("#040302")
+		};
+
+		ValueNode expected = new ColorNode("#489CAC");
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void evalDivideColorsTest() throws IOException {
+
+		CssNode[] input = {
+			new ColorNode("#123456"),
+			new OperatorNode("/"),
+			new ColorNode("#020406")
+		};
+
+		ValueNode expected = new ColorNode("#090D0E");
 
 		ValueNode actual = new ArithmeticEvaluator().eval(input);
 

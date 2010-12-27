@@ -243,4 +243,19 @@ public class ColorNode extends ValueNode {
 
 		return (char)((digit - 10) + 'A');
 	}
+
+	@Override
+	public boolean equals(Object arg) {
+		if (!(arg instanceof ColorNode) || !this.getClass().equals(arg.getClass())) {
+			// includes null
+			return false;
+		}
+
+		ColorNode that = (ColorNode)arg;
+		return
+			(this.red == that.red) &&
+			(this.green == that.green) &&
+			(this.blue == that.blue) &&
+			(this.hasChannels == that.hasChannels);
+	}
 }

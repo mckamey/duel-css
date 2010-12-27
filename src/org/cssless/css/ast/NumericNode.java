@@ -200,4 +200,19 @@ public class NumericNode extends ValueNode {
 			return Double.toString(value);
 		}
 	}
+
+	@Override
+	public boolean equals(Object arg) {
+		if (!(arg instanceof NumericNode) || !this.getClass().equals(arg.getClass())) {
+			// includes null
+			return false;
+		}
+
+		NumericNode that = (NumericNode)arg;
+		if (this.units == null ? that.units != null : !this.units.equals(that.units)) {
+			return false;
+		}
+
+		return (this.number == that.number);
+	}
 }
