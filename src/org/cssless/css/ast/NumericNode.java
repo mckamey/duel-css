@@ -127,7 +127,7 @@ public class NumericNode extends ValueNode {
 			if (units == null || units.isEmpty()) {
 				units = that.units;
 			}
-			return new NumericNode(this.number + that.number, units, this.getIndex(), this.getLine(), this.getColumn());
+			return new NumericNode(this.number - that.number, units, this.getIndex(), this.getLine(), this.getColumn());
 		}
 
 		if (operand instanceof ColorNode) {

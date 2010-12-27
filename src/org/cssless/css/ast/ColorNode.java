@@ -200,7 +200,7 @@ public class ColorNode extends ValueNode {
 		while (operand instanceof LessBinaryOperatorNode) {
 			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
 		}
-		
+
 		if (operand instanceof ColorNode) {
 			ColorNode that = (ColorNode)operand;
 			int r = this.red / that.red;

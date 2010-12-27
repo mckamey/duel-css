@@ -1,13 +1,14 @@
 package org.cssless.css.ast;
 
-import java.util.*;
-
+import org.cssless.css.codegen.ArithmeticEvaluator;
 import org.cssless.css.parsing.InvalidNodeException;
 
 /**
  * Represents a LESS variable declaration
  */
 public class LessVariableDeclarationNode extends ContainerNode implements LessNode {
+
+	private static final ArithmeticEvaluator evaluator = new ArithmeticEvaluator();
 
 	private String name;
 
@@ -42,13 +43,7 @@ public class LessVariableDeclarationNode extends ContainerNode implements LessNo
 
 	@Override
 	public ValueNode eval(ContainerNode context) {
-		ValueNode result = null;
-		for (CssNode child : this.getChildren()) {
-			// TODO: build LESS expression tree
-
-			// need parens node for forcing precendence
-			// and multi-value node (comma list)
-		}
+		ValueNode result = evaluator.eval(this.getChildren());
 		context.putVariable(this.name, result);
 
 		// nothing emitted in output
