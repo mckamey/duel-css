@@ -45,10 +45,11 @@ public class ColorNode extends ValueNode {
 	}
 
 	public void setChannels(int r, int g, int b) {
+		// ensure channel bounds
+		this.red = r = Math.max(0x00, Math.min(0xFF, r));
+		this.green = g = Math.max(0x00, Math.min(0xFF, g));
+		this.blue = b = Math.max(0x00, Math.min(0xFF, b));
 		this.hasChannels = true;
-		this.red = r;
-		this.green = g;
-		this.blue = b;
 
 		// hex notation
 		super.setValue("#" + toHex(r) + toHex(g) + toHex(b));
@@ -222,7 +223,8 @@ public class ColorNode extends ValueNode {
 	}
 
 	private static int fromHex(String channel) {
-		return Integer.parseInt(channel, 16);
+		// parse and ensure channel bounds
+		return Math.max(0x00, Math.min(0xFF, Integer.parseInt(channel, 16)));
 	}
 
 	private static String toHex(int channel) {
