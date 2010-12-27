@@ -2,22 +2,34 @@ package org.cssless.css.ast;
 
 import java.util.*;
 
-public class ContainerNode extends CssNode {
-	private final List<CssNode> children = new ArrayList<CssNode>();
-	private Map<String, ValueNode> variables;
+public class MultiValueNode extends ValueNode {
 
-	public ContainerNode(int index, int line, int column) {
-		super(index, line, column);
+	private final List<ValueNode> children = new ArrayList<ValueNode>();
+
+	public MultiValueNode(int index, int line, int column) {
+		super(null, index, line, column);
 	}
 
-	protected ContainerNode(CssNode... children) {
+	public MultiValueNode(ValueNode... children) {
+		super(null);
+
 		if (children != null) {
-			for (CssNode child : children) {
+			for (ValueNode child : children) {
 				this.appendChild(child);
 			}
 		}
 	}
 
+	@Override
+	public String getValue() {
+		throw new IllegalStateException("Value of MultiValueNode cannot be accessed directly as a String.");
+	}
+
+	@Override
+	public void setValue(String value) {
+		// ignore
+	}
+	
 	public boolean hasChildren() {
 		return !this.children.isEmpty();
 	}
@@ -26,7 +38,7 @@ public class ContainerNode extends CssNode {
 		return this.children.size();
 	}
 
-	public List<CssNode> getChildren() {
+	public List<ValueNode> getChildren() {
 		return this.children;
 	}
 
@@ -38,10 +50,10 @@ public class ContainerNode extends CssNode {
 		return this.children.isEmpty() ? null : this.children.get(this.children.size()-1);
 	}
 
-	public void appendChild(CssNode child) {
+	public void appendChild(ValueNode child) {
 		while (child instanceof LessNode) {
 			// evaluate LESS expressions before insertion
-			child = ((LessNode)child).eval(this);
+			child = ((LessNode)child).eval(this.getParent());
 		}
 
 		if (child == null) {
@@ -49,15 +61,8 @@ public class ContainerNode extends CssNode {
 			return;
 		}
 
-		if (child instanceof MultiValueNode) {
-			for (ValueNode grand : ((MultiValueNode)child).getChildren()) {
-				this.appendChild(grand);
-			}
-			return;
-		}
-		
 		this.children.add(child);
-		child.setParent(this);
+		child.setParent(this.getParent());
 	}
 
 	public boolean removeChild(CssNode oldChild) {
@@ -77,7 +82,7 @@ public class ContainerNode extends CssNode {
 		return false;
 	}
 
-	public boolean replaceChild(CssNode newChild, CssNode oldChild) {
+	public boolean replaceChild(ValueNode newChild, ValueNode oldChild) {
 		if (oldChild == null) {
 			this.appendChild(newChild);
 			return true;
@@ -87,7 +92,7 @@ public class ContainerNode extends CssNode {
 			CssNode child = this.children.get(i);
 			if (child == oldChild) {
 				this.children.set(i, newChild);
-				newChild.setParent(this);
+				newChild.setParent(this.getParent());
 				child.setParent(null);
 				return true;
 			}
@@ -96,34 +101,14 @@ public class ContainerNode extends CssNode {
 		return false;
 	}
 
-	public boolean containsVariable(String name) {
-		return (this.variables != null) && this.variables.containsKey(name);
-	}
-	
-	public void putVariable(String name, ValueNode value) {
-		if (this.variables == null) {
-			this.variables = new HashMap<String, ValueNode>();
-		}
-
-		this.variables.put(name, value);
-	}
-
-	public ValueNode getVariable(String name) {
-		if (this.variables == null || !this.variables.containsKey(name)) {
-			return null;
-		}
-
-		return this.variables.get(name);
-	}
-	
 	@Override
 	public boolean equals(Object arg) {
-		if (!(arg instanceof ContainerNode) || !this.getClass().equals(arg.getClass())) {
+		if (!(arg instanceof MultiValueNode) || !this.getClass().equals(arg.getClass())) {
 			// includes null
 			return false;
 		}
 
-		ContainerNode that = (ContainerNode)arg;
+		MultiValueNode that = (MultiValueNode)arg;
 		if (this.children.size() != that.children.size()) {
 			return false;
 		}

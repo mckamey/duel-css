@@ -22,16 +22,168 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalOperandListTest() throws IOException {
+	public void evalMultiOperandTest() throws IOException {
 
 		CssNode[] input = {
 			new NumericNode("5px"),
-			new NumericNode("10px")
+			new NumericNode("10px"),
+			new NumericNode("20px")
 		};
 
 		ValueNode expected = new MultiValueNode(
 			new NumericNode("5px"),
-			new NumericNode("10px"));
+			new NumericNode("10px"),
+			new NumericNode("20px"));
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void evalMultiExprTest() throws IOException {
+
+		CssNode[] input = {
+			new NumericNode("5px"),
+			new OperatorNode("*"),
+			new NumericNode("3"),
+			new NumericNode("2"),
+			new OperatorNode("+"),
+			new NumericNode("10px"),
+			new NumericNode("19"),
+			new OperatorNode("-"),
+			new NumericNode("1px")
+		};
+
+		ValueNode expected = new MultiValueNode(
+			new NumericNode("15px"),
+			new NumericNode("12px"),
+			new NumericNode("18px"));
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void evalMultiExprCommaTest() throws IOException {
+
+		CssNode[] input = {
+			new NumericNode("5px"),
+			new OperatorNode("*"),
+			new NumericNode("3"),
+			new OperatorNode(","),
+			new NumericNode("2"),
+			new OperatorNode("+"),
+			new NumericNode("10px"),
+			new NumericNode("19"),
+			new OperatorNode("-"),
+			new NumericNode("1px")
+		};
+
+		ValueNode expected = new MultiValueNode(
+			new NumericNode("15px"),
+			new OperatorNode(","),
+			new NumericNode("12px"),
+			new NumericNode("18px"));
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void evalMultiExprLeadingParensTest() throws IOException {
+
+		CssNode[] input = {
+			new NumericNode("5px"),
+			new OperatorNode("*"),
+			new NumericNode("3"),
+			new OperatorNode("("),
+			new NumericNode("2"),
+			new OperatorNode("*"),
+			new NumericNode("10px"),
+			new OperatorNode(")")
+		};
+
+		ValueNode expected = new MultiValueNode(
+			new NumericNode("15px"),
+			new NumericNode("20px"));
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void evalMultiExprMiddleParensTest() throws IOException {
+
+		CssNode[] input = {
+			new NumericNode("25%"),
+			new OperatorNode("+"),
+			new NumericNode("5"),
+			new OperatorNode("("),
+			new NumericNode("5px"),
+			new OperatorNode("*"),
+			new NumericNode("3"),
+			new OperatorNode(")"),
+			new NumericNode("2"),
+			new OperatorNode("*"),
+			new NumericNode("10px")
+		};
+
+		ValueNode expected = new MultiValueNode(
+			new NumericNode("30%"),
+			new NumericNode("15px"),
+			new NumericNode("20px"));
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void evalMultiExprTrailingParensTest() throws IOException {
+
+		CssNode[] input = {
+			new OperatorNode("("),
+			new NumericNode("5px"),
+			new OperatorNode("*"),
+			new NumericNode("3"),
+			new OperatorNode(")"),
+			new NumericNode("2"),
+			new OperatorNode("*"),
+			new NumericNode("10px")
+		};
+
+		ValueNode expected = new MultiValueNode(
+			new NumericNode("15px"),
+			new NumericNode("20px"));
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void evalMultiExprBothParensTest() throws IOException {
+
+		CssNode[] input = {
+			new OperatorNode("("),
+			new NumericNode("5px"),
+			new OperatorNode("*"),
+			new NumericNode("3"),
+			new OperatorNode(")"),
+			new OperatorNode("("),
+			new NumericNode("2"),
+			new OperatorNode("*"),
+			new NumericNode("10px"),
+			new OperatorNode(")")
+		};
+
+		ValueNode expected = new MultiValueNode(
+			new NumericNode("15px"),
+			new NumericNode("20px"));
 
 		ValueNode actual = new ArithmeticEvaluator().eval(input);
 

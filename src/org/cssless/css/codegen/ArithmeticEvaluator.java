@@ -24,25 +24,40 @@ public class ArithmeticEvaluator {
 		Stack<OperatorNode> operators = new Stack<OperatorNode>();
 		Stack<ValueNode> operands = new Stack<ValueNode>();
 
+		boolean lastWasVar = false;
 		for (CssNode next : expr) {
 			if (next instanceof OperatorNode) {
-				this.processOp(operators, operands, (OperatorNode)next);
+				int nextPrecedence = this.precedence((OperatorNode)next);
+				if (nextPrecedence < 0) {
+					// unknown operator signals start of new expression
+					this.flushOperators(operators, operands);
+					// operator is treated as a delimiter
+					operands.add((ValueNode)next);
+
+				} else {
+					if (lastWasVar && "(".equals(((OperatorNode)next).getValue())) {
+						// unknown operator signals start of new expression
+						this.flushOperators(operators, operands);
+					}
+
+					this.processOp(operators, operands, (OperatorNode)next);
+				}
+				lastWasVar = false;
 
 			} else if (next instanceof ValueNode) {
+				if (lastWasVar) {
+					// two values without an infix operator signals start of new expression
+					this.flushOperators(operators, operands);
+				}
 				operands.push((ValueNode)next);
+				lastWasVar = true;
 
 			} else {
 				throw new IllegalStateException("Unexpected expression node: "+next.getClass().getName());
 			}
 		}
 
-		while (!operators.isEmpty()) {
-			// evaluate remaining operators
-			ValueNode result = this.evalOp(operators.pop(), operands);
-			if (result != null) {
-				operands.push(result);
-			}
-		}
+		this.flushOperators(operators, operands);
 
 		int length = operands.size();
 		switch (length) {
@@ -60,12 +75,21 @@ public class ArithmeticEvaluator {
 		}
 	}
 
+	private void flushOperators(Stack<OperatorNode> operators, Stack<ValueNode> operands) {
+		// evaluate operators on stack
+		while (!operators.isEmpty()) {
+			ValueNode result = this.evalOp(operators.pop(), operands);
+			if (result != null) {
+				operands.push(result);
+			}
+		}
+	}
+
 	private void processOp(Stack<OperatorNode> operators, Stack<ValueNode> operands, OperatorNode next) {
 		while (true) {
-			if (operators.isEmpty() ||
-				"(".equals(next.getValue()) ||
+			if (operators.isEmpty() || "(".equals(next.getValue()) ||
 				this.precedence(next) > this.precedence(operators.peek())) {
-				// queue operator for later evaluation
+				// push operator for later evaluation
 				operators.push(next);
 				return;
 			}
@@ -92,6 +116,7 @@ public class ArithmeticEvaluator {
 			switch (opCh) {
 				case '(':
 				case ')':
+					// consume
 					return null;
 				case '+':
 				case '-':
@@ -118,7 +143,8 @@ public class ArithmeticEvaluator {
 			}
 		}
 
-		throw new IllegalStateException("Unknown operator: "+operator);
+		// pass unknown operators through
+		return op;
 	}
 
 	private int precedence(OperatorNode node) {

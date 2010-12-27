@@ -86,6 +86,9 @@ public class CssFormatter {
 		} else if (node instanceof CommentNode) {
 			this.writeComment(output, (CommentNode)node, 0);
 
+		} else if (node instanceof MultiValueNode) {
+			this.writeMultiValue(output, (MultiValueNode)node, 0);
+
 		} else if (node instanceof ValueNode) {
 			this.writeValue(output, (ValueNode)node);
 
@@ -99,7 +102,7 @@ public class CssFormatter {
 			throw new UnsupportedOperationException("Node not yet implemented: "+node.getClass());
 		}
 	}
-	
+
 	private void writeNode(Appendable output, CssNode node, int depth)
 		throws IOException {
 
@@ -114,6 +117,9 @@ public class CssFormatter {
 
 		} else if (node instanceof CommentNode) {
 			this.writeComment(output, (CommentNode)node, depth);
+
+		} else if (node instanceof MultiValueNode) {
+			this.writeMultiValue(output, (MultiValueNode)node, depth);
 
 		} else if (node instanceof ValueNode) {
 			this.writeValue(output, (ValueNode)node);
@@ -246,6 +252,27 @@ public class CssFormatter {
 
 		this.writeln(output, --depth);
 		output.append('}');
+	}
+
+	private void writeMultiValue(Appendable output, MultiValueNode node, int depth)
+		throws IOException {
+
+		WordBreak last = null;
+		if (node.hasChildren()) {
+			for (CssNode child : node.getChildren()) {
+				// check for significant whitespace
+				WordBreak next = this.getWordBreak(child);
+				if (last != null &&
+					(WordBreak.BOTH.equals(last) || WordBreak.POST.equals(last)) &&
+					(WordBreak.BOTH.equals(next) || WordBreak.PRE.equals(next))) {
+
+					output.append(' ');
+				}
+				last = next;
+
+				this.writeNode(output, child, depth);
+			}
+		}
 	}
 
 	private void writeValue(Appendable output, ValueNode node)
