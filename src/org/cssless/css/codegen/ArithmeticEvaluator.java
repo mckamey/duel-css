@@ -44,11 +44,20 @@ public class ArithmeticEvaluator {
 			}
 		}
 
-		if (operands.size() != 1) {
-			throw new IllegalStateException("Eval ended with extra operands: "+operands.size());
+		int length = operands.size();
+		switch (length) {
+			case 0:
+				return null;
+			case 1:
+				return operands.pop();
+			default:
+				ValueNode first = operands.get(0);
+				MultiValueNode multi = new MultiValueNode(first.getIndex(), first.getLine(), first.getColumn());
+				for (int i=0; i<length; i++) {
+					multi.appendChild(operands.get(i));
+				}
+				return multi;
 		}
-
-		return operands.pop();
 	}
 
 	private void processOp(Stack<OperatorNode> operators, Stack<ValueNode> operands, OperatorNode next) {

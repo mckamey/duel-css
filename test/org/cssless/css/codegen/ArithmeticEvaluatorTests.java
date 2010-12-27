@@ -8,6 +8,37 @@ import org.junit.Test;
 public class ArithmeticEvaluatorTests {
 
 	@Test
+	public void evalOperandSingleTest() throws IOException {
+
+		CssNode[] input = {
+			new ColorNode("yellow")
+		};
+
+		ValueNode expected = new ColorNode("#FF0");
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void evalOperandListTest() throws IOException {
+
+		CssNode[] input = {
+			new NumericNode("5px"),
+			new NumericNode("10px")
+		};
+
+		ValueNode expected = new MultiValueNode(
+			new NumericNode("5px"),
+			new NumericNode("10px"));
+
+		ValueNode actual = new ArithmeticEvaluator().eval(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void evalPrecendenceTest() throws IOException {
 
 		CssNode[] input = {
