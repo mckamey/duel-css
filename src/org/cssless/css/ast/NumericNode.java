@@ -84,7 +84,7 @@ public class NumericNode extends ValueNode {
 			}
 		}
 		this.units = value.substring(index+1);
-		
+
 		try {
 			this.number = Double.parseDouble(this.units.isEmpty() ? value : value.substring(0, index+1));
 		} catch (NumberFormatException ex) {
@@ -94,8 +94,8 @@ public class NumericNode extends ValueNode {
 
 	@Override
 	public ValueNode add(ValueNode operand) {
-		while (operand instanceof LessBinaryOperatorNode) {
-			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
+		while (operand instanceof LessNode) {
+			operand = ((LessNode)operand).eval(this.getParent());
 		}
 		
 		if (operand instanceof NumericNode) {
@@ -117,8 +117,8 @@ public class NumericNode extends ValueNode {
 
 	@Override
 	public ValueNode subtract(ValueNode operand) {
-		while (operand instanceof LessBinaryOperatorNode) {
-			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
+		while (operand instanceof LessNode) {
+			operand = ((LessNode)operand).eval(this.getParent());
 		}
 		
 		if (operand instanceof NumericNode) {
@@ -143,8 +143,8 @@ public class NumericNode extends ValueNode {
 
 	@Override
 	public ValueNode multiply(ValueNode operand) {
-		while (operand instanceof LessBinaryOperatorNode) {
-			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
+		while (operand instanceof LessNode) {
+			operand = ((LessNode)operand).eval(this.getParent());
 		}
 		
 		if (operand instanceof NumericNode) {
@@ -166,8 +166,8 @@ public class NumericNode extends ValueNode {
 
 	@Override
 	public ValueNode divide(ValueNode operand) {
-		while (operand instanceof LessBinaryOperatorNode) {
-			operand = ((LessBinaryOperatorNode)operand).eval(this.getParent());
+		while (operand instanceof LessNode) {
+			operand = ((LessNode)operand).eval(this.getParent());
 		}
 		
 		if (operand instanceof NumericNode) {
