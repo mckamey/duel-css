@@ -35,6 +35,7 @@ public class LessVariableDeclarationNode extends DeclarationNode {
 	
 	@Override
 	public CssNode eval(ContainerNode context) {
+		this.setParent(context);
 		context.putVariable(this);
 
 		// nothing emitted in output

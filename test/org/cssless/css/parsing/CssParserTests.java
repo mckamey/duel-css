@@ -1333,6 +1333,7 @@ public class CssParserTests {
 				CssToken.operator(":"),
 				CssToken.color("#4D926F"),
 				CssToken.ruleDelim(),
+
 				CssToken.value("#header"),
 				CssToken.blockBegin(),
 				CssToken.value("color"),
@@ -1367,6 +1368,43 @@ public class CssParserTests {
 	}
 
 	@Test
+	public void lessVariablesReferenceVarsTest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.atRule("nice-blue"),
+				CssToken.operator(":"),
+				CssToken.color("#5B83AD"),
+				CssToken.ruleDelim(),
+
+				CssToken.atRule("light-blue"),
+				CssToken.operator(":"),
+				CssToken.atRule("nice-blue"),
+				CssToken.operator("+"),
+				CssToken.color("#111"),
+				CssToken.ruleDelim(),
+
+				CssToken.value("#header"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.atRule("light-blue"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("#header"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("#6c94be"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void lessOperationsTest() throws IOException {
 
 		CssToken[] input = {
@@ -1374,10 +1412,12 @@ public class CssParserTests {
 				CssToken.operator(":"),
 				CssToken.numeric("1px"),
 				CssToken.ruleDelim(),
+
 				CssToken.atRule("base-color"),
 				CssToken.operator(":"),
 				CssToken.color("#111"),
 				CssToken.ruleDelim(),
+
 				CssToken.value("#header"),
 				CssToken.blockBegin(),
 				CssToken.value("color"),
@@ -1397,6 +1437,7 @@ public class CssParserTests {
 				CssToken.numeric("2"),
 				CssToken.ruleDelim(),
 				CssToken.blockEnd(),
+
 				CssToken.value("#footer"),
 				CssToken.blockBegin(),
 				CssToken.value("color"),
