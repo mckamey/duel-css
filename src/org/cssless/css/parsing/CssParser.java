@@ -84,9 +84,9 @@ public class CssParser {
 				// TODO: LESS will use this for scoped variables
 				if (isRuleSet) {
 					throw new InvalidTokenException("Invalid token inside rule-set: "+this.next, this.next);
-				} else {
-					this.parseAtRule(parent);
 				}
+
+				this.parseAtRule(parent);
 				break;
 
 			case VALUE:
@@ -94,12 +94,8 @@ public class CssParser {
 			case NUMERIC:
 			case COLOR:
 			case OPERATOR:
-				if (isRuleSet) {
-					// TODO: LESS can have nested rule-sets
-					this.parseDeclaration(parent);
-				} else {
-					this.parseRuleSet(parent);
-				}
+				// LESS can have nested rule-sets
+				this.parseRuleSet(parent, isRuleSet);
 				break;
 
 			case COMMENT:
@@ -126,7 +122,9 @@ public class CssParser {
 
 		String keyword = this.next.getValue();
 		if (!CssGrammar.isAtRuleKeyword(keyword)) {
-			this.parseDeclaration(parent);
+			CssToken ident = this.next;
+			this.next = null;
+			this.parseDeclaration(parent, ident);
 			return;
 		}
 
@@ -194,15 +192,33 @@ public class CssParser {
 		}
 	}
 
-	private void parseRuleSet(ContainerNode parent)
+	private void parseRuleSet(ContainerNode parent, boolean nested)
 		throws IOException {
 
-		RuleSetNode ruleSet = new RuleSetNode(this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+		// consume ident
+		CssToken ident = this.next;
+		this.next = null;
+
+		// if not nested, then must be rule set
+		if (nested && this.hasNext() && CssTokenType.OPERATOR.equals(this.next.getToken()) && ":".equals(this.next.getValue())) {
+			this.parseDeclaration(parent, ident);
+			return;
+		}
+
+		RuleSetNode ruleSet = new RuleSetNode(ident.getIndex(), ident.getLine(), ident.getColumn());
 		parent.appendChild(ruleSet);
+
+		RuleSetNode nestedParent = (parent instanceof RuleSetNode) ? (RuleSetNode)parent : null;
+
+		this.parseSelector(ruleSet, ident);
 
 		while (this.hasNext()) {
 			switch (this.next.getToken()) {
 				case BLOCK_BEGIN:
+					if (nestedParent != null) {
+						// LESS allows nested rules, unroll selectors here
+						ruleSet.expandSelectors(nestedParent.getSelectors());
+					}
 					this.parseBlock(ruleSet, true);
 					return;
 
@@ -211,7 +227,7 @@ public class CssParser {
 				case NUMERIC:
 				case COLOR:
 				case OPERATOR:
-					this.parseSelector(ruleSet);
+					this.parseSelector(ruleSet, this.next);
 					continue;
 
 				case COMMENT:
@@ -229,15 +245,37 @@ public class CssParser {
 		}
 	}
 
-	private void parseSelector(RuleSetNode ruleSet)
+	private void parseSelector(RuleSetNode ruleSet, CssToken start)
 		throws IOException {
 
-		SelectorNode selector = new SelectorNode(this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+		SelectorNode selector = new SelectorNode(start.getIndex(), start.getLine(), start.getColumn());
 		ruleSet.getSelectors().add(selector);
 
 		char ch;
 		String value;
 		int funcDepth = 0;
+
+		// check identity of start
+		if (start != this.next) {
+			// need to process start token outside of loop due to look ahead needed for LESS nested rule-sets
+			switch (start.getToken()) {
+				case COMMENT:
+					ruleSet.appendChild(new CommentNode(start.getValue(), start.getIndex(), start.getLine(), start.getColumn()));
+					break;
+				case OPERATOR:
+					selector.appendChild(new OperatorNode(start.getValue(), start.getIndex(), start.getLine(), start.getColumn()));
+					break;
+				default:
+					value = start.getValue();
+					ch = (value != null) ? value.charAt(value.length()-1) : '\0';
+					if (ch == CssGrammar.OP_PAREN_BEGIN || ch == CssGrammar.OP_ATTR_BEGIN) {
+						funcDepth++;
+					}
+					selector.appendChild(new ValueNode(value, start.getIndex(), start.getLine(), start.getColumn()));
+					break;
+			}
+		}
+
 		while (this.hasNext()) {
 			switch (this.next.getToken()) {
 				case BLOCK_BEGIN:
@@ -245,12 +283,15 @@ public class CssParser {
 					return;
 
 				case VALUE:
+				case NUMERIC:
+				case COLOR:
+					// numeric/color are typically ID and class selectors
 					value = this.next.getValue();
 					ch = (value != null) ? value.charAt(value.length()-1) : '\0';
 					if (ch == CssGrammar.OP_PAREN_BEGIN || ch == CssGrammar.OP_ATTR_BEGIN) {
 						funcDepth++;
 					}
-					selector.appendChild(new ValueNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					selector.appendChild(new ValueNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
 					continue;
@@ -290,14 +331,6 @@ public class CssParser {
 					this.next = null;
 					continue;
 
-				case NUMERIC:
-				case COLOR:
-					// these are typically ID and class selectors
-					selector.appendChild(new ValueNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
-					// consume token
-					this.next = null;
-					continue;
-
 				case COMMENT:
 					ruleSet.appendChild(new CommentNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
@@ -313,26 +346,23 @@ public class CssParser {
 		}
 	}
 
-	private void parseDeclaration(ContainerNode parent) {
+	private void parseDeclaration(ContainerNode parent, CssToken ident) {
 
-		boolean requiredEval = (this.next.getToken() == CssTokenType.AT_RULE);
+		if (!this.hasNext() || !CssTokenType.OPERATOR.equals(this.next.getToken()) || !":".equals(this.next.getValue())) {
+			throw new InvalidTokenException("Invalid declaration: "+ident, ident);
+		}
+		// consume ':'
+		this.next = null;
+
+		boolean requiredEval = (ident.getToken() == CssTokenType.AT_RULE);
 		boolean optionalEval = false;
 
 		// LESS variable declarations leverage @rule syntax
 		DeclarationNode declaration = requiredEval ?
-			new LessVariableDeclarationNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()) :
-			new DeclarationNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+			new LessVariableDeclarationNode(ident.getValue(), ident.getIndex(), ident.getLine(), ident.getColumn()) :
+			new DeclarationNode(ident.getValue(), ident.getIndex(), ident.getLine(), ident.getColumn());
 
 		parent.appendChild(declaration);
-		// consume property
-		this.next = null;
-
-		if (!this.hasNext() || !CssTokenType.OPERATOR.equals(this.next.getToken()) || !":".equals(this.next.getValue())) {
-			throw new InvalidTokenException("Invalid declaration: "+this.next, this.next);
-		}
-
-		// consume ':'
-		this.next = null;
 
 		char ch;
 		String value;

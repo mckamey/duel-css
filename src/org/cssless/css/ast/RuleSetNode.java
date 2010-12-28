@@ -45,7 +45,31 @@ public class RuleSetNode extends BlockNode {
 			return child;
 		}
 
+		if (child instanceof RuleSetNode) {
+			// LESS allows nested rules, trickle up to parent
+			this.getParent().appendChild(child);
+			return null;
+		}
+
 		throw new InvalidNodeException("Rule-sets may only directly hold declarations and comments", child);
+	}
+
+	public void expandSelectors(List<SelectorNode> prefixes) {
+		List<SelectorNode> expanded = new ArrayList<SelectorNode>(prefixes.size() * this.selectors.size());
+
+		for (SelectorNode prefix : prefixes) {
+			for (SelectorNode suffix : this.selectors) {
+				SelectorNode selector = new SelectorNode();
+				expanded.add(selector);
+
+				List<CssNode> parts = selector.getChildren(); 
+				parts.addAll(prefix.getChildren());
+				parts.addAll(suffix.getChildren());
+			}
+		}
+
+		this.selectors.clear();
+		this.selectors.addAll(expanded);
 	}
 
 	@Override
