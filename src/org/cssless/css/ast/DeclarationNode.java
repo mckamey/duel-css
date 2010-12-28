@@ -1,5 +1,6 @@
 package org.cssless.css.ast;
 
+import org.cssless.css.codegen.ArithmeticEvaluator;
 import org.cssless.css.parsing.InvalidNodeException;
 
 /**
@@ -7,8 +8,11 @@ import org.cssless.css.parsing.InvalidNodeException;
  */
 public class DeclarationNode extends ContainerNode {
 
+	protected static final ArithmeticEvaluator evaluator = new ArithmeticEvaluator();
+
 	private String ident;
 	private boolean important;
+	private boolean hasExpression;
 
 	public DeclarationNode(String ident, int index, int line, int column) {
 		super(index, line, column);
@@ -44,9 +48,25 @@ public class DeclarationNode extends ContainerNode {
 	}
 
 	@Override
+	void setParent(ContainerNode parent) {
+		super.setParent(parent);
+
+		if (this.hasExpression) {
+			ValueNode result = evaluator.eval(this.getChildren());
+			this.getChildren().clear();
+			this.hasExpression = false;
+			this.appendChild(result);
+		}
+	}
+
+	@Override
 	public void appendChild(CssNode value) {
 		if (!(value instanceof ValueNode)) {
 			throw new InvalidNodeException("Declaration may only hold values for its expression", value);
+		}
+
+		if (value instanceof LessNode) {
+			this.hasExpression = true;
 		}
 
 		super.appendChild(value);

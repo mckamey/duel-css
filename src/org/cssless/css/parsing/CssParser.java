@@ -314,8 +314,7 @@ public class CssParser {
 	private void parseDeclaration(ContainerNode parent) {
 
 		// LESS variable declarations leverage @rule syntax
-		DeclarationNode declaration =
-			(this.next.getToken() == CssTokenType.AT_RULE) ?
+		DeclarationNode declaration = (this.next.getToken() == CssTokenType.AT_RULE) ?
 			new LessVariableDeclarationNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()) :
 			new DeclarationNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 

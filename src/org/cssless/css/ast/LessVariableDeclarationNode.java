@@ -1,13 +1,9 @@
 package org.cssless.css.ast;
 
-import org.cssless.css.codegen.ArithmeticEvaluator;
-
 /**
  * Represents a LESS variable declaration
  */
 public class LessVariableDeclarationNode extends DeclarationNode implements LessNode {
-
-	private static final ArithmeticEvaluator evaluator = new ArithmeticEvaluator();
 
 	public LessVariableDeclarationNode(String ident, int index, int line, int column) {
 		super(ident, index, line, column);

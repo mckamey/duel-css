@@ -36,7 +36,7 @@ public class ArithmeticEvaluator {
 
 				} else {
 					if (lastWasVar && "(".equals(((OperatorNode)next).getValue())) {
-						// unknown operator signals start of new expression
+						// var/parens boundary signals start of new expression
 						this.flushOperators(operators, operands);
 					}
 
