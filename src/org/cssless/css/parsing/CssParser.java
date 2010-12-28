@@ -123,7 +123,7 @@ public class CssParser {
 
 		String keyword = this.next.getValue();
 		if (!CssGrammar.isAtRuleKeyword(keyword)) {
-			this.parseLessVarDecl(parent);
+			this.parseDeclaration(parent);
 			return;
 		}
 
@@ -190,11 +190,6 @@ public class CssParser {
 					throw new InvalidTokenException("Invalid token in at-rule: "+this.next, this.next);
 			}
 		}
-	}
-
-	private void parseLessVarDecl(ContainerNode parent) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	private void parseRuleSet(ContainerNode parent)
@@ -318,7 +313,12 @@ public class CssParser {
 
 	private void parseDeclaration(ContainerNode parent) {
 
-		DeclarationNode declaration = new DeclarationNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+		// LESS variable declarations leverage @rule syntax
+		DeclarationNode declaration =
+			(this.next.getToken() == CssTokenType.AT_RULE) ?
+			new LessVariableDeclarationNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()) :
+			new DeclarationNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+
 		parent.appendChild(declaration);
 		// consume property
 		this.next = null;
@@ -338,6 +338,14 @@ public class CssParser {
 				case BLOCK_END:
 					return;
 
+				case AT_RULE:
+					// LESS variable references leverage @rule syntax
+					value = this.next.getValue();
+					declaration.appendChild(new LessVariableReferenceNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					// consume token
+					this.next = null;
+					continue;
+					
 				case RULE_DELIM:
 					if (funcDepth <= 0) {
 						// consume ';' as end of declaration
