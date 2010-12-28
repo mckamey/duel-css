@@ -1475,4 +1475,75 @@ public class CssParserTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void lessOperations2Test() throws IOException {
+
+		CssToken[] input = {
+				CssToken.atRule("base"),
+				CssToken.operator(":"),
+				CssToken.numeric("5%"),
+				CssToken.ruleDelim(),
+
+				CssToken.atRule("filler"),
+				CssToken.operator(":"),
+				CssToken.atRule("base"),
+				CssToken.operator("*"),
+				CssToken.numeric("2"),
+				CssToken.ruleDelim(),
+
+				CssToken.atRule("other"),
+				CssToken.operator(":"),
+				CssToken.atRule("base"),
+				CssToken.operator("+"),
+				CssToken.atRule("filler"),
+				CssToken.ruleDelim(),
+
+				CssToken.atRule("base-color"),
+				CssToken.operator(":"),
+				CssToken.color("gray"),
+				CssToken.ruleDelim(),
+
+				CssToken.value("#foo"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("#888"),
+				CssToken.operator("/"),
+				CssToken.numeric("4"),
+				CssToken.ruleDelim(),
+				CssToken.value("background-color"),
+				CssToken.operator(":"),
+				CssToken.atRule("base-color"),
+				CssToken.operator("+"),
+				CssToken.color("#111"),
+				CssToken.ruleDelim(),
+				CssToken.value("height"),
+				CssToken.operator(":"),
+				CssToken.numeric("100%"),
+				CssToken.operator("/"),
+				CssToken.numeric("2"),
+				CssToken.operator("+"),
+				CssToken.atRule("other"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("#foo"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("#222")),
+				new DeclarationNode(
+					"background-color",
+					new ColorNode("#919191")),
+				new DeclarationNode(
+					"height",
+					new NumericNode("65%"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
 }

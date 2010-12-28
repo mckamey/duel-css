@@ -1,5 +1,7 @@
 package org.cssless.css.ast;
 
+import org.cssless.css.parsing.InvalidNodeException;
+
 /**
  * Represents a numeric value
  */
@@ -99,6 +101,8 @@ public class NumericNode extends ValueNode {
 			String units = this.units;
 			if (units == null || units.isEmpty()) {
 				units = that.units;
+			} else if (that.units != null && !that.units.isEmpty() && !units.equals(that.units)) {
+				throw new InvalidNodeException("Incompatible units: "+this+", "+that, that);
 			}
 			return new NumericNode(this.number + that.number, units, this.getIndex(), this.getLine(), this.getColumn());
 		}
@@ -118,11 +122,16 @@ public class NumericNode extends ValueNode {
 			String units = this.units;
 			if (units == null || units.isEmpty()) {
 				units = that.units;
+			} else if (that.units != null && !that.units.isEmpty() && !units.equals(that.units)) {
+				throw new InvalidNodeException("Incompatible units: "+this+", "+that, that);
 			}
 			return new NumericNode(this.number - that.number, units, this.getIndex(), this.getLine(), this.getColumn());
 		}
 
 		if (operand instanceof ColorNode) {
+			if (this.units != null && !this.units.isEmpty()) {
+				throw new InvalidNodeException("Cannot use units when mixing numeric and color: "+this, this);
+			}
 			ColorNode that = (ColorNode)operand;
 			int r = (int)(this.number - that.getRedChannel());
 			int g = (int)(this.number - that.getGreenChannel());
@@ -140,6 +149,8 @@ public class NumericNode extends ValueNode {
 			String units = this.units;
 			if (units == null || units.isEmpty()) {
 				units = that.units;
+			} else if (that.units != null && !that.units.isEmpty() && !units.equals(that.units)) {
+				throw new InvalidNodeException("Incompatible units: "+this+", "+that, that);
 			}
 			return new NumericNode(this.number * that.number, units, this.getIndex(), this.getLine(), this.getColumn());
 		}
@@ -159,11 +170,16 @@ public class NumericNode extends ValueNode {
 			String units = this.units;
 			if (units == null || units.isEmpty()) {
 				units = that.units;
+			} else if (that.units != null && !that.units.isEmpty() && !units.equals(that.units)) {
+				throw new InvalidNodeException("Incompatible units: "+this+", "+that, that);
 			}
 			return new NumericNode(this.number / that.number, units, this.getIndex(), this.getLine(), this.getColumn());
 		}
 
 		if (operand instanceof ColorNode) {
+			if (this.units != null && !this.units.isEmpty()) {
+				throw new InvalidNodeException("Cannot use units when mixing numeric and color: "+this, this);
+			}
 			ColorNode that = (ColorNode)operand;
 			int r = (int)(this.number - that.getRedChannel());
 			int g = (int)(this.number - that.getGreenChannel());

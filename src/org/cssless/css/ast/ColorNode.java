@@ -1,6 +1,7 @@
 package org.cssless.css.ast;
 
 import org.cssless.css.parsing.CssGrammar;
+import org.cssless.css.parsing.InvalidNodeException;
 
 /**
  * Represents a color value
@@ -130,6 +131,9 @@ public class ColorNode extends ValueNode {
 
 		if (operand instanceof NumericNode) {
 			NumericNode that = (NumericNode)operand;
+			if (that.getUnits() != null && !that.getUnits().isEmpty()) {
+				throw new InvalidNodeException("Cannot use units when mixing numeric and color: "+that, that);
+			}
 			double number = that.getNumber();
 			int r = (int)(this.red + number);
 			int g = (int)(this.green + number);
@@ -152,6 +156,9 @@ public class ColorNode extends ValueNode {
 
 		if (operand instanceof NumericNode) {
 			NumericNode that = (NumericNode)operand;
+			if (that.getUnits() != null && !that.getUnits().isEmpty()) {
+				throw new InvalidNodeException("Cannot use units when mixing numeric and color: "+that, that);
+			}
 			double number = that.getNumber();
 			int r = (int)(this.red - number);
 			int g = (int)(this.green - number);
@@ -174,6 +181,9 @@ public class ColorNode extends ValueNode {
 
 		if (operand instanceof NumericNode) {
 			NumericNode that = (NumericNode)operand;
+			if (that.getUnits() != null && !that.getUnits().isEmpty()) {
+				throw new InvalidNodeException("Cannot use units when mixing numeric and color: "+that, that);
+			}
 			double number = that.getNumber();
 			int r = (int)(this.red * number);
 			int g = (int)(this.green * number);
@@ -196,6 +206,9 @@ public class ColorNode extends ValueNode {
 
 		if (operand instanceof NumericNode) {
 			NumericNode that = (NumericNode)operand;
+			if (that.getUnits() != null && !that.getUnits().isEmpty()) {
+				throw new InvalidNodeException("Cannot use units when mixing numeric and color: "+that, that);
+			}
 			double number = that.getNumber();
 			int r = (int)(this.red / number);
 			int g = (int)(this.green / number);

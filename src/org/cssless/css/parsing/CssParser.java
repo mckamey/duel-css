@@ -315,10 +315,11 @@ public class CssParser {
 
 	private void parseDeclaration(ContainerNode parent) {
 
-		boolean hasExpressions = (this.next.getToken() == CssTokenType.AT_RULE);
-		
+		boolean requiredEval = (this.next.getToken() == CssTokenType.AT_RULE);
+		boolean optionalEval = false;
+
 		// LESS variable declarations leverage @rule syntax
-		DeclarationNode declaration = hasExpressions ?
+		DeclarationNode declaration = requiredEval ?
 			new LessVariableDeclarationNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()) :
 			new DeclarationNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 
@@ -339,8 +340,8 @@ public class CssParser {
 		while (this.hasNext()) {
 			switch (this.next.getToken()) {
 				case BLOCK_END:
-					if (hasExpressions) {
-						this.evalExpressions(declaration);
+					if (requiredEval || optionalEval) {
+						this.evalExpressions(declaration, requiredEval);
 					}
 					return;
 
@@ -348,17 +349,17 @@ public class CssParser {
 					// LESS variable references leverage @rule syntax
 					value = this.next.getValue();
 					declaration.appendChild(new LessVariableReferenceNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					requiredEval = true;
 					// consume token
 					this.next = null;
-					hasExpressions = true;
 					continue;
 
 				case RULE_DELIM:
 					if (funcDepth <= 0) {
 						// consume ';' as end of declaration
 						this.next = null;
-						if (hasExpressions) {
-							this.evalExpressions(declaration);
+						if (requiredEval || optionalEval) {
+							this.evalExpressions(declaration, requiredEval);
 						}
 						return;
 					}
@@ -399,11 +400,19 @@ public class CssParser {
 
 				case OPERATOR:
 					value = this.next.getValue();
-					ch = (value != null) ? value.charAt(0) : '\0';
+					ch = (value != null && value.length() == 1) ? value.charAt(0) : '\0';
 					if (ch == CssGrammar.OP_PAREN_END || ch == CssGrammar.OP_ATTR_END) {
 						funcDepth--;
 					}
 					declaration.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					switch (ch) {
+						case '+':
+						case '-':
+						case '*':
+						case '/':
+							optionalEval = true;
+							break;
+					}
 					// consume token
 					this.next = null;
 					continue;
@@ -428,15 +437,21 @@ public class CssParser {
 			}
 		}
 
-		if (hasExpressions) {
-			this.evalExpressions(declaration);
+		if (requiredEval || optionalEval) {
+			this.evalExpressions(declaration, requiredEval);
 		}
 	}
 
-	private void evalExpressions(DeclarationNode declaration) {
-		ValueNode result = evaluator.eval(declaration.getChildren());
-		declaration.getChildren().clear();
-		declaration.appendChild(result);
+	private void evalExpressions(DeclarationNode declaration, boolean throwOnError) {
+		try {
+			ValueNode result = evaluator.eval(declaration.getChildren());
+			declaration.getChildren().clear();
+			declaration.appendChild(result);
+
+		} catch (InvalidNodeException ex) {
+			// suppress errors when evaluation not required
+			if (throwOnError) { throw ex; }
+		}
 	}
 
 	private void parseBlock(BlockNode block, boolean isRuleSet)

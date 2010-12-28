@@ -2,6 +2,7 @@ package org.cssless.css.codegen;
 
 import java.util.*;
 import org.cssless.css.ast.*;
+import org.cssless.css.parsing.InvalidNodeException;
 
 /**
  * Implements single-pass variant of Dijkstra's shunting-yard algorithm.
@@ -21,57 +22,67 @@ public class ArithmeticEvaluator {
 	 * @return
 	 */
 	public ValueNode eval(Iterable<CssNode> expr) {
-		Stack<OperatorNode> operators = new Stack<OperatorNode>();
-		Stack<ValueNode> operands = new Stack<ValueNode>();
-
-		boolean lastWasVar = false;
-		for (CssNode next : expr) {
-			if (next instanceof OperatorNode) {
-				int nextPrecedence = this.precedence((OperatorNode)next);
-				if (nextPrecedence < 0) {
-					// unknown operator signals start of new expression
-					this.flushOperators(operators, operands);
-					// operator is treated as a delimiter
-					operands.add((ValueNode)next);
-
-				} else {
-					if (lastWasVar && "(".equals(((OperatorNode)next).getValue())) {
-						// var/parens boundary signals start of new expression
+		try {
+			Stack<OperatorNode> operators = new Stack<OperatorNode>();
+			Stack<ValueNode> operands = new Stack<ValueNode>();
+	
+			boolean lastWasVar = false;
+			for (CssNode next : expr) {
+				if (next instanceof OperatorNode) {
+					int nextPrecedence = this.precedence((OperatorNode)next);
+					if (nextPrecedence < 0) {
+						// unknown operator signals start of new expression
+						this.flushOperators(operators, operands);
+						// operator is treated as a delimiter
+						operands.add((ValueNode)next);
+	
+					} else {
+						if (lastWasVar && "(".equals(((OperatorNode)next).getValue())) {
+							// var/parens boundary signals start of new expression
+							this.flushOperators(operators, operands);
+						}
+	
+						this.processOp(operators, operands, (OperatorNode)next);
+					}
+					lastWasVar = false;
+	
+				} else if (next instanceof ValueNode) {
+					if (lastWasVar) {
+						// two values without an infix operator signals start of new expression
 						this.flushOperators(operators, operands);
 					}
-
-					this.processOp(operators, operands, (OperatorNode)next);
+					operands.push((ValueNode)next);
+					lastWasVar = true;
+	
+				} else {
+					throw new InvalidNodeException("Unexpected expression node: "+next.getClass().getName(), next);
 				}
-				lastWasVar = false;
-
-			} else if (next instanceof ValueNode) {
-				if (lastWasVar) {
-					// two values without an infix operator signals start of new expression
-					this.flushOperators(operators, operands);
-				}
-				operands.push((ValueNode)next);
-				lastWasVar = true;
-
-			} else {
-				throw new IllegalStateException("Unexpected expression node: "+next.getClass().getName());
 			}
-		}
 
-		this.flushOperators(operators, operands);
+			this.flushOperators(operators, operands);
+	
+			int length = operands.size();
+			switch (length) {
+				case 0:
+					return null;
+				case 1:
+					return operands.pop();
+				default:
+					ValueNode first = operands.get(0);
+					MultiValueNode multi = new MultiValueNode(first.getIndex(), first.getLine(), first.getColumn());
+					for (int i=0; i<length; i++) {
+						multi.appendChild(operands.get(i));
+					}
+					return multi;
+			}
 
-		int length = operands.size();
-		switch (length) {
-			case 0:
-				return null;
-			case 1:
-				return operands.pop();
-			default:
-				ValueNode first = operands.get(0);
-				MultiValueNode multi = new MultiValueNode(first.getIndex(), first.getLine(), first.getColumn());
-				for (int i=0; i<length; i++) {
-					multi.appendChild(operands.get(i));
-				}
-				return multi;
+		} catch (InvalidNodeException ex) {
+			throw ex;
+
+		} catch (Exception ex) {
+			Iterator<CssNode> iterator = expr.iterator();
+			CssNode node = iterator.hasNext() ? iterator.next() : null;
+			throw new InvalidNodeException(ex.getMessage(), node, ex);
 		}
 	}
 
@@ -109,7 +120,6 @@ public class ArithmeticEvaluator {
 	}
 
 	private ValueNode evalOp(OperatorNode op, Stack<ValueNode> operands) {
-
 		String operator = op.getValue();
 		if (operator != null && operator.length() == 1) {
 			char opCh = operator.charAt(0);
@@ -118,6 +128,7 @@ public class ArithmeticEvaluator {
 //				case ')':
 					// consume
 					return null;
+
 				case '+':
 				case '-':
 				case '*':
@@ -129,13 +140,10 @@ public class ArithmeticEvaluator {
 					switch (opCh) {
 						case '+':
 							return left.add(right);
-
 						case '-':
 							return left.subtract(right);
-
 						case '*':
 							return left.multiply(right);
-
 						case '/':
 							return left.divide(right);
 					}

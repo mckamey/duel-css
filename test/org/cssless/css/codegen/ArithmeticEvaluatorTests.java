@@ -3,12 +3,13 @@ package org.cssless.css.codegen;
 import static org.junit.Assert.*;
 import java.io.IOException;
 import org.cssless.css.ast.*;
+import org.cssless.css.parsing.InvalidNodeException;
 import org.junit.Test;
 
 public class ArithmeticEvaluatorTests {
 
 	@Test
-	public void evalOperandSingleTest() throws IOException {
+	public void evalOperandSingleTest() {
 
 		CssNode[] input = {
 			new ColorNode("yellow")
@@ -22,7 +23,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalMultiOperandTest() throws IOException {
+	public void evalMultiOperandTest() {
 
 		CssNode[] input = {
 			new NumericNode("5px"),
@@ -41,7 +42,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalMultiExprTest() throws IOException {
+	public void evalMultiExprTest() {
 
 		CssNode[] input = {
 			new NumericNode("5px"),
@@ -66,7 +67,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalMultiExprCommaTest() throws IOException {
+	public void evalMultiExprCommaTest() {
 
 		CssNode[] input = {
 			new NumericNode("5px"),
@@ -93,7 +94,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalMultiExprLeadingParensTest() throws IOException {
+	public void evalMultiExprLeadingParensTest() {
 
 		CssNode[] input = {
 			new NumericNode("5px"),
@@ -116,7 +117,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalMultiExprMiddleParensTest() throws IOException {
+	public void evalMultiExprMiddleParensTest() {
 
 		CssNode[] input = {
 			new NumericNode("25%"),
@@ -143,7 +144,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalMultiExprTrailingParensTest() throws IOException {
+	public void evalMultiExprTrailingParensTest() {
 
 		CssNode[] input = {
 			new OperatorNode("("),
@@ -166,7 +167,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalMultiExprBothParensTest() throws IOException {
+	public void evalMultiExprBothParensTest() {
 
 		CssNode[] input = {
 			new OperatorNode("("),
@@ -191,7 +192,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalPrecendenceTest() throws IOException {
+	public void evalPrecendenceTest() {
 
 		CssNode[] input = {
 			new NumericNode("2"),
@@ -211,7 +212,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalLeadingParensTest() throws IOException {
+	public void evalLeadingParensTest() {
 
 		CssNode[] input = {
 			new OperatorNode("("),
@@ -237,7 +238,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalTrailingParensTest() throws IOException {
+	public void evalTrailingParensTest() {
 
 		CssNode[] input = {
 			new NumericNode("3"),
@@ -261,7 +262,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalNestedParensTest() throws IOException {
+	public void evalNestedParensTest() {
 
 		CssNode[] input = {
 			new OperatorNode("("),
@@ -301,7 +302,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalAddUnitsTest() throws IOException {
+	public void evalAddUnitsTest() {
 
 		CssNode[] input = {
 			new NumericNode("13px"),
@@ -317,7 +318,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalAddUnits2Test() throws IOException {
+	public void evalAddUnits2Test() {
 
 		CssNode[] input = {
 			new NumericNode("13"),
@@ -333,7 +334,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalSubtractUnitsTest() throws IOException {
+	public void evalSubtractUnitsTest() {
 
 		CssNode[] input = {
 			new NumericNode("13px"),
@@ -349,7 +350,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalSubtractUnits2Test() throws IOException {
+	public void evalSubtractUnits2Test() {
 
 		CssNode[] input = {
 			new NumericNode("13"),
@@ -365,7 +366,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalMultiplyUnitsTest() throws IOException {
+	public void evalMultiplyUnitsTest() {
 
 		CssNode[] input = {
 			new NumericNode("13px"),
@@ -381,7 +382,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalMultiplyUnits2Test() throws IOException {
+	public void evalMultiplyUnits2Test() {
 
 		CssNode[] input = {
 			new NumericNode("13"),
@@ -397,7 +398,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalDivideUnitsTest() throws IOException {
+	public void evalDivideUnitsTest() {
 
 		CssNode[] input = {
 			new NumericNode("13px"),
@@ -413,7 +414,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalDivideUnits2Test() throws IOException {
+	public void evalDivideUnits2Test() {
 
 		CssNode[] input = {
 			new NumericNode("13"),
@@ -429,7 +430,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalAddConflictingUnitsTest() throws IOException {
+	public void evalAddConflictingUnitsTest() {
 
 		CssNode[] input = {
 			new NumericNode("42px"),
@@ -437,15 +438,18 @@ public class ArithmeticEvaluatorTests {
 			new NumericNode("2pt")
 		};
 
-		ValueNode expected = new NumericNode("44px");
+		try {
+			new ArithmeticEvaluator().eval(input);
+			fail("Expected InvalidNodeException");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
-
-		assertEquals(expected, actual);
+		} catch (InvalidNodeException ex) {
+			ValueNode expected = new NumericNode("2pt");
+			assertEquals(expected, ex.getNode());
+		}
 	}
 
 	@Test
-	public void evalSubtractConflictingUnitsTest() throws IOException {
+	public void evalSubtractConflictingUnitsTest() {
 
 		CssNode[] input = {
 			new NumericNode("42em"),
@@ -453,15 +457,18 @@ public class ArithmeticEvaluatorTests {
 			new NumericNode("2%")
 		};
 
-		ValueNode expected = new NumericNode("40em");
+		try {
+			new ArithmeticEvaluator().eval(input);
+			fail("Expected InvalidNodeException");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
-
-		assertEquals(expected, actual);
+		} catch (InvalidNodeException ex) {
+			ValueNode expected = new NumericNode("2%");
+			assertEquals(expected, ex.getNode());
+		}
 	}
 
 	@Test
-	public void evalMultiplyConflictingUnitsTest() throws IOException {
+	public void evalMultiplyConflictingUnitsTest() {
 
 		CssNode[] input = {
 			new NumericNode("42em"),
@@ -469,15 +476,18 @@ public class ArithmeticEvaluatorTests {
 			new NumericNode("2%")
 		};
 
-		ValueNode expected = new NumericNode("84em");
+		try {
+			new ArithmeticEvaluator().eval(input);
+			fail("Expected InvalidNodeException");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
-
-		assertEquals(expected, actual);
+		} catch (InvalidNodeException ex) {
+			ValueNode expected = new NumericNode("2%");
+			assertEquals(expected, ex.getNode());
+		}
 	}
 
 	@Test
-	public void evalDivideConflictingUnitsTest() throws IOException {
+	public void evalDivideConflictingUnitsTest() {
 
 		CssNode[] input = {
 			new NumericNode("42%"),
@@ -485,15 +495,18 @@ public class ArithmeticEvaluatorTests {
 			new NumericNode("2em")
 		};
 
-		ValueNode expected = new NumericNode("21%");
+		try {
+			new ArithmeticEvaluator().eval(input);
+			fail("Expected InvalidNodeException");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
-
-		assertEquals(expected, actual);
+		} catch (InvalidNodeException ex) {
+			ValueNode expected = new NumericNode("2em");
+			assertEquals(expected, ex.getNode());
+		}
 	}
 
 	@Test
-	public void evalAddColorTest() throws IOException {
+	public void evalAddColorTest() {
 
 		CssNode[] input = {
 			new NumericNode("3"),
@@ -509,7 +522,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalAddColor2Test() throws IOException {
+	public void evalAddColor2Test() {
 
 		CssNode[] input = {
 			new ColorNode("#123456"),
@@ -525,7 +538,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalSubtractColorTest() throws IOException {
+	public void evalSubtractColorTest() {
 
 		CssNode[] input = {
 			new ColorNode("#123456"),
@@ -541,7 +554,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalMultiplyColorTest() throws IOException {
+	public void evalMultiplyColorTest() {
 
 		CssNode[] input = {
 			new NumericNode("3"),
@@ -557,7 +570,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalMultiplyColor2Test() throws IOException {
+	public void evalMultiplyColor2Test() {
 
 		CssNode[] input = {
 			new ColorNode("#123456"),
@@ -573,7 +586,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalDivideColorTest() throws IOException {
+	public void evalDivideColorTest() {
 
 		CssNode[] input = {
 			new ColorNode("#123456"),
@@ -589,7 +602,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalAddColorsTest() throws IOException {
+	public void evalAddColorsTest() {
 
 		CssNode[] input = {
 			new ColorNode("springgreen"),
@@ -605,7 +618,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalAddColors2Test() throws IOException {
+	public void evalAddColors2Test() {
 
 		CssNode[] input = {
 			new ColorNode("#123"),
@@ -621,7 +634,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalSubtractColorsTest() throws IOException {
+	public void evalSubtractColorsTest() {
 
 		CssNode[] input = {
 			new ColorNode("#123"),
@@ -637,7 +650,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalMultiplyColorsTest() throws IOException {
+	public void evalMultiplyColorsTest() {
 
 		CssNode[] input = {
 			new ColorNode("#123456"),
@@ -653,7 +666,7 @@ public class ArithmeticEvaluatorTests {
 	}
 
 	@Test
-	public void evalDivideColorsTest() throws IOException {
+	public void evalDivideColorsTest() {
 
 		CssNode[] input = {
 			new ColorNode("#123456"),
