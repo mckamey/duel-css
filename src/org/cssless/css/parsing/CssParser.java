@@ -334,6 +334,7 @@ public class CssParser {
 		while (this.hasNext()) {
 			switch (this.next.getToken()) {
 				case BLOCK_END:
+					declaration.eval();
 					return;
 
 				case AT_RULE:
@@ -348,6 +349,7 @@ public class CssParser {
 					if (funcDepth <= 0) {
 						// consume ';' as end of declaration
 						this.next = null;
+						declaration.eval();
 						return;
 					}
 					// still within function
@@ -416,6 +418,8 @@ public class CssParser {
 					throw new InvalidTokenException("Invalid token in declaration: "+this.next, this.next);
 			}
 		}
+
+		declaration.eval();
 	}
 
 	private void parseBlock(BlockNode block, boolean isRuleSet)

@@ -115,7 +115,7 @@ public class ArithmeticEvaluator {
 			char opCh = operator.charAt(0);
 			switch (opCh) {
 				case '(':
-				case ')':
+//				case ')':
 					// consume
 					return null;
 				case '+':

@@ -41,8 +41,8 @@ public class ContainerNode extends CssNode {
 	protected void filterChild(CssNode child) {
 	}
 
-	public final void appendChild(CssNode child) {
-		while (child instanceof LessNode) {
+	public void appendChild(CssNode child) {
+		if (child instanceof LessNode) {
 			// evaluate LESS expressions before insertion
 			child = ((LessNode)child).eval(this);
 		}
@@ -52,6 +52,7 @@ public class ContainerNode extends CssNode {
 			return;
 		}
 
+		// consolidate containers
 		if (child instanceof MultiValueNode) {
 			for (ValueNode grand : ((MultiValueNode)child).getChildren()) {
 				this.appendChild(grand);

@@ -1365,4 +1365,73 @@ public class CssParserTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void lessOperationsTest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.atRule("the-border"),
+				CssToken.operator(":"),
+				CssToken.numeric("1px"),
+				CssToken.ruleDelim(),
+				CssToken.atRule("base-color"),
+				CssToken.operator(":"),
+				CssToken.color("#111"),
+				CssToken.ruleDelim(),
+				CssToken.value("#header"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.atRule("base-color"),
+				CssToken.operator("*"),
+				CssToken.numeric("3"),
+				CssToken.ruleDelim(),
+				CssToken.value("border-left"),
+				CssToken.operator(":"),
+				CssToken.atRule("the-border"),
+				CssToken.ruleDelim(),
+				CssToken.value("border-right"),
+				CssToken.operator(":"),
+				CssToken.atRule("the-border"),
+				CssToken.operator("*"),
+				CssToken.numeric("2"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd(),
+				CssToken.value("#footer"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.operator("("),
+				CssToken.atRule("base-color"),
+				CssToken.operator("+"),
+				CssToken.color("#111"),
+				CssToken.operator(")"),
+				CssToken.operator("*"),
+				CssToken.numeric("1.5"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("#header"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("#333333")),
+				new DeclarationNode(
+					"border-left",
+					new NumericNode("1px")),
+				new DeclarationNode(
+					"border-right",
+					new NumericNode("2px"))),
+			new RuleSetNode(
+				new SelectorNode("#footer"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("#333333"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
 }

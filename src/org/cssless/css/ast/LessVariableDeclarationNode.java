@@ -14,10 +14,17 @@ public class LessVariableDeclarationNode extends DeclarationNode implements Less
 	}
 
 	@Override
-	public ValueNode eval(ContainerNode context) {
+	public CssNode eval(ContainerNode context) {
 		context.putVariable(this);
 
 		// nothing emitted in output
 		return null;
+	}
+
+	@Override
+	protected void filterChild(CssNode child) {
+		super.filterChild(child);
+
+		this.requestEval();
 	}
 }

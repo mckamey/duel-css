@@ -120,10 +120,6 @@ public class ColorNode extends ValueNode {
 
 	@Override
 	public ValueNode add(ValueNode operand) {
-		while (operand instanceof LessNode) {
-			operand = ((LessNode)operand).eval(this.getParent());
-		}
-		
 		if (operand instanceof ColorNode) {
 			ColorNode that = (ColorNode)operand;
 			int r = this.red + that.red;
@@ -146,10 +142,6 @@ public class ColorNode extends ValueNode {
 
 	@Override
 	public ValueNode subtract(ValueNode operand) {
-		while (operand instanceof LessNode) {
-			operand = ((LessNode)operand).eval(this.getParent());
-		}
-		
 		if (operand instanceof ColorNode) {
 			ColorNode that = (ColorNode)operand;
 			int r = this.red - that.red;
@@ -172,10 +164,6 @@ public class ColorNode extends ValueNode {
 
 	@Override
 	public ValueNode multiply(ValueNode operand) {
-		while (operand instanceof LessNode) {
-			operand = ((LessNode)operand).eval(this.getParent());
-		}
-		
 		if (operand instanceof ColorNode) {
 			ColorNode that = (ColorNode)operand;
 			int r = this.red * that.red;
@@ -198,10 +186,6 @@ public class ColorNode extends ValueNode {
 
 	@Override
 	public ValueNode divide(ValueNode operand) {
-		while (operand instanceof LessNode) {
-			operand = ((LessNode)operand).eval(this.getParent());
-		}
-
 		if (operand instanceof ColorNode) {
 			ColorNode that = (ColorNode)operand;
 			int r = this.red / that.red;

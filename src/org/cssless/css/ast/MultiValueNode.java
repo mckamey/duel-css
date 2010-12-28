@@ -51,13 +51,11 @@ public class MultiValueNode extends ValueNode {
 	}
 
 	public void appendChild(ValueNode child) {
-		while (child instanceof LessNode) {
-			// evaluate LESS expressions before insertion
-			child = ((LessNode)child).eval(this.getParent());
-		}
-
-		if (child == null) {
-			// variable declarations do not generate content
+		// consolidate containers
+		if (child instanceof MultiValueNode) {
+			for (ValueNode grand : ((MultiValueNode)child).getChildren()) {
+				this.appendChild(grand);
+			}
 			return;
 		}
 

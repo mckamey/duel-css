@@ -12,7 +12,7 @@ public class DeclarationNode extends ContainerNode {
 
 	private String ident;
 	private boolean important;
-	private boolean hasExpression;
+	private boolean hasExpressions;
 
 	public DeclarationNode(String ident, int index, int line, int column) {
 		super(index, line, column);
@@ -47,16 +47,19 @@ public class DeclarationNode extends ContainerNode {
 		return this;
 	}
 
-	@Override
-	void setParent(ContainerNode parent) {
-		super.setParent(parent);
-
-		if (this.hasExpression) {
-			ValueNode result = evaluator.eval(this.getChildren());
-			this.getChildren().clear();
-			this.hasExpression = false;
-			this.appendChild(result);
+	protected void requestEval() {
+		this.hasExpressions = true;
+	}
+	
+	public void eval() {
+		if (!this.hasExpressions) {
+			return;
 		}
+
+		ValueNode result = evaluator.eval(this.getChildren());
+		this.getChildren().clear();
+		this.appendChild(result);
+		this.hasExpressions = false;
 	}
 
 	@Override
@@ -65,13 +68,18 @@ public class DeclarationNode extends ContainerNode {
 			throw new InvalidNodeException("Declaration may only hold values for its expression", child);
 		}
 
-		if (child instanceof LessNode) {
-			this.hasExpression = true;
-		}
-
 		super.filterChild(child);
 	}
 
+	@Override
+	public void appendChild(CssNode child) {
+		if (child instanceof LessVariableReferenceNode) {
+			this.hasExpressions = true;
+		}
+
+		super.appendChild(child);
+	}
+	
 	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof DeclarationNode)) {

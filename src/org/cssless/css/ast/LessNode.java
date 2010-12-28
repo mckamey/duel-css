@@ -11,5 +11,5 @@ public interface LessNode {
 	 * @param context
 	 * @return
 	 */
-	public ValueNode eval(ContainerNode context);
+	public CssNode eval(ContainerNode context);
 }
