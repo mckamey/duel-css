@@ -15,8 +15,7 @@ public class LessVariableDeclarationNode extends DeclarationNode implements Less
 
 	@Override
 	public ValueNode eval(ContainerNode context) {
-		ValueNode result = evaluator.eval(this.getChildren());
-		context.putVariable(this.getIdent(), result);
+		context.putVariable(this);
 
 		// nothing emitted in output
 		return null;

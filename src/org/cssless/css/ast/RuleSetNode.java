@@ -38,12 +38,12 @@ public class RuleSetNode extends BlockNode {
 	}
 
 	@Override
-	public void appendChild(CssNode value) {
-		if (!(value instanceof DeclarationNode || value instanceof CommentNode)) {
-			throw new InvalidNodeException("Rule-sets may only directly hold declarations", value);
+	protected void filterChild(CssNode child) {
+		if (!(child instanceof DeclarationNode || child instanceof CommentNode)) {
+			throw new InvalidNodeException("Rule-sets may only directly hold declarations", child);
 		}
 
-		super.appendChild(value);
+		super.filterChild(child);
 	}
 
 	@Override

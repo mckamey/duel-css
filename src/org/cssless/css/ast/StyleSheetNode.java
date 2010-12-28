@@ -16,10 +16,10 @@ public class StyleSheetNode extends ContainerNode {
 	}
 
 	@Override
-	public void appendChild(CssNode child) {
+	protected void filterChild(CssNode child) {
 		if (!(child instanceof RuleSetNode || child instanceof AtRuleNode || child instanceof CommentNode)) {
 			throw new InvalidNodeException("StyleSheets may only directly hold at-rules, rule-sets and comments", child);
 		}
-		super.appendChild(child);
+		super.filterChild(child);
 	}
 }

@@ -22,11 +22,11 @@ public class SelectorNode extends ContainerNode {
 	}
 
 	@Override
-	public void appendChild(CssNode value) {
-		if (!(value instanceof ValueNode)) {
-			throw new InvalidNodeException("Selector may only hold value nodes", value);
+	protected void filterChild(CssNode child) {
+		if (!(child instanceof ValueNode)) {
+			throw new InvalidNodeException("Selector may only hold value nodes", child);
 		}
 
-		super.appendChild(value);
+		super.filterChild(child);
 	}
 }

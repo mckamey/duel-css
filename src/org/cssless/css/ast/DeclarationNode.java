@@ -8,7 +8,7 @@ import org.cssless.css.parsing.InvalidNodeException;
  */
 public class DeclarationNode extends ContainerNode {
 
-	protected static final ArithmeticEvaluator evaluator = new ArithmeticEvaluator();
+	private static final ArithmeticEvaluator evaluator = new ArithmeticEvaluator();
 
 	private String ident;
 	private boolean important;
@@ -60,16 +60,16 @@ public class DeclarationNode extends ContainerNode {
 	}
 
 	@Override
-	public void appendChild(CssNode value) {
-		if (!(value instanceof ValueNode)) {
-			throw new InvalidNodeException("Declaration may only hold values for its expression", value);
+	protected void filterChild(CssNode child) {
+		if (!(child instanceof ValueNode)) {
+			throw new InvalidNodeException("Declaration may only hold values for its expression", child);
 		}
 
-		if (value instanceof LessNode) {
+		if (child instanceof LessNode) {
 			this.hasExpression = true;
 		}
 
-		super.appendChild(value);
+		super.filterChild(child);
 	}
 
 	@Override

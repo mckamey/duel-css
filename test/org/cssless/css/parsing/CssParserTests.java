@@ -1324,4 +1324,45 @@ public class CssParserTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void lessVariablesTest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.atRule("brand_color"),
+				CssToken.operator(":"),
+				CssToken.color("#4D926F"),
+				CssToken.ruleDelim(),
+				CssToken.value("#header"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.atRule("brand_color"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd(),
+				CssToken.value("h2"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.atRule("brand_color"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("#header"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("#4D926F"))),
+			new RuleSetNode(
+				new SelectorNode("h2"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("#4D926F"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
 }

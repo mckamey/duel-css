@@ -4,7 +4,7 @@ import java.util.*;
 
 public class ContainerNode extends CssNode {
 	private final List<CssNode> children = new ArrayList<CssNode>();
-	private Map<String, ValueNode> variables;
+	private Map<String, LessVariableDeclarationNode> variables;
 
 	public ContainerNode(int index, int line, int column) {
 		super(index, line, column);
@@ -38,7 +38,10 @@ public class ContainerNode extends CssNode {
 		return this.children.isEmpty() ? null : this.children.get(this.children.size()-1);
 	}
 
-	public void appendChild(CssNode child) {
+	protected void filterChild(CssNode child) {
+	}
+
+	public final void appendChild(CssNode child) {
 		while (child instanceof LessNode) {
 			// evaluate LESS expressions before insertion
 			child = ((LessNode)child).eval(this);
@@ -55,7 +58,8 @@ public class ContainerNode extends CssNode {
 			}
 			return;
 		}
-		
+
+		this.filterChild(child);
 		this.children.add(child);
 		child.setParent(this);
 	}
@@ -77,38 +81,38 @@ public class ContainerNode extends CssNode {
 		return false;
 	}
 
-	public boolean replaceChild(CssNode newChild, CssNode oldChild) {
-		if (oldChild == null) {
-			this.appendChild(newChild);
-			return true;
-		}
-
-		for (int i=0, length=this.children.size(); i<length; i++) {
-			CssNode child = this.children.get(i);
-			if (child == oldChild) {
-				this.children.set(i, newChild);
-				newChild.setParent(this);
-				child.setParent(null);
-				return true;
-			}
-		}
-
-		return false;
-	}
+//	public boolean replaceChild(CssNode newChild, CssNode oldChild) {
+//		if (oldChild == null) {
+//			this.appendChild(newChild);
+//			return true;
+//		}
+//
+//		for (int i=0, length=this.children.size(); i<length; i++) {
+//			CssNode child = this.children.get(i);
+//			if (child == oldChild) {
+//				this.children.set(i, newChild);
+//				newChild.setParent(this);
+//				child.setParent(null);
+//				return true;
+//			}
+//		}
+//
+//		return false;
+//	}
 
 	public boolean containsVariable(String name) {
 		return (this.variables != null) && this.variables.containsKey(name);
 	}
 	
-	public void putVariable(String name, ValueNode value) {
+	public void putVariable(LessVariableDeclarationNode value) {
 		if (this.variables == null) {
-			this.variables = new HashMap<String, ValueNode>();
+			this.variables = new HashMap<String, LessVariableDeclarationNode>();
 		}
 
-		this.variables.put(name, value);
+		this.variables.put(value.getIdent(), value);
 	}
 
-	public ValueNode getVariable(String name) {
+	public LessVariableDeclarationNode getVariable(String name) {
 		if (this.variables == null || !this.variables.containsKey(name)) {
 			return null;
 		}

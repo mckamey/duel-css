@@ -132,8 +132,7 @@ public class CssParser {
 		// consume at-rule
 		this.next = null;
 
-		boolean done = false;
-		while (!done && this.hasNext()) {
+		while (this.hasNext()) {
 			switch (this.next.getToken()) {
 				case BLOCK_BEGIN:
 					BlockNode block = new BlockNode(this.next.getIndex(), this.next.getLine(), this.next.getColumn());
