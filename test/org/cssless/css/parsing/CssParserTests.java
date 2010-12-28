@@ -1580,16 +1580,99 @@ public class CssParserTests {
 				new DeclarationNode(
 					"color",
 					new ColorNode("red"))),
-				new RuleSetNode(
-					new SelectorNode(
-						new ValueNode("#header"),
-						new ValueNode("a")),
-					new DeclarationNode(
-						"font-weight",
-						new ValueNode("bold")),
-					new DeclarationNode(
-						"text-decoration",
-						new ValueNode("none"))));
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("#header"),
+					new ValueNode("a")),
+				new DeclarationNode(
+					"font-weight",
+					new ValueNode("bold")),
+				new DeclarationNode(
+					"text-decoration",
+					new ValueNode("none"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void lessDeeplyNestedRulesTest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.value("#header"),
+				CssToken.blockBegin(),
+
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("red"),
+				CssToken.ruleDelim(),
+
+				CssToken.value("div.foo"),
+				CssToken.blockBegin(),
+
+				CssToken.value("background-color"),
+				CssToken.operator(":"),
+				CssToken.color("yellow"),
+				CssToken.ruleDelim(),
+
+				CssToken.value("a"),
+				CssToken.blockBegin(),
+				CssToken.value("font-weight"),
+				CssToken.operator(":"),
+				CssToken.value("bold"),
+				CssToken.ruleDelim(),
+				CssToken.value("text-decoration"),
+				CssToken.operator(":"),
+				CssToken.value("none"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd(),
+
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("black"),
+				CssToken.ruleDelim(),
+
+				CssToken.blockEnd(),
+
+				CssToken.value("background-color"),
+				CssToken.operator(":"),
+				CssToken.color("blue"),
+				CssToken.ruleDelim(),
+
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("#header"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("red")),
+				new DeclarationNode(
+					"background-color",
+					new ColorNode("blue"))),
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("#header"),
+					new ValueNode("div.foo")),
+				new DeclarationNode(
+					"background-color",
+					new ColorNode("yellow")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("black"))),
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("#header"),
+					new ValueNode("div.foo"),
+					new ValueNode("a")),
+				new DeclarationNode(
+					"font-weight",
+					new ValueNode("bold")),
+				new DeclarationNode(
+					"text-decoration",
+					new ValueNode("none"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
