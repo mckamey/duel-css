@@ -1,13 +1,9 @@
 package org.cssless.css.ast;
 
-import org.cssless.css.codegen.ArithmeticEvaluator;
-
 /**
  * Represents a LESS variable reference
  */
-public class LessVariableReferenceNode extends ValueNode implements LessNode {
-
-	private static final ArithmeticEvaluator evaluator = new ArithmeticEvaluator();
+public class LessVariableReferenceNode extends ValueNode {
 
 	public LessVariableReferenceNode(String varRef, int index, int line, int column) {
 		super(varRef, index, line, column);
@@ -18,7 +14,7 @@ public class LessVariableReferenceNode extends ValueNode implements LessNode {
 	}
 
 	@Override
-	public ValueNode eval(ContainerNode context) {
+	public CssNode eval(ContainerNode context) {
 		String varRef = this.getValue();
 		if (varRef == null || varRef.isEmpty()) {
 			throw new NullPointerException("varRef");
@@ -38,10 +34,6 @@ public class LessVariableReferenceNode extends ValueNode implements LessNode {
 			throw new IllegalStateException("Undeclared variable reference: @"+varRef);
 		}
 
-		ValueNode value = evaluator.eval(varDecl.getChildren());
-		if (value == null) {
-			throw new IllegalStateException("Undeclared variable reference: @"+varRef);
-		}
-		return value;
+		return varDecl.getValue();
 	}
 }

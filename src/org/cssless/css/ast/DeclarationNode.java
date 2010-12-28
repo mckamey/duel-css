@@ -1,6 +1,5 @@
 package org.cssless.css.ast;
 
-import org.cssless.css.codegen.ArithmeticEvaluator;
 import org.cssless.css.parsing.InvalidNodeException;
 
 /**
@@ -8,11 +7,8 @@ import org.cssless.css.parsing.InvalidNodeException;
  */
 public class DeclarationNode extends ContainerNode {
 
-	private static final ArithmeticEvaluator evaluator = new ArithmeticEvaluator();
-
 	private String ident;
 	private boolean important;
-	private boolean hasExpressions;
 
 	public DeclarationNode(String ident, int index, int line, int column) {
 		super(index, line, column);
@@ -47,39 +43,17 @@ public class DeclarationNode extends ContainerNode {
 		return this;
 	}
 
-	protected void requestEval() {
-		this.hasExpressions = true;
-	}
-	
-	public void eval() {
-		if (!this.hasExpressions) {
-			return;
-		}
-
-		ValueNode result = evaluator.eval(this.getChildren());
-		this.getChildren().clear();
-		this.appendChild(result);
-		this.hasExpressions = false;
-	}
-
 	@Override
-	protected void filterChild(CssNode child) {
-		if (!(child instanceof ValueNode)) {
-			throw new InvalidNodeException("Declaration may only hold values for its expression", child);
+	protected CssNode filterChild(CssNode child) {
+		child = super.filterChild(child);
+
+		if (child == null || child instanceof ValueNode) {
+			return child;
 		}
 
-		super.filterChild(child);
+		throw new InvalidNodeException("Declaration may only hold values for its expression", child);
 	}
 
-	@Override
-	public void appendChild(CssNode child) {
-		if (child instanceof LessVariableReferenceNode) {
-			this.hasExpressions = true;
-		}
-
-		super.appendChild(child);
-	}
-	
 	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof DeclarationNode)) {

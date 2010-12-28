@@ -3,11 +3,14 @@ package org.cssless.css.parsing;
 import java.util.*;
 import java.io.IOException;
 import org.cssless.css.ast.*;
+import org.cssless.css.codegen.ArithmeticEvaluator;
 
 /**
  * Processes a token sequence into AST
  */
 public class CssParser {
+
+	private static final ArithmeticEvaluator evaluator = new ArithmeticEvaluator();
 
 	private CssToken next;
 	private Iterator<CssToken> tokens;
@@ -312,8 +315,10 @@ public class CssParser {
 
 	private void parseDeclaration(ContainerNode parent) {
 
+		boolean hasExpressions = (this.next.getToken() == CssTokenType.AT_RULE);
+		
 		// LESS variable declarations leverage @rule syntax
-		DeclarationNode declaration = (this.next.getToken() == CssTokenType.AT_RULE) ?
+		DeclarationNode declaration = hasExpressions ?
 			new LessVariableDeclarationNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()) :
 			new DeclarationNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 
@@ -334,7 +339,9 @@ public class CssParser {
 		while (this.hasNext()) {
 			switch (this.next.getToken()) {
 				case BLOCK_END:
-					declaration.eval();
+					if (hasExpressions) {
+						this.evalExpressions(declaration);
+					}
 					return;
 
 				case AT_RULE:
@@ -343,13 +350,16 @@ public class CssParser {
 					declaration.appendChild(new LessVariableReferenceNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
+					hasExpressions = true;
 					continue;
-					
+
 				case RULE_DELIM:
 					if (funcDepth <= 0) {
 						// consume ';' as end of declaration
 						this.next = null;
-						declaration.eval();
+						if (hasExpressions) {
+							this.evalExpressions(declaration);
+						}
 						return;
 					}
 					// still within function
@@ -357,7 +367,6 @@ public class CssParser {
 					// consume token
 					this.next = null;
 					continue;
-		
 
 				case VALUE:
 					value = this.next.getValue();
@@ -419,7 +428,15 @@ public class CssParser {
 			}
 		}
 
-		declaration.eval();
+		if (hasExpressions) {
+			this.evalExpressions(declaration);
+		}
+	}
+
+	private void evalExpressions(DeclarationNode declaration) {
+		ValueNode result = evaluator.eval(declaration.getChildren());
+		declaration.getChildren().clear();
+		declaration.appendChild(result);
 	}
 
 	private void parseBlock(BlockNode block, boolean isRuleSet)

@@ -39,6 +39,16 @@ public abstract class CssNode {
 		this.parent = parent;
 	}
 
+	/**
+	 * Evaluates LESS node producing static content and modifying metadata
+	 * May return null if does not generate any content
+	 * @param context
+	 * @return
+	 */
+	CssNode eval(ContainerNode context) {
+		return this;
+	}
+
 	@Override
 	public String toString() {
 		try {

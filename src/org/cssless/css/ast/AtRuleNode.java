@@ -46,12 +46,14 @@ public class AtRuleNode extends ContainerNode {
 	}
 
 	@Override
-	protected void filterChild(CssNode child) {
-		if (!(child instanceof ValueNode)) {
-			throw new InvalidNodeException("At-rule may only hold value nodes outside of block", child);
+	protected CssNode filterChild(CssNode child) {
+		child = super.filterChild(child);
+
+		if (child == null || child instanceof ValueNode) {
+			return child;
 		}
 
-		super.filterChild(child);
+		throw new InvalidNodeException("At-rule may only hold value nodes outside of block", child);
 	}
 
 	@Override

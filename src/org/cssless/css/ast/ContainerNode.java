@@ -38,29 +38,18 @@ public class ContainerNode extends CssNode {
 		return this.children.isEmpty() ? null : this.children.get(this.children.size()-1);
 	}
 
-	protected void filterChild(CssNode child) {
+	protected CssNode filterChild(CssNode child) {
+		// evaluate any LESS expressions before insertion
+		return child.eval(this);
 	}
 
 	public void appendChild(CssNode child) {
-		if (child instanceof LessNode) {
-			// evaluate LESS expressions before insertion
-			child = ((LessNode)child).eval(this);
-		}
-
+		child = this.filterChild(child);
 		if (child == null) {
 			// variable declarations do not generate content
 			return;
 		}
 
-		// consolidate containers
-		if (child instanceof MultiValueNode) {
-			for (ValueNode grand : ((MultiValueNode)child).getChildren()) {
-				this.appendChild(grand);
-			}
-			return;
-		}
-
-		this.filterChild(child);
 		this.children.add(child);
 		child.setParent(this);
 	}
@@ -82,24 +71,30 @@ public class ContainerNode extends CssNode {
 		return false;
 	}
 
-//	public boolean replaceChild(CssNode newChild, CssNode oldChild) {
-//		if (oldChild == null) {
-//			this.appendChild(newChild);
-//			return true;
-//		}
-//
-//		for (int i=0, length=this.children.size(); i<length; i++) {
-//			CssNode child = this.children.get(i);
-//			if (child == oldChild) {
-//				this.children.set(i, newChild);
-//				newChild.setParent(this);
-//				child.setParent(null);
-//				return true;
-//			}
-//		}
-//
-//		return false;
-//	}
+	public boolean replaceChild(CssNode newChild, CssNode oldChild) {
+		if (oldChild == null) {
+			this.appendChild(newChild);
+			return true;
+		}
+
+		// evaluate any LESS expressions before insertion
+		newChild = this.filterChild(newChild);
+		if (newChild == null) {
+			return this.removeChild(oldChild);
+		}
+
+		for (int i=0, length=this.children.size(); i<length; i++) {
+			CssNode child = this.children.get(i);
+			if (child == oldChild) {
+				this.children.set(i, newChild);
+				newChild.setParent(this);
+				child.setParent(null);
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	public boolean containsVariable(String name) {
 		return (this.variables != null) && this.variables.containsKey(name);
