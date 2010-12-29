@@ -1678,4 +1678,225 @@ public class CssParserTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void lessNestedRulesPseudoClassTest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.value("#header"),
+				CssToken.blockBegin(),
+
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("black"),
+				CssToken.ruleDelim(),
+
+				CssToken.value(".navigation"),
+				CssToken.blockBegin(),
+				CssToken.value("font-size"),
+				CssToken.operator(":"),
+				CssToken.numeric("12px"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd(),
+
+				CssToken.value(".logo"),
+				CssToken.blockBegin(),
+				CssToken.value("width"),
+				CssToken.operator(":"),
+				CssToken.numeric("300px"),
+				CssToken.ruleDelim(),
+				CssToken.value(":hover"),
+				CssToken.blockBegin(),
+				CssToken.value("text-decoration"),
+				CssToken.operator(":"),
+				CssToken.value("none"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd(),
+
+				CssToken.blockEnd(),
+
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("#header"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("black"))),
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("#header"),
+					new ValueNode(".navigation")),
+				new DeclarationNode(
+					"font-size",
+					new NumericNode("12px"))),
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("#header"),
+					new ValueNode(".logo")),
+				new DeclarationNode(
+					"width",
+					new NumericNode("300px"))),
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("#header"),
+					new ValueNode(".logo"),
+					new ValueNode(":hover")),
+				new DeclarationNode(
+					"text-decoration",
+					new ValueNode("none"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void lessNestedRulesMergedPseudoClassTest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.value("#header"),
+				CssToken.blockBegin(),
+
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("black"),
+				CssToken.ruleDelim(),
+
+				CssToken.value(".navigation"),
+				CssToken.blockBegin(),
+				CssToken.value("font-size"),
+				CssToken.operator(":"),
+				CssToken.numeric("12px"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd(),
+
+				CssToken.value(".logo"),
+				CssToken.blockBegin(),
+				CssToken.value("width"),
+				CssToken.operator(":"),
+				CssToken.numeric("300px"),
+				CssToken.ruleDelim(),
+				CssToken.value("&:hover"),
+				CssToken.blockBegin(),
+				CssToken.value("text-decoration"),
+				CssToken.operator(":"),
+				CssToken.value("none"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd(),
+
+				CssToken.blockEnd(),
+
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("#header"),
+				new DeclarationNode(
+					"color",
+					new ColorNode("black"))),
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("#header"),
+					new ValueNode(".navigation")),
+				new DeclarationNode(
+					"font-size",
+					new NumericNode("12px"))),
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("#header"),
+					new ValueNode(".logo")),
+				new DeclarationNode(
+					"width",
+					new NumericNode("300px"))),
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode("#header"),
+					new ValueNode(".logo:hover")),
+				new DeclarationNode(
+					"text-decoration",
+					new ValueNode("none"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void lessMultipleNestedRulesTest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.value("#header"),
+				CssToken.value(".foo1"),
+				CssToken.operator(","),
+				CssToken.value("#footer"),
+				CssToken.value(".foo2"),
+				CssToken.blockBegin(),
+
+				CssToken.value(".bar"),
+				CssToken.value("em"),
+				CssToken.operator(","),
+				CssToken.value("h3"),
+				CssToken.value(".baz"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("red"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd(),
+
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.color("blue"),
+				CssToken.ruleDelim(),
+
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode[] {
+					new SelectorNode(
+						new ValueNode("#header"),
+						new ValueNode(".foo1")),
+					new SelectorNode(
+						new ValueNode("#footer"),
+						new ValueNode(".foo2"))
+				},
+				new DeclarationNode(
+					"color",
+					new ColorNode("blue"))),
+			new RuleSetNode(
+				new SelectorNode[] {
+					new SelectorNode(
+						new ValueNode("#header"),
+						new ValueNode(".foo1"),
+						new ValueNode(".bar"),
+						new ValueNode("em")),
+					new SelectorNode(
+						new ValueNode("#footer"),
+						new ValueNode(".foo2"),
+						new ValueNode(".bar"),
+						new ValueNode("em")),
+					new SelectorNode(
+						new ValueNode("#header"),
+						new ValueNode(".foo1"),
+						new ValueNode("h3"),
+						new ValueNode(".baz")),
+					new SelectorNode(
+						new ValueNode("#footer"),
+						new ValueNode(".foo2"),
+						new ValueNode("h3"),
+						new ValueNode(".baz"))
+				},
+				new DeclarationNode(
+					"color",
+					new ColorNode("red"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
 }

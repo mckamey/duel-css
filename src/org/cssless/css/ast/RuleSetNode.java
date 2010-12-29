@@ -57,14 +57,27 @@ public class RuleSetNode extends BlockNode {
 	public void expandSelectors(List<SelectorNode> prefixes) {
 		List<SelectorNode> expanded = new ArrayList<SelectorNode>(prefixes.size() * this.selectors.size());
 
-		for (SelectorNode prefix : prefixes) {
-			for (SelectorNode suffix : this.selectors) {
+		for (SelectorNode suffix : this.selectors) {
+			ValueNode first = ((ValueNode)suffix.getFirstChild());
+			boolean mergedSelectors = (first.getValue() != null) && first.getValue().startsWith("&");
+
+			for (SelectorNode prefix : prefixes) {
 				SelectorNode selector = new SelectorNode();
 				expanded.add(selector);
 
 				List<CssNode> parts = selector.getChildren(); 
 				parts.addAll(prefix.getChildren());
-				parts.addAll(suffix.getChildren());
+				if (!mergedSelectors) {
+					parts.addAll(suffix.getChildren());
+					continue;
+				}
+
+				// merge pseudo-classes
+				String last = ((ValueNode)parts.get(parts.size()-1)).getValue();
+				parts.set(parts.size()-1, new ValueNode(last+first.getValue().substring(1), first.getIndex(), first.getLine(), first.getColumn()));
+				for (int i=1, length=suffix.childCount(); i<length; i++) {
+					parts.add(suffix.getChildren().get(i));
+				}
 			}
 		}
 

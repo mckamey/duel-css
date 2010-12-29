@@ -1121,14 +1121,44 @@ public class CssLexerTests {
 		assertArrayEquals(expected, actual);
 	}
 
+	@Test
+	public void nestedRulesPseudoClassTest() {
+
+		String input =
+			".logo {" +
+			"\twidth: 300px;" +
+			"\t&:hover { text-decoration: none }" +
+			"}";
+
+		Object[] expected = {
+			CssToken.value(".logo"),
+			CssToken.blockBegin(),
+			CssToken.value("width"),
+			CssToken.operator(":"),
+			CssToken.numeric("300px"),
+			CssToken.ruleDelim(),
+			CssToken.value("&:hover"),
+			CssToken.blockBegin(),
+			CssToken.value("text-decoration"),
+			CssToken.operator(":"),
+			CssToken.value("none"),
+			CssToken.blockEnd(),
+			CssToken.blockEnd()
+		};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
 	private void dumpLists(Object[] expected, Object[] actual) {
 
 		for (Object token : expected) {
-			System.out.println(token.toString());
+			System.out.println(String.valueOf(token));
 		}
 
 		for (Object token : actual) {
-			System.err.println(token.toString());
+			System.err.println(String.valueOf(token));
 		}
 	}
 }
