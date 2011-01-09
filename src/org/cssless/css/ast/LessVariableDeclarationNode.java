@@ -34,7 +34,7 @@ public class LessVariableDeclarationNode extends DeclarationNode {
 		}
 		return multi;
 	}
-	
+
 	@Override
 	public CssNode eval(ContainerNode context) {
 		this.setParent(context);

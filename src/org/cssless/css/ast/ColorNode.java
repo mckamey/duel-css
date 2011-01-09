@@ -240,11 +240,6 @@ public class ColorNode extends ValueNode {
 
 		return (char)((digit - 10) + 'A');
 	}
-
-	@Override
-	public WordBreak getWordBreak(boolean prettyPrint) {
-		return WordBreak.BOTH;
-	}
 	
 	@Override
 	public boolean equals(Object arg) {

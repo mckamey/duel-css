@@ -9,9 +9,4 @@ public class AccessorNode extends ContainerValueNode {
 	public AccessorNode(String value, ValueNode... args) {
 		super(value, args);
 	}
-
-	@Override
-	public WordBreak getWordBreak(boolean prettyPrint) {
-		return WordBreak.BOTH;
-	}
 }

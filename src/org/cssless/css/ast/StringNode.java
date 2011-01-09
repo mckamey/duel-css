@@ -12,9 +12,4 @@ public class StringNode extends ValueNode {
 	public StringNode(String value) {
 		super(value);
 	}
-
-	@Override
-	public WordBreak getWordBreak(boolean prettyPrint) {
-		return WordBreak.BOTH;
-	}
 }

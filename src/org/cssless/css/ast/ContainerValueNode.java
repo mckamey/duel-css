@@ -7,17 +7,25 @@ public abstract class ContainerValueNode extends ValueNode {
 	public ContainerValueNode(String value, int index, int line, int column) {
 		super(value, index, line, column);
 		this.children = new ContainerNode();
+		this.children.setParent(this.getParent());
 	}
 
 	public ContainerValueNode(String value, ValueNode... children) {
 		super(value);
 		this.children = new ContainerNode(children);
+		this.children.setParent(this.getParent());
 	}
 
 	public ContainerNode getContainer() {
 		return this.children;
 	}
 
+	@Override
+	void setParent(ContainerNode parent) {
+		super.setParent(parent);
+		this.children.setParent(parent);
+	}
+	
 	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof ContainerValueNode) || !this.getClass().equals(arg.getClass())) {
