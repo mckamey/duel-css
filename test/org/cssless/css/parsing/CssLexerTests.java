@@ -308,7 +308,7 @@ public class CssLexerTests {
 		String input = "span.foo.bar[foo=bar]{ color :red}";
 
 		Object[] expected = {
-				CssToken.value("span.foo.bar["),
+				CssToken.accessor("span.foo.bar"),
 				CssToken.value("foo"),
 				CssToken.operator("="),
 				CssToken.value("bar"),
@@ -333,7 +333,7 @@ public class CssLexerTests {
 		Object[] expected = {
 				CssToken.value("div#my-id"),
 				CssToken.value("*.myClass"),
-				CssToken.value("E["),
+				CssToken.accessor("E"),
 				CssToken.value("foo"),
 				CssToken.operator("~="),
 				CssToken.string("\"warning\""),
@@ -372,7 +372,7 @@ public class CssLexerTests {
 			"}\"] { color: red }";
 
 		Object[] expected = {
-				CssToken.value("p["),
+				CssToken.accessor("p"),
 				CssToken.value("example"),
 				CssToken.operator("="),
 				CssToken.string(

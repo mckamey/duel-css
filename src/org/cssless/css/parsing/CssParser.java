@@ -90,6 +90,7 @@ public class CssParser {
 				break;
 
 			case FUNCTION:
+			case ACCESSOR:
 			case STRING:
 			case NUMERIC:
 			case COLOR:
@@ -150,6 +151,10 @@ public class CssParser {
 
 				case FUNCTION:
 					this.parseFunction(atRule, this.next, false);
+					continue;
+
+				case ACCESSOR:
+					this.parseAccessor(atRule, this.next, false);
 					continue;
 
 				case VALUE:
@@ -281,6 +286,10 @@ public class CssParser {
 					this.parseFunction(selector, start, true);
 					break;
 
+				case ACCESSOR:
+					this.parseAccessor(selector, start, true);
+					break;
+
 				default:
 					// TODO: this check can go away once accesors are fully parsed
 					value = start.getValue();
@@ -302,6 +311,10 @@ public class CssParser {
 				case FUNCTION:
 					this.parseFunction(selector, this.next, true);
 					continue;
+
+				case ACCESSOR:
+					this.parseAccessor(selector, this.next, true);
+					break;
 
 				case VALUE:
 				case NUMERIC:
@@ -425,6 +438,10 @@ public class CssParser {
 					this.parseFunction(declaration, this.next, false);
 					continue;
 
+				case ACCESSOR:
+					this.parseAccessor(declaration, this.next, false);
+					continue;
+
 				case VALUE:
 					value = this.next.getValue();
 					// TODO: this check can go away once accesors are fully parsed
@@ -519,6 +536,10 @@ public class CssParser {
 					this.parseFunction(args, this.next, isSelector);
 					continue;
 
+				case ACCESSOR:
+					this.parseAccessor(args, this.next, isSelector);
+					continue;
+
 				case NUMERIC:
 					if (isSelector) {
 						args.appendChild(new ValueNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
@@ -589,12 +610,116 @@ public class CssParser {
 					// consume token
 					this.next = null;
 					continue;
-
+					
 				case ERROR:
 					throw throwErrorToken();
 
 				default:
 					throw new InvalidTokenException("Invalid token in function: "+this.next, this.next);
+			}
+		}
+	}
+
+	private void parseAccessor(ContainerNode parent, CssToken start, boolean isSelector) {
+
+		AccessorNode accessor = new AccessorNode(start.getValue(), start.getIndex(), start.getLine(), start.getColumn());
+		parent.appendChild(accessor);
+		if (this.next == start) {
+			// consume function start
+			this.next = null;
+		}
+
+		char ch;
+		String value;
+		int nestDepth = 0;
+		ContainerNode args = accessor.getContainer();
+
+		while (this.hasNext()) {
+			switch (this.next.getToken()) {
+				case FUNCTION:
+					this.parseFunction(args, this.next, isSelector);
+					continue;
+
+				case ACCESSOR:
+					this.parseAccessor(args, this.next, isSelector);
+					continue;
+
+				case NUMERIC:
+					if (isSelector) {
+						args.appendChild(new ValueNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					} else {
+						args.appendChild(new NumericNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					}
+					// consume token
+					this.next = null;
+					continue;
+
+				case COLOR:
+					// numeric/color are typically ID and class selectors
+					if (isSelector) {
+						args.appendChild(new ValueNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					} else {
+						args.appendChild(new ColorNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					}
+					// consume token
+					this.next = null;
+					continue;
+
+				case VALUE:
+					// TODO: this check can go away once accesors are fully parsed
+					value = this.next.getValue();
+					ch = (value != null) ? value.charAt(value.length()-1) : '\0';
+					if (ch == CssGrammar.OP_ATTR_BEGIN) {
+						nestDepth++;
+					}
+					args.appendChild(new ValueNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					// consume token
+					this.next = null;
+					continue;
+
+				case OPERATOR:
+					value = this.next.getValue();
+					ch = (value != null) ? value.charAt(0) : '\0';
+					switch (ch) {
+						case CssGrammar.OP_PAREN_BEGIN:
+						case CssGrammar.OP_ATTR_BEGIN:
+							nestDepth++;
+							break;
+						case CssGrammar.OP_PAREN_END:
+							nestDepth--;
+							break;
+						case CssGrammar.OP_ATTR_END:
+							if (nestDepth <= 0) {
+								// consume token, terminate function
+								this.next = null;
+								return;
+							}
+							nestDepth--;
+							break;
+					}
+
+					args.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					// consume token
+					this.next = null;
+					continue;
+
+				case STRING:
+					args.appendChild(new StringNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					// consume token
+					this.next = null;
+					continue;
+
+				case COMMENT:
+					args.appendChild(new CommentNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					// consume token
+					this.next = null;
+					continue;
+
+				case ERROR:
+					throw throwErrorToken();
+
+				default:
+					throw new InvalidTokenException("Invalid token in accessor: "+this.next, this.next);
 			}
 		}
 	}

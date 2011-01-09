@@ -33,6 +33,11 @@ public enum CssTokenType {
 	FUNCTION,
 
 	/**
+	 * Accessor begin
+	 */
+	ACCESSOR,
+
+	/**
 	 * Operator
 	 */
 	OPERATOR,

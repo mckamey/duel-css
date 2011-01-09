@@ -703,8 +703,13 @@ public class CssLexer implements Iterator<CssToken> {
 		}
 
 		int last = value != null ? value.length()-1 : -1;
-		if (last > 0 && value.charAt(last) == CssGrammar.OP_PAREN_BEGIN) {
-			return CssToken.func(value.substring(0, last), index, line, column);
+		if (last > 0) {
+			switch (value.charAt(last)) {
+				case CssGrammar.OP_PAREN_BEGIN:
+					return CssToken.func(value.substring(0, last), index, line, column);
+				case CssGrammar.OP_ATTR_BEGIN:
+					return CssToken.accessor(value.substring(0, last), index, line, column);
+			}
 		}
 		return CssToken.value(value, index, line, column);
 	}

@@ -81,6 +81,9 @@ public class CssFormatter {
 		} else if (node instanceof FunctionNode) {
 			this.writeFunction(output, (FunctionNode)node, 0);
 
+		} else if (node instanceof AccessorNode) {
+			this.writeAccessor(output, (AccessorNode)node, 0);
+
 		} else if (node instanceof MultiValueNode) {
 			this.writeContainer(output, ((MultiValueNode)node).getContainer(), 0);
 
@@ -115,6 +118,9 @@ public class CssFormatter {
 
 		} else if (node instanceof FunctionNode) {
 			this.writeFunction(output, (FunctionNode)node, depth);
+
+		} else if (node instanceof AccessorNode) {
+			this.writeAccessor(output, (AccessorNode)node, depth);
 
 		} else if (node instanceof MultiValueNode) {
 			this.writeContainer(output, ((MultiValueNode)node).getContainer(), depth);
@@ -250,6 +256,15 @@ public class CssFormatter {
 		output.append('(');
 		this.writeContainer(output, node.getContainer(), depth);
 		output.append(')');
+	}
+
+	private void writeAccessor(Appendable output, AccessorNode node, int depth)
+		throws IOException {
+
+		output.append(node.getValue());
+		output.append('[');
+		this.writeContainer(output, node.getContainer(), depth);
+		output.append(']');
 	}
 
 	private void writeContainer(Appendable output, ContainerNode node, int depth)
