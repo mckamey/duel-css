@@ -59,42 +59,6 @@ public class ValueNode extends CssNode {
 
 	@Override
 	public WordBreak getWordBreak(boolean prettyPrint) {
-		// TODO: simplify this now that true function nodes exist
-		// or wait until accessor node exist and then remove completely
-		String value = this.getValue(!prettyPrint);
-		if (value != null) {
-			char ch = value.charAt(0);
-			switch (ch) {
-				case ',':
-					return prettyPrint ? WordBreak.POST : WordBreak.NONE;
-				case ')':
-				case ']':
-					ch = value.charAt(value.length()-1);
-					switch (ch) {
-						case '(':
-						case '[':
-							return WordBreak.NONE;
-					}
-					return WordBreak.POST;
-				case '(':
-				case '[':
-					ch = value.charAt(value.length()-1);
-					switch (ch) {
-						case '(':
-						case '[':
-							return WordBreak.PRE;
-					}
-					return WordBreak.BOTH;
-				default:
-					ch = value.charAt(value.length()-1);
-					switch (ch) {
-						case '(':
-						case '[':
-							return WordBreak.PRE;
-					}
-			}
-		}
-
 		return WordBreak.BOTH;
 	}
 	

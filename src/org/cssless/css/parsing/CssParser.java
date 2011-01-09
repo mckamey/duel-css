@@ -81,11 +81,11 @@ public class CssParser {
 
 		switch (this.next.getToken()) {
 			case AT_RULE:
-				// TODO: LESS will use this for scoped variables
 				if (isRuleSet) {
 					throw new InvalidTokenException("Invalid token inside rule-set: "+this.next, this.next);
 				}
 
+				// LESS also uses this for scoped variables
 				this.parseAtRule(parent);
 				break;
 
@@ -261,7 +261,6 @@ public class CssParser {
 		SelectorNode selector = new SelectorNode(start.getIndex(), start.getLine(), start.getColumn());
 		ruleSet.getSelectors().add(selector);
 
-		char ch;
 		String value;
 		int nestDepth = 0;
 
@@ -275,11 +274,19 @@ public class CssParser {
 
 				case OPERATOR:
 					value = start.getValue();
-					ch = (value != null) ? value.charAt(0) : '\0';
-					if (ch == CssGrammar.OP_PAREN_BEGIN || ch == CssGrammar.OP_ATTR_BEGIN) {
-						nestDepth++;
+					if (value != null) {
+						switch (value.charAt(0)) {
+							case CssGrammar.OP_PAREN_BEGIN:
+							case CssGrammar.OP_ATTR_BEGIN:
+								nestDepth++;
+								break;
+							case CssGrammar.OP_PAREN_END:
+							case CssGrammar.OP_ATTR_END:
+								nestDepth--;
+								break;
+						}
 					}
-					selector.appendChild(new OperatorNode(start.getValue(), start.getIndex(), start.getLine(), start.getColumn()));
+					selector.appendChild(new OperatorNode(value, start.getIndex(), start.getLine(), start.getColumn()));
 					break;
 
 				case FUNCTION:
@@ -291,13 +298,7 @@ public class CssParser {
 					break;
 
 				default:
-					// TODO: this check can go away once accesors are fully parsed
-					value = start.getValue();
-					ch = (value != null) ? value.charAt(value.length()-1) : '\0';
-					if (ch == CssGrammar.OP_PAREN_BEGIN || ch == CssGrammar.OP_ATTR_BEGIN) {
-						nestDepth++;
-					}
-					selector.appendChild(new ValueNode(value, start.getIndex(), start.getLine(), start.getColumn()));
+					selector.appendChild(new ValueNode(start.getValue(), start.getIndex(), start.getLine(), start.getColumn()));
 					break;
 			}
 		}
@@ -320,13 +321,7 @@ public class CssParser {
 				case NUMERIC:
 				case COLOR:
 					// numeric/color are typically ID and class selectors
-					// TODO: this check can go away once accesors are fully parsed
-					value = this.next.getValue();
-					ch = (value != null) ? value.charAt(value.length()-1) : '\0';
-					if (ch == CssGrammar.OP_PAREN_BEGIN || ch == CssGrammar.OP_ATTR_BEGIN) {
-						nestDepth++;
-					}
-					selector.appendChild(new ValueNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					selector.appendChild(new ValueNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
 					continue;
@@ -350,9 +345,17 @@ public class CssParser {
 						}
 					}
 
-					ch = (value != null) ? value.charAt(0) : '\0';
-					if (ch == CssGrammar.OP_PAREN_END || ch == CssGrammar.OP_ATTR_END) {
-						nestDepth--;
+					if (value != null) {
+						switch (value.charAt(0)) {
+							case CssGrammar.OP_PAREN_BEGIN:
+							case CssGrammar.OP_ATTR_BEGIN:
+								nestDepth++;
+								break;
+							case CssGrammar.OP_PAREN_END:
+							case CssGrammar.OP_ATTR_END:
+								nestDepth--;
+								break;
+						}
 					}
 					selector.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 
@@ -402,6 +405,7 @@ public class CssParser {
 		char ch;
 		String value;
 		int nestDepth = 0;
+
 		while (this.hasNext()) {
 			switch (this.next.getToken()) {
 				case BLOCK_END:
@@ -443,13 +447,7 @@ public class CssParser {
 					continue;
 
 				case VALUE:
-					value = this.next.getValue();
-					// TODO: this check can go away once accesors are fully parsed
-					ch = (value != null) ? value.charAt(value.length()-1) : '\0';
-					if (ch == CssGrammar.OP_PAREN_BEGIN || ch == CssGrammar.OP_ATTR_BEGIN) {
-						nestDepth++;
-					}
-					declaration.appendChild(new ValueNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					declaration.appendChild(new ValueNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
 					continue;
@@ -475,11 +473,17 @@ public class CssParser {
 				case OPERATOR:
 					value = this.next.getValue();
 					ch = (value != null && value.length() == 1) ? value.charAt(0) : '\0';
-					if (ch == CssGrammar.OP_PAREN_END || ch == CssGrammar.OP_ATTR_END) {
-						nestDepth--;
-					}
 					declaration.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+
 					switch (ch) {
+						case CssGrammar.OP_PAREN_BEGIN:
+						case CssGrammar.OP_ATTR_BEGIN:
+							nestDepth++;
+							break;
+						case CssGrammar.OP_PAREN_END:
+						case CssGrammar.OP_ATTR_END:
+							nestDepth--;
+							break;
 						case '+':
 						case '-':
 						case '*':
@@ -525,7 +529,6 @@ public class CssParser {
 			this.next = null;
 		}
 
-		char ch;
 		String value;
 		int nestDepth = 0;
 		ContainerNode args = func.getContainer();
@@ -562,21 +565,14 @@ public class CssParser {
 					continue;
 
 				case VALUE:
-					// TODO: this check can go away once accesors are fully parsed
-					value = this.next.getValue();
-					ch = (value != null) ? value.charAt(value.length()-1) : '\0';
-					if (ch == CssGrammar.OP_ATTR_BEGIN) {
-						nestDepth++;
-					}
-					args.appendChild(new ValueNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					args.appendChild(new ValueNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
 					continue;
 
 				case OPERATOR:
 					value = this.next.getValue();
-					ch = (value != null) ? value.charAt(0) : '\0';
-					switch (ch) {
+					switch ((value != null) ? value.charAt(0) : '\0') {
 						case CssGrammar.OP_PAREN_BEGIN:
 						case CssGrammar.OP_ATTR_BEGIN:
 							nestDepth++;
@@ -629,7 +625,6 @@ public class CssParser {
 			this.next = null;
 		}
 
-		char ch;
 		String value;
 		int nestDepth = 0;
 		ContainerNode args = accessor.getContainer();
@@ -666,21 +661,14 @@ public class CssParser {
 					continue;
 
 				case VALUE:
-					// TODO: this check can go away once accesors are fully parsed
-					value = this.next.getValue();
-					ch = (value != null) ? value.charAt(value.length()-1) : '\0';
-					if (ch == CssGrammar.OP_ATTR_BEGIN) {
-						nestDepth++;
-					}
-					args.appendChild(new ValueNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					args.appendChild(new ValueNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
 					continue;
 
 				case OPERATOR:
 					value = this.next.getValue();
-					ch = (value != null) ? value.charAt(0) : '\0';
-					switch (ch) {
+					switch ((value != null) ? value.charAt(0) : '\0') {
 						case CssGrammar.OP_PAREN_BEGIN:
 						case CssGrammar.OP_ATTR_BEGIN:
 							nestDepth++;

@@ -371,11 +371,11 @@ public class CssFormatterTests {
 		StyleSheetNode input = new StyleSheetNode(
 			new RuleSetNode(
 				new SelectorNode(
-					new ValueNode("span.foo.bar["),
-					new ValueNode("foo"),
-					new OperatorNode("="),
-					new ValueNode("bar"),
-					new OperatorNode("]")),
+					new AccessorNode(
+						"span.foo.bar",
+						new ValueNode("foo"),
+						new OperatorNode("="),
+						new ValueNode("bar"))),
 				new DeclarationNode(
 					"color",
 					new ColorNode("red"))));
@@ -401,11 +401,11 @@ public class CssFormatterTests {
 				new SelectorNode(
 					new ValueNode("div#my-id"),
 					new ValueNode("*.myClass"),
-					new ValueNode("E["),
-					new ValueNode("foo"),
-					new OperatorNode("~="),
-					new StringNode("\"warning\""),
-					new OperatorNode("]"),
+					new AccessorNode(
+						"E",
+						new ValueNode("foo"),
+						new OperatorNode("~="),
+						new StringNode("\"warning\"")),
 					new CombinatorNode(CombinatorType.CHILD),
 					new ValueNode("F:first-child"),
 					new CombinatorNode(CombinatorType.ADJACENT),
@@ -437,11 +437,11 @@ public class CssFormatterTests {
 				new SelectorNode(
 					new ValueNode("div#my-id"),
 					new ValueNode("*.myClass"),
-					new ValueNode("E["),
-					new ValueNode("foo"),
-					new OperatorNode("~="),
-					new StringNode("\"warning\""),
-					new OperatorNode("]"),
+					new AccessorNode(
+						"E",
+						new ValueNode("foo"),
+						new OperatorNode("~="),
+						new StringNode("\"warning\"")),
 					new CombinatorNode(CombinatorType.CHILD),
 					new ValueNode("F:first-child"),
 					new CombinatorNode(CombinatorType.ADJACENT),
@@ -467,20 +467,20 @@ public class CssFormatterTests {
 		StyleSheetNode input = new StyleSheetNode(
 				new RuleSetNode(
 					new SelectorNode(
-						new ValueNode("p["),
-						new ValueNode("example"),
-						new OperatorNode("="),
-						new StringNode(
-							"\"public class foo\\\n" +
-							"{\\\n" +
-							"\tprivate int x;\\\n" +
-							"\\\n" +
-							"\tfoo(int x) {\\\n" +
-							"\t\tthis.x = x;\\\n" +
-							"\t}\\\n" +
-							"\\\n" +
-							"}\""),
-						new OperatorNode("]")),
+						new AccessorNode(
+							"p",
+							new ValueNode("example"),
+							new OperatorNode("="),
+							new StringNode(
+								"\"public class foo\\\n" +
+								"{\\\n" +
+								"\tprivate int x;\\\n" +
+								"\\\n" +
+								"\tfoo(int x) {\\\n" +
+								"\t\tthis.x = x;\\\n" +
+								"\t}\\\n" +
+								"\\\n" +
+								"}\""))),
 					new DeclarationNode(
 						"color",
 						new ColorNode("red"))));
