@@ -242,6 +242,11 @@ public class ColorNode extends ValueNode {
 	}
 
 	@Override
+	public WordBreak getWordBreak(boolean prettyPrint) {
+		return WordBreak.BOTH;
+	}
+	
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof ColorNode) || !this.getClass().equals(arg.getClass())) {
 			// includes null

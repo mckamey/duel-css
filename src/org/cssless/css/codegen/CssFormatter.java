@@ -9,14 +9,6 @@ import org.cssless.css.ast.*;
  */
 public class CssFormatter {
 
-	private enum WordBreak
-	{
-		NONE,
-		PRE,
-		POST,
-		BOTH
-	};
-	
 	private final CodeGenSettings settings;
 	private final boolean prettyPrint;
 
@@ -213,19 +205,10 @@ public class CssFormatter {
 	private void writeExpression(Appendable output, ContainerNode node, int depth)
 		throws IOException {
 
-		WordBreak last = null;
+		WordBreak prev = null;
 		if (node.hasChildren()) {
 			for (CssNode child : node.getChildren()) {
-				// check for significant whitespace
-				WordBreak next = this.getWordBreak(child);
-				if (last != null &&
-					(WordBreak.BOTH.equals(last) || WordBreak.POST.equals(last)) &&
-					(WordBreak.BOTH.equals(next) || WordBreak.PRE.equals(next))) {
-
-					output.append(' ');
-				}
-				last = next;
-
+				prev = this.writeWordBreak(output, prev, child.getWordBreak(this.prettyPrint));
 				this.writeNode(output, child, depth);
 			}
 		}
@@ -272,19 +255,10 @@ public class CssFormatter {
 	private void writeContainer(Appendable output, ContainerNode node, int depth)
 		throws IOException {
 
-		WordBreak last = null;
+		WordBreak prev = null;
 		if (node.hasChildren()) {
 			for (CssNode child : node.getChildren()) {
-				// check for significant whitespace
-				WordBreak next = this.getWordBreak(child);
-				if (last != null &&
-					(WordBreak.BOTH.equals(last) || WordBreak.POST.equals(last)) &&
-					(WordBreak.BOTH.equals(next) || WordBreak.PRE.equals(next))) {
-
-					output.append(' ');
-				}
-				last = next;
-
+				prev = this.writeWordBreak(output, prev, child.getWordBreak(this.prettyPrint));
 				this.writeNode(output, child, depth);
 			}
 		}
@@ -304,6 +278,19 @@ public class CssFormatter {
 		}
 	}
 
+	private WordBreak writeWordBreak(Appendable output, WordBreak prev, WordBreak next)
+		throws IOException {
+
+		if (prev != null &&
+			(WordBreak.BOTH.equals(prev) || WordBreak.POST.equals(prev)) &&
+			(WordBreak.BOTH.equals(next) || WordBreak.PRE.equals(next))) {
+
+			// emit significant whitespace
+			output.append(' ');
+		}
+		return next;
+	}
+
 	private void writeln(Appendable output, int depth)
 		throws IOException {
 
@@ -321,64 +308,6 @@ public class CssFormatter {
 		String indent = this.settings.getIndent();
 		for (int i=depth; i>0; i--) {
 			output.append(indent);
-		}
-	}
-
-	private WordBreak getWordBreak(CssNode node) {
-		if (node == null) {
-			return WordBreak.NONE;
-
-		} else if (node instanceof CombinatorNode) {
-			return this.prettyPrint ? WordBreak.BOTH : WordBreak.NONE;
-
-		} else if (node instanceof ColorNode || node instanceof NumericNode || node instanceof StringNode || node instanceof FunctionNode) {
-			return WordBreak.BOTH;
-
-		} else if (node instanceof ValueNode) {
-			// TODO: simplify this now that true function nodes exist
-			// or wait until accessor node exist and then remove completely
-			String value = ((ValueNode)node).getValue(!this.prettyPrint);
-			if (value != null) {
-				char ch = value.charAt(0);
-				switch (ch) {
-					case ',':
-						return this.prettyPrint ? WordBreak.POST : WordBreak.NONE;
-					case ')':
-					case ']':
-						ch = value.charAt(value.length()-1);
-						switch (ch) {
-							case '(':
-							case '[':
-								return WordBreak.NONE;
-						}
-						return WordBreak.POST;
-					case '(':
-					case '[':
-						ch = value.charAt(value.length()-1);
-						switch (ch) {
-							case '(':
-							case '[':
-								return WordBreak.PRE;
-						}
-						return WordBreak.BOTH;
-					default:
-						ch = value.charAt(value.length()-1);
-						switch (ch) {
-							case '(':
-							case '[':
-								return WordBreak.PRE;
-						}
-				}
-			}
-
-			if (node instanceof OperatorNode) {
-				return WordBreak.NONE;
-
-			} else {
-				return WordBreak.BOTH;
-			}
-		} else {
-			return WordBreak.NONE;
 		}
 	}
 }

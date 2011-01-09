@@ -71,6 +71,11 @@ public class CombinatorNode extends ValueNode {
 	}
 
 	@Override
+	public WordBreak getWordBreak(boolean prettyPrint) {
+		return prettyPrint ? WordBreak.BOTH : WordBreak.NONE;
+	}
+
+	@Override
 	public boolean equals(Object arg) {
 		if (!(arg instanceof CombinatorNode)) {
 			// includes null

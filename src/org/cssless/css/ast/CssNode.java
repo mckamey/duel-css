@@ -31,6 +31,10 @@ public abstract class CssNode {
 		return column;
 	}
 
+	public WordBreak getWordBreak(boolean prettyPrint) {
+		return WordBreak.NONE;
+	}
+	
 	public ContainerNode getParent() {
 		return this.parent;
 	}
