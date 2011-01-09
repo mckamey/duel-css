@@ -26,9 +26,11 @@ public class LessVariableDeclarationNode extends DeclarationNode {
 		}
 
 		MultiValueNode multi = new MultiValueNode(this.getIndex(), this.getLine(), this.getColumn());
+		ContainerNode container = multi.getContainer();
 		for (CssNode child : this.getChildren()) {
-			// can safely case as DeclarationNode only allows ValueNode
-			multi.appendChild((ValueNode)child);
+			// TODO: these should be clones in order to maintain correct parent links
+			// can safely cast as DeclarationNode only allows ValueNode
+			container.appendChild((ValueNode)child);
 		}
 		return multi;
 	}

@@ -55,7 +55,7 @@ public class CssParserTests {
 				CssToken.blockBegin(),
 				CssToken.value("background"),
 				CssToken.operator(":"),
-				CssToken.value("-webkit-gradient("),
+				CssToken.func("-webkit-gradient"),
 				CssToken.value("linear"),
 				CssToken.operator(","),
 				CssToken.value("left"),
@@ -64,18 +64,18 @@ public class CssParserTests {
 				CssToken.value("left"),
 				CssToken.value("bottom"),
 				CssToken.operator(","),
-				CssToken.value("from("),
+				CssToken.func("from"),
 				CssToken.color("#D5DDE5"),
 				CssToken.operator(")"),
 				CssToken.operator(","),
-				CssToken.value("to("),
+				CssToken.func("to"),
 				CssToken.color("#FFFFFF"),
 				CssToken.operator(")"),
 				CssToken.operator(")"),
 				CssToken.ruleDelim(),
 				CssToken.value("background"),
 				CssToken.operator(":"),
-				CssToken.value("-moz-linear-gradient("),
+				CssToken.func("-moz-linear-gradient"),
 				CssToken.value("top"),
 				CssToken.operator(","),
 				CssToken.color("#D5DDE5"),
@@ -90,32 +90,32 @@ public class CssParserTests {
 				new SelectorNode("body"),
 				new DeclarationNode(
 					"background",
-					new ValueNode("-webkit-gradient("),
-					new ValueNode("linear"),
-					new OperatorNode(","),
-					new ValueNode("left"),
-					new ValueNode("top"),
-					new OperatorNode(","),
-					new ValueNode("left"),
-					new ValueNode("bottom"),
-					new OperatorNode(","),
-					new ValueNode("from("),
-					new ColorNode("#D5DDE5"),
-					new OperatorNode(")"),
-					new OperatorNode(","),
-					new ValueNode("to("),
-					new ColorNode("#FFFFFF"),
-					new OperatorNode(")"),
-					new OperatorNode(")")),
+					new FunctionNode(
+						"-webkit-gradient",
+						new ValueNode("linear"),
+						new OperatorNode(","),
+						new ValueNode("left"),
+						new ValueNode("top"),
+						new OperatorNode(","),
+						new ValueNode("left"),
+						new ValueNode("bottom"),
+						new OperatorNode(","),
+						new FunctionNode(
+							"from",
+							new ColorNode("#D5DDE5")),
+						new OperatorNode(","),
+						new FunctionNode(
+							"to",
+							new ColorNode("#FFFFFF")))),
 				new DeclarationNode(
 					"background",
-					new ValueNode("-moz-linear-gradient("),
-					new ValueNode("top"),
-					new OperatorNode(","),
-					new ColorNode("#D5DDE5"),
-					new OperatorNode(","),
-					new ColorNode("#FFFFFF"),
-					new OperatorNode(")"))
+					new FunctionNode(
+						"-moz-linear-gradient",
+						new ValueNode("top"),
+						new OperatorNode(","),
+						new ColorNode("#D5DDE5"),
+						new OperatorNode(","),
+						new ColorNode("#FFFFFF")))
 			));
 		
 		StyleSheetNode actual = new CssParser().parse(input);
@@ -422,7 +422,7 @@ public class CssParserTests {
 				CssToken.operator(">"),
 				CssToken.value("F:first-child"),
 				CssToken.operator("+"),
-				CssToken.value("G:lang("),
+				CssToken.func("G:lang"),
 				CssToken.value("en"),
 				CssToken.operator(")"),
 				CssToken.blockBegin(),
@@ -446,9 +446,9 @@ public class CssParserTests {
 					new CombinatorNode(CombinatorType.CHILD),
 					new ValueNode("F:first-child"),
 					new CombinatorNode(CombinatorType.ADJACENT),
-					new ValueNode("G:lang("),
-					new ValueNode("en"),
-					new OperatorNode(")")),
+					new FunctionNode(
+						"G:lang",
+						new ValueNode("en"))),
 				new DeclarationNode(
 					"color",
 					new ColorNode("#336699"))));
@@ -539,7 +539,7 @@ public class CssParserTests {
 
 		CssToken[] input = {
 				CssToken.atRule("import"),
-				CssToken.value("url("),
+				CssToken.func("url"),
 				CssToken.string("\"reset.css\""),
 				CssToken.operator(")"),
 				CssToken.value("screen"),
@@ -549,9 +549,9 @@ public class CssParserTests {
 		StyleSheetNode expected = new StyleSheetNode(
 			new AtRuleNode(
 				"import",
-				new ValueNode("url("),
-				new StringNode("\"reset.css\""),
-				new OperatorNode(")"),
+				new FunctionNode(
+					"url",
+					new StringNode("\"reset.css\"")),
 				new ValueNode("screen")));
 
 		StyleSheetNode actual = new CssParser().parse(input);
@@ -609,14 +609,14 @@ public class CssParserTests {
 				CssToken.ruleDelim(),
 				CssToken.value("src"),
 				CssToken.operator(":"),
-				CssToken.value("local("),
+				CssToken.func("local"),
 				CssToken.string("'Foo'"),
 				CssToken.operator(")"),
 				CssToken.operator(","),
-				CssToken.value("url("),
+				CssToken.func("url"),
 				CssToken.string("'http://example.com/fonts/foo.tt'"),
 				CssToken.operator(")"),
-				CssToken.value("format("),
+				CssToken.func("format"),
 				CssToken.string("'truetype'"),
 				CssToken.operator(")"),
 				CssToken.ruleDelim(),
@@ -633,16 +633,16 @@ public class CssParserTests {
 							new StringNode("'Foo'")),
 						new DeclarationNode(
 							"src",
-							new ValueNode("local("),
-							new StringNode("'Foo'"),
-							new OperatorNode(")"),
+							new FunctionNode(
+								"local",
+								new StringNode("'Foo'")),
 							new OperatorNode(","),
-							new ValueNode("url("),
-							new StringNode("'http://example.com/fonts/foo.tt'"),
-							new OperatorNode(")"),
-							new ValueNode("format("),
-							new StringNode("'truetype'"),
-							new OperatorNode(")")))));
+							new FunctionNode(
+								"url",
+								new StringNode("'http://example.com/fonts/foo.tt'")),
+							new FunctionNode(
+								"format",
+								new StringNode("'truetype'"))))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 
@@ -717,7 +717,7 @@ public class CssParserTests {
 	public void pseudoClassFunctionTest() throws IOException {
 
 		CssToken[] input = {
-				CssToken.value("p:nth-last-of-type("),
+				CssToken.func("p:nth-last-of-type"),
 				CssToken.value("n"),
 				CssToken.operator("+"),
 				CssToken.numeric("2"),
@@ -733,11 +733,11 @@ public class CssParserTests {
 		StyleSheetNode expected = new StyleSheetNode(
 			new RuleSetNode(
 				new SelectorNode(
-					new ValueNode("p:nth-last-of-type("),
-					new ValueNode("n"),
-					new OperatorNode("+"),
-					new ValueNode("2"),
-					new OperatorNode(")")),
+					new FunctionNode(
+						"p:nth-last-of-type",
+						new ValueNode("n"),
+						new OperatorNode("+"),
+						new ValueNode("2"))),
 				new DeclarationNode(
 					"color",
 					new ColorNode("#69C"))));
@@ -753,7 +753,7 @@ public class CssParserTests {
 		CssToken[] input = {
 				CssToken.value("p"),
 				CssToken.operator(":"),
-				CssToken.value("not-last-of-type("),
+				CssToken.func("not-last-of-type"),
 				CssToken.value("n"),
 				CssToken.operator("+"),
 				CssToken.numeric("2"),
@@ -771,11 +771,11 @@ public class CssParserTests {
 				new SelectorNode(
 					new ValueNode("p"),
 					new OperatorNode(":"),
-					new ValueNode("not-last-of-type("),
-					new ValueNode("n"),
-					new OperatorNode("+"),
-					new ValueNode("2"),
-					new OperatorNode(")")),
+					new FunctionNode(
+						"not-last-of-type",
+						new ValueNode("n"),
+						new OperatorNode("+"),
+						new ValueNode("2"))),
 				new DeclarationNode(
 					"color",
 					new ColorNode("#69C"))));
@@ -791,7 +791,7 @@ public class CssParserTests {
 		CssToken[] input = {
 				CssToken.value("p"),
 				CssToken.operator(":"),
-				CssToken.value("nth-last-of-type-fake("),
+				CssToken.func("nth-last-of-type-fake"),
 				CssToken.value("n"),
 				CssToken.operator("+"),
 				CssToken.numeric("2"),
@@ -809,11 +809,11 @@ public class CssParserTests {
 				new SelectorNode(
 					new ValueNode("p"),
 					new OperatorNode(":"),
-					new ValueNode("nth-last-of-type-fake("),
-					new ValueNode("n"),
-					new OperatorNode("+"),
-					new ValueNode("2"),
-					new OperatorNode(")")),
+					new FunctionNode(
+						"nth-last-of-type-fake",
+						new ValueNode("n"),
+						new OperatorNode("+"),
+						new ValueNode("2"))),
 				new DeclarationNode(
 					"color",
 					new ColorNode("#69C"))));
@@ -964,7 +964,7 @@ public class CssParserTests {
 				CssToken.operator(":"),
 				CssToken.value("progid"),
 				CssToken.operator(":"),
-				CssToken.value("DXImageTransform.Microsoft.AlphaImageLoader("),
+				CssToken.func("DXImageTransform.Microsoft.AlphaImageLoader"),
 				CssToken.value("src"),
 				CssToken.operator("="),
 				CssToken.string("'foo.png'"),
@@ -986,15 +986,15 @@ public class CssParserTests {
 					"filter",
 					new ValueNode("progid"),
 					new OperatorNode(":"),
-					new ValueNode("DXImageTransform.Microsoft.AlphaImageLoader("),
-					new ValueNode("src"),
-					new OperatorNode("="),
-					new StringNode("'foo.png'"),
-					new OperatorNode(","),
-					new ValueNode("sizingMethod"),
-					new OperatorNode("="),
-					new StringNode("\"scale\""),
-					new OperatorNode(")"))));
+					new FunctionNode(
+						"DXImageTransform.Microsoft.AlphaImageLoader",
+						new ValueNode("src"),
+						new OperatorNode("="),
+						new StringNode("'foo.png'"),
+						new OperatorNode(","),
+						new ValueNode("sizingMethod"),
+						new OperatorNode("="),
+						new StringNode("\"scale\"")))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 

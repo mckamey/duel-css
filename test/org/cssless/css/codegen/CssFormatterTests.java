@@ -46,32 +46,31 @@ public class CssFormatterTests {
 				new SelectorNode("body"),
 				new DeclarationNode(
 					"background",
-					new ValueNode("-webkit-gradient("),
-					new ValueNode("linear"),
-					new OperatorNode(","),
-					new ValueNode("left"),
-					new ValueNode("top"),
-					new OperatorNode(","),
-					new ValueNode("left"),
-					new ValueNode("bottom"),
-					new OperatorNode(","),
-					new ValueNode("from("),
-					new ColorNode("#D5DDE5"),
-					new OperatorNode(")"),
-					new OperatorNode(","),
-					new ValueNode("to("),
-					new ColorNode("#FFFFFF"),
-					new OperatorNode(")"),
-					new OperatorNode(")")),
+					new FunctionNode(
+						"-webkit-gradient",
+						new ValueNode("linear"),
+						new OperatorNode(","),
+						new ValueNode("left"),
+						new ValueNode("top"),
+						new OperatorNode(","),
+						new ValueNode("left"),
+						new ValueNode("bottom"),
+						new OperatorNode(","),
+						new FunctionNode(
+							"from",
+							new ColorNode("#D5DDE5")),
+						new OperatorNode(","),
+						new FunctionNode("to",
+							new ColorNode("#FFFFFF")))),
 				new DeclarationNode(
 					"background",
-					new ValueNode("-moz-linear-gradient("),
-					new ValueNode("top"),
-					new OperatorNode(","),
-					new ColorNode("#D5DDE5"),
-					new OperatorNode(","),
-					new ColorNode("#FFFFFF"),
-					new OperatorNode(")"))
+					new FunctionNode(
+						"-moz-linear-gradient",
+						new ValueNode("top"),
+						new OperatorNode(","),
+						new ColorNode("#D5DDE5"),
+						new OperatorNode(","),
+						new ColorNode("#FFFFFF")))
 			));
 
 		String expected =
@@ -96,32 +95,32 @@ public class CssFormatterTests {
 				new SelectorNode("body"),
 				new DeclarationNode(
 					"background",
-					new ValueNode("-webkit-gradient("),
-					new ValueNode("linear"),
-					new OperatorNode(","),
-					new ValueNode("left"),
-					new ValueNode("top"),
-					new OperatorNode(","),
-					new ValueNode("left"),
-					new ValueNode("bottom"),
-					new OperatorNode(","),
-					new ValueNode("from("),
-					new ColorNode("#D5DDE5"),
-					new OperatorNode(")"),
-					new OperatorNode(","),
-					new ValueNode("to("),
-					new ColorNode("cornflowerblue"),
-					new OperatorNode(")"),
-					new OperatorNode(")")),
+					new FunctionNode(
+						"-webkit-gradient",
+						new ValueNode("linear"),
+						new OperatorNode(","),
+						new ValueNode("left"),
+						new ValueNode("top"),
+						new OperatorNode(","),
+						new ValueNode("left"),
+						new ValueNode("bottom"),
+						new OperatorNode(","),
+						new FunctionNode(
+							"from",
+							new ColorNode("#D5DDE5")),
+						new OperatorNode(","),
+						new FunctionNode(
+							"to",
+							new ColorNode("cornflowerblue")))),
 				new DeclarationNode(
 					"background",
-					new ValueNode("-moz-linear-gradient("),
-					new ValueNode("top"),
-					new OperatorNode(","),
-					new ColorNode("silver"),
-					new OperatorNode(","),
-					new ColorNode("white"),
-					new OperatorNode(")"))
+					new FunctionNode(
+						"-moz-linear-gradient",
+						new ValueNode("top"),
+						new OperatorNode(","),
+						new ColorNode("silver"),
+						new OperatorNode(","),
+						new ColorNode("white")))
 			));
 
 		String expected = "body{background:-webkit-gradient(linear,left top,left bottom,from(#D5DDE5),to(#6495ED));background:-moz-linear-gradient(top,silver,#FFF);}";
@@ -410,9 +409,9 @@ public class CssFormatterTests {
 					new CombinatorNode(CombinatorType.CHILD),
 					new ValueNode("F:first-child"),
 					new CombinatorNode(CombinatorType.ADJACENT),
-					new ValueNode("G:lang("),
-					new ValueNode("en"),
-					new OperatorNode(")")),
+					new FunctionNode(
+						"G:lang",
+						new ValueNode("en"))),
 				new DeclarationNode(
 					"color",
 					new ColorNode("#336699"))));
@@ -446,9 +445,9 @@ public class CssFormatterTests {
 					new CombinatorNode(CombinatorType.CHILD),
 					new ValueNode("F:first-child"),
 					new CombinatorNode(CombinatorType.ADJACENT),
-					new ValueNode("G:lang("),
-					new ValueNode("en"),
-					new OperatorNode(")")),
+					new FunctionNode(
+						"G:lang",
+						new ValueNode("en"))),
 				new DeclarationNode(
 					"color",
 					new ColorNode("#336699"))));
@@ -556,9 +555,9 @@ public class CssFormatterTests {
 		StyleSheetNode input = new StyleSheetNode(
 			new AtRuleNode(
 				"import",
-				new ValueNode("url("),
-				new StringNode("\"reset.css\""),
-				new OperatorNode(")"),
+				new FunctionNode(
+					"url",
+					new StringNode("\"reset.css\"")),
 				new ValueNode("screen")));
 
 		String expected =
@@ -724,16 +723,16 @@ public class CssFormatterTests {
 						new StringNode("'Foo'")),
 					new DeclarationNode(
 						"src",
-						new ValueNode("local("),
-						new StringNode("'Foo'"),
-						new OperatorNode(")"),
+						new FunctionNode(
+							"local",
+							new StringNode("'Foo'")),
 						new OperatorNode(","),
-						new ValueNode("url("),
-						new StringNode("'http://example.com/fonts/foo.tt'"),
-						new OperatorNode(")"),
-						new ValueNode("format("),
-						new StringNode("'truetype'"),
-						new OperatorNode(")")))));
+						new FunctionNode(
+							"url",
+							new StringNode("'http://example.com/fonts/foo.tt'")),
+						new FunctionNode(
+							"format",
+							new StringNode("'truetype'"))))));
 
 		String expected =
 			"@font-face\n" +
@@ -810,11 +809,11 @@ public class CssFormatterTests {
 		StyleSheetNode input = new StyleSheetNode(
 			new RuleSetNode(
 				new SelectorNode(
-					new ValueNode("p:nth-last-of-type("),
-					new ValueNode("n"),
-					new OperatorNode("+"),
-					new ValueNode("2"),
-					new OperatorNode(")")),
+					new FunctionNode(
+						"p:nth-last-of-type",
+						new ValueNode("n"),
+						new OperatorNode("+"),
+						new ValueNode("2"))),
 				new DeclarationNode(
 					"color",
 					new ColorNode("#69C"))));
@@ -840,11 +839,11 @@ public class CssFormatterTests {
 				new SelectorNode(
 					new ValueNode("p"),
 					new OperatorNode(":"),
-					new ValueNode("not-last-of-type("),
-					new ValueNode("n"),
-					new OperatorNode("+"),
-					new ValueNode("2"),
-					new OperatorNode(")")),
+					new FunctionNode(
+						"not-last-of-type",
+						new ValueNode("n"),
+						new OperatorNode("+"),
+						new ValueNode("2"))),
 				new DeclarationNode(
 					"color",
 					new ColorNode("#69C"))));
@@ -870,11 +869,11 @@ public class CssFormatterTests {
 				new SelectorNode(
 					new ValueNode("p"),
 					new OperatorNode(":"),
-					new ValueNode("nth-last-of-type-fake("),
-					new ValueNode("n"),
-					new OperatorNode("+"),
-					new ValueNode("2"),
-					new OperatorNode(")")),
+					new FunctionNode(
+						"nth-last-of-type-fake",
+						new ValueNode("n"),
+						new OperatorNode("+"),
+						new ValueNode("2"))),
 				new DeclarationNode(
 					"color",
 					new ColorNode("#69C"))));
@@ -1022,15 +1021,15 @@ public class CssFormatterTests {
 					"filter",
 					new ValueNode("progid"),
 					new OperatorNode(":"),
-					new ValueNode("DXImageTransform.Microsoft.AlphaImageLoader("),
-					new ValueNode("src"),
-					new OperatorNode("="),
-					new StringNode("'foo.png'"),
-					new OperatorNode(","),
-					new ValueNode("sizingMethod"),
-					new OperatorNode("="),
-					new StringNode("\"scale\""),
-					new OperatorNode(")"))));
+					new FunctionNode(
+						"DXImageTransform.Microsoft.AlphaImageLoader",
+						new ValueNode("src"),
+						new OperatorNode("="),
+						new StringNode("'foo.png'"),
+						new OperatorNode(","),
+						new ValueNode("sizingMethod"),
+						new OperatorNode("="),
+						new StringNode("\"scale\"")))));
 
 		String expected =
 			"div.foo .1a\n" +
@@ -1057,15 +1056,15 @@ public class CssFormatterTests {
 					"filter",
 					new ValueNode("progid"),
 					new OperatorNode(":"),
-					new ValueNode("DXImageTransform.Microsoft.AlphaImageLoader("),
-					new ValueNode("src"),
-					new OperatorNode("="),
-					new StringNode("'foo.png'"),
-					new OperatorNode(","),
-					new ValueNode("sizingMethod"),
-					new OperatorNode("="),
-					new StringNode("\"scale\""),
-					new OperatorNode(")"))));
+					new FunctionNode(
+						"DXImageTransform.Microsoft.AlphaImageLoader",
+						new ValueNode("src"),
+						new OperatorNode("="),
+						new StringNode("'foo.png'"),
+						new OperatorNode(","),
+						new ValueNode("sizingMethod"),
+						new OperatorNode("="),
+						new StringNode("\"scale\"")))));
 
 		String expected = "div.foo .1a{filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='foo.png',sizingMethod=\"scale\");}";
 		

@@ -116,38 +116,12 @@ public class CssToken {
 		return new CssToken(CssTokenType.RULE_DELIM, index, line, column);
 	}
 
-	static CssToken typedValue(String value, int index, int line, int column) {
-		int length = value != null ? value.length()-1 : -1;
-		if ((length == 3 || length == 6) && value.charAt(0) == CssGrammar.OP_HASH) {
-			while (length > 0) {
-				if (!CharUtility.isHexDigit(value.charAt(length))) {
-					break;
-				}
-
-				length--;
-			}
-
-			if (length == 0) {
-				return CssToken.color(value, index, line, column);
-			}
-		}
-
-		if (CharUtility.isOperator(value)) {
-			return new CssToken(CssTokenType.OPERATOR, value, index, line, column);
-
-		} else if (CssGrammar.decodeColor(value) != null) {
-			return new CssToken(CssTokenType.COLOR, value, index, line, column);
-		}
-
-		return new CssToken(CssTokenType.VALUE, value, index, line, column);
+	public static CssToken func(String value) {
+		return new CssToken(CssTokenType.FUNCTION, value, -1, -1, -1);
 	}
 
-	public static CssToken value(String value) {
-		return new CssToken(CssTokenType.VALUE, value, -1, -1, -1);
-	}
-
-	public static CssToken value(String value, int index, int line, int column) {
-		return new CssToken(CssTokenType.VALUE, value, index, line, column);
+	public static CssToken func(String value, int index, int line, int column) {
+		return new CssToken(CssTokenType.FUNCTION, value, index, line, column);
 	}
 
 	public static CssToken operator(String value) {
@@ -180,6 +154,14 @@ public class CssToken {
 
 	public static CssToken stringValue(String value, int index, int line, int column) {
 		return new CssToken(CssTokenType.STRING, value, index, line, column);
+	}
+
+	public static CssToken value(String value) {
+		return new CssToken(CssTokenType.VALUE, value, -1, -1, -1);
+	}
+
+	public static CssToken value(String value, int index, int line, int column) {
+		return new CssToken(CssTokenType.VALUE, value, index, line, column);
 	}
 
 	public static CssToken important() {

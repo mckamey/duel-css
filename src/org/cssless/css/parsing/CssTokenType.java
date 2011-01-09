@@ -28,6 +28,11 @@ public enum CssTokenType {
 	RULE_DELIM,
 
 	/**
+	 * Function begin
+	 */
+	FUNCTION,
+
+	/**
 	 * Operator
 	 */
 	OPERATOR,

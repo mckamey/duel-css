@@ -70,8 +70,9 @@ public class ArithmeticEvaluator {
 				default:
 					ValueNode first = operands.get(0);
 					MultiValueNode multi = new MultiValueNode(first.getIndex(), first.getLine(), first.getColumn());
+					ContainerNode container = multi.getContainer();
 					for (int i=0; i<length; i++) {
-						multi.appendChild(operands.get(i));
+						container.appendChild(operands.get(i));
 					}
 					return multi;
 			}

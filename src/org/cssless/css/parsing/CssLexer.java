@@ -325,7 +325,7 @@ public class CssLexer implements Iterator<CssToken> {
 		while (true) {
 			if (CharUtility.isWhiteSpace(this.ch)) {
 				// flush the buffer
-				return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+				return (this.token = this.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 			}
 
 			switch (this.ch) {
@@ -357,14 +357,14 @@ public class CssLexer implements Iterator<CssToken> {
 				case EOF:
 					// these chars are start of other tokens
 					// flush the buffer
-					return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+					return (this.token = this.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 
 				case CssGrammar.OP_PAREN_END:
 				case CssGrammar.OP_ATTR_END:
 					if (this.buffer.length() > 0) {
 						// these chars are start of next token
 						// flush the buffer
-						return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+						return (this.token = this.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 					}
 					// consume until reach a special char
 					this.buffer.append((char)this.ch);
@@ -380,7 +380,7 @@ public class CssLexer implements Iterator<CssToken> {
 						this.resetMark();
 						// start of numeric token
 						// flush the buffer
-						return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+						return (this.token = this.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 					}
 
 					// consume until reach a special char
@@ -394,7 +394,7 @@ public class CssLexer implements Iterator<CssToken> {
 					this.nextChar();
 
 					// flush the buffer
-					return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+					return (this.token = this.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 
 				case CssGrammar.OP_PAIR_DELIM:
 					this.setMark(CAPACITY);
@@ -432,7 +432,7 @@ public class CssLexer implements Iterator<CssToken> {
 
 					// end of property token
 					// flush the buffer
-					return (this.token = CssToken.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
+					return (this.token = this.typedValue(this.buffer.toString(), this.token_index, this.token_line, this.token_column));
 
 				default:
 					// consume until reach a special char
@@ -535,7 +535,7 @@ public class CssLexer implements Iterator<CssToken> {
 				// didn't match important
 				// NOTE: this may throw an exception if block was unterminated
 				this.resetMark();
-				return (this.token = CssToken.typedValue("!", this.token_index, this.token_line, this.token_column));
+				return (this.token = this.typedValue("!", this.token_index, this.token_line, this.token_column));
 			}
 
 			this.nextChar();
@@ -677,6 +677,36 @@ public class CssLexer implements Iterator<CssToken> {
 		}
 
 		throw new SyntaxException("Unterminated block", this.token_index, this.token_line, this.token_column);
+	}
+
+	private CssToken typedValue(String value, int index, int line, int column) {
+		int length = value != null ? value.length()-1 : -1;
+		if ((length == 3 || length == 6) && value.charAt(0) == CssGrammar.OP_HASH) {
+			while (length > 0) {
+				if (!CharUtility.isHexDigit(value.charAt(length))) {
+					break;
+				}
+
+				length--;
+			}
+
+			if (length == 0) {
+				return CssToken.color(value, index, line, column);
+			}
+		}
+
+		if (CharUtility.isOperator(value)) {
+			return CssToken.operator(value, index, line, column);
+
+		} else if (CssGrammar.decodeColor(value) != null) {
+			return CssToken.color(value, index, line, column);
+		}
+
+		int last = value != null ? value.length()-1 : -1;
+		if (last > 0 && value.charAt(last) == CssGrammar.OP_PAREN_BEGIN) {
+			return CssToken.func(value.substring(0, last), index, line, column);
+		}
+		return CssToken.value(value, index, line, column);
 	}
 
 	/**

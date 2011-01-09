@@ -86,8 +86,11 @@ public class CssFormatter {
 		} else if (node instanceof CommentNode) {
 			this.writeComment(output, (CommentNode)node, 0);
 
+		} else if (node instanceof FunctionNode) {
+			this.writeFunction(output, (FunctionNode)node, 0);
+
 		} else if (node instanceof MultiValueNode) {
-			this.writeMultiValue(output, (MultiValueNode)node, 0);
+			this.writeContainer(output, ((MultiValueNode)node).getContainer(), 0);
 
 		} else if (node instanceof ValueNode) {
 			this.writeValue(output, (ValueNode)node);
@@ -118,8 +121,11 @@ public class CssFormatter {
 		} else if (node instanceof CommentNode) {
 			this.writeComment(output, (CommentNode)node, depth);
 
+		} else if (node instanceof FunctionNode) {
+			this.writeFunction(output, (FunctionNode)node, depth);
+
 		} else if (node instanceof MultiValueNode) {
-			this.writeMultiValue(output, (MultiValueNode)node, depth);
+			this.writeContainer(output, ((MultiValueNode)node).getContainer(), depth);
 
 		} else if (node instanceof ValueNode) {
 			this.writeValue(output, (ValueNode)node);
@@ -254,7 +260,16 @@ public class CssFormatter {
 		output.append('}');
 	}
 
-	private void writeMultiValue(Appendable output, MultiValueNode node, int depth)
+	private void writeFunction(Appendable output, FunctionNode node, int depth)
+		throws IOException {
+
+		output.append(node.getValue());
+		output.append('(');
+		this.writeContainer(output, node.getContainer(), depth);
+		output.append(')');
+	}
+
+	private void writeContainer(Appendable output, ContainerNode node, int depth)
 		throws IOException {
 
 		WordBreak last = null;
@@ -316,10 +331,12 @@ public class CssFormatter {
 		} else if (node instanceof CombinatorNode) {
 			return this.prettyPrint ? WordBreak.BOTH : WordBreak.NONE;
 
-		} else if (node instanceof ColorNode || node instanceof NumericNode || node instanceof StringNode) {
+		} else if (node instanceof ColorNode || node instanceof NumericNode || node instanceof StringNode || node instanceof FunctionNode) {
 			return WordBreak.BOTH;
 
 		} else if (node instanceof ValueNode) {
+			// TODO: simplify this now that true function nodes exist
+			// or wait until accessor node exist and then remove completely
 			String value = ((ValueNode)node).getValue(!this.prettyPrint);
 			if (value != null) {
 				char ch = value.charAt(0);
