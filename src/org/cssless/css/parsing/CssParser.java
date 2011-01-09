@@ -262,7 +262,7 @@ public class CssParser {
 		ruleSet.getSelectors().add(selector);
 
 		String value;
-		int nestDepth = 0;
+		int nesting = 0;
 
 		// check identity of start
 		if (start != this.next) {
@@ -277,12 +277,10 @@ public class CssParser {
 					if (value != null) {
 						switch (value.charAt(0)) {
 							case CssGrammar.OP_PAREN_BEGIN:
-							case CssGrammar.OP_ATTR_BEGIN:
-								nestDepth++;
+								nesting++;
 								break;
 							case CssGrammar.OP_PAREN_END:
-							case CssGrammar.OP_ATTR_END:
-								nestDepth--;
+								nesting--;
 								break;
 						}
 					}
@@ -328,7 +326,7 @@ public class CssParser {
 
 				case OPERATOR:
 					value = this.next.getValue();
-					if (nestDepth <= 0) {
+					if (nesting <= 0) {
 						if (",".equals(value)) {
 							// consume token
 							this.next = null;
@@ -348,12 +346,10 @@ public class CssParser {
 					if (value != null) {
 						switch (value.charAt(0)) {
 							case CssGrammar.OP_PAREN_BEGIN:
-							case CssGrammar.OP_ATTR_BEGIN:
-								nestDepth++;
+								nesting++;
 								break;
 							case CssGrammar.OP_PAREN_END:
-							case CssGrammar.OP_ATTR_END:
-								nestDepth--;
+								nesting--;
 								break;
 						}
 					}
@@ -404,7 +400,7 @@ public class CssParser {
 
 		char ch;
 		String value;
-		int nestDepth = 0;
+		int nesting = 0;
 
 		while (this.hasNext()) {
 			switch (this.next.getToken()) {
@@ -424,7 +420,7 @@ public class CssParser {
 					continue;
 
 				case RULE_DELIM:
-					if (nestDepth <= 0) {
+					if (nesting <= 0) {
 						// consume ';' as end of declaration
 						this.next = null;
 						if (requiredEval || optionalEval) {
@@ -477,12 +473,10 @@ public class CssParser {
 
 					switch (ch) {
 						case CssGrammar.OP_PAREN_BEGIN:
-						case CssGrammar.OP_ATTR_BEGIN:
-							nestDepth++;
+							nesting++;
 							break;
 						case CssGrammar.OP_PAREN_END:
-						case CssGrammar.OP_ATTR_END:
-							nestDepth--;
+							nesting--;
 							break;
 						case '+':
 						case '-':
@@ -530,7 +524,7 @@ public class CssParser {
 		}
 
 		String value;
-		int nestDepth = 0;
+		int nesting = 0;
 		ContainerNode args = func.getContainer();
 
 		while (this.hasNext()) {
@@ -574,19 +568,15 @@ public class CssParser {
 					value = this.next.getValue();
 					switch ((value != null) ? value.charAt(0) : '\0') {
 						case CssGrammar.OP_PAREN_BEGIN:
-						case CssGrammar.OP_ATTR_BEGIN:
-							nestDepth++;
+							nesting++;
 							break;
 						case CssGrammar.OP_PAREN_END:
-							if (nestDepth <= 0) {
+							if (nesting <= 0) {
 								// consume token, terminate function
 								this.next = null;
 								return;
 							}
-							nestDepth--;
-							break;
-						case CssGrammar.OP_ATTR_END:
-							nestDepth--;
+							nesting--;
 							break;
 					}
 
@@ -626,7 +616,7 @@ public class CssParser {
 		}
 
 		String value;
-		int nestDepth = 0;
+		int nesting = 0;
 		ContainerNode args = accessor.getContainer();
 
 		while (this.hasNext()) {
@@ -670,19 +660,17 @@ public class CssParser {
 					value = this.next.getValue();
 					switch ((value != null) ? value.charAt(0) : '\0') {
 						case CssGrammar.OP_PAREN_BEGIN:
-						case CssGrammar.OP_ATTR_BEGIN:
-							nestDepth++;
+							nesting++;
 							break;
 						case CssGrammar.OP_PAREN_END:
-							nestDepth--;
+							nesting--;
 							break;
 						case CssGrammar.OP_ATTR_END:
-							if (nestDepth <= 0) {
-								// consume token, terminate function
+							if (nesting <= 0) {
+								// consume token, terminate accessor
 								this.next = null;
 								return;
 							}
-							nestDepth--;
 							break;
 					}
 
