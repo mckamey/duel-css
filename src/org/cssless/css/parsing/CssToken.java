@@ -35,15 +35,15 @@ public class CssToken {
 	}
 
 	public int getIndex() {
-		return index;
+		return this.index;
 	}
 
 	public int getLine() {
-		return line;
+		return this.line;
 	}
 
 	public int getColumn() {
-		return column;
+		return this.column;
 	}
 
 	@Override

@@ -163,7 +163,7 @@ public class CssParser {
 		CssToken ident = this.next;
 		this.next = null;
 
-		// if not nested, then must be rule set
+		// if nested, then must be rule set
 		if (nested && this.hasNext() && CssTokenType.OPERATOR.equals(this.next.getToken()) && ":".equals(this.next.getValue())) {
 			this.parseDeclaration(parent, ident);
 			return;
@@ -215,7 +215,7 @@ public class CssParser {
 		throws IOException {
 
 		SelectorNode selector = new SelectorNode(start.getIndex(), start.getLine(), start.getColumn());
-		ruleSet.getSelectors().add(selector);
+		ruleSet.addSelector(selector);
 
 		int nesting = 0;
 
@@ -353,7 +353,25 @@ public class CssParser {
 								break;
 							case CssGrammar.OP_PAREN_END:
 								nesting--;
+								if (nesting < 0) {
+									// end of LESS mixin function param, let caller consume token
+									if (requiredEval || optionalEval) {
+										this.evalExpressions(declaration, requiredEval);
+									}
+									return;
+								}
 								break;
+//							case ',':
+//								if (nesting <= 0) {
+//									// consume token
+//									this.next = null;
+//									// end of LESS mixin function param
+//									if (requiredEval || optionalEval) {
+//										this.evalExpressions(declaration, requiredEval);
+//									}
+//									return;
+//								}
+//								break;
 							case '+':
 							case '-':
 							case '*':
@@ -408,11 +426,27 @@ public class CssParser {
 								break;
 							case CssGrammar.OP_PAREN_END:
 								if (nesting <= 0) {
+									// elevate any params to parent scope
+									if (args.hasVariables() && parent instanceof SelectorNode) {
+										ContainerNode ruleSet = parent.getParent();
+										if (ruleSet != null) {
+											for (LessVariableDeclarationNode variable : args.getVariables()) {
+												ruleSet.putVariable(variable);
+											}
+										}
+										if (!args.hasChildren()) {
+											parent.replaceChild(new ValueNode(func.getValue(), func.getIndex(), func.getLine(), func.getColumn()), func);
+										}
+									}
+
 									// consume token, terminate function
 									this.next = null;
 									return;
 								}
 								nesting--;
+								break;
+							case ',':
+								// TODO: check if children are LESS vars and consume?
 								break;
 						}
 					}
@@ -420,6 +454,13 @@ public class CssParser {
 					args.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 					// consume token
 					this.next = null;
+					continue;
+
+				case AT_RULE:
+					// LESS mixin function param
+					CssToken ident = this.next;
+					this.next = null;
+					this.parseDeclaration(args, ident);
 					continue;
 
 				default:

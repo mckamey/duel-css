@@ -1899,4 +1899,135 @@ public class CssParserTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void lessMixinFunctionTest() throws IOException {
+
+		CssToken[] input = {
+			CssToken.func(".rounded_corners"),
+			CssToken.atRule("radius"),
+			CssToken.operator(":"),
+			CssToken.numeric("5px"),
+			CssToken.operator(")"),
+			CssToken.blockBegin(),
+
+			CssToken.value("-moz-border-radius"),
+			CssToken.operator(":"),
+			CssToken.atRule("radius"),
+			CssToken.ruleDelim(),
+
+			CssToken.value("-webkit-border-radius"),
+			CssToken.operator(":"),
+			CssToken.atRule("radius"),
+			CssToken.ruleDelim(),
+
+			CssToken.value("border-radius"),
+			CssToken.operator(":"),
+			CssToken.atRule("radius"),
+			CssToken.ruleDelim(),
+
+			CssToken.blockEnd()
+		};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(".rounded_corners"),
+				new DeclarationNode(
+					"-moz-border-radius",
+					new NumericNode("5px")),
+				new DeclarationNode(
+					"-webkit-border-radius",
+					new NumericNode("5px")),
+				new DeclarationNode(
+					"border-radius",
+					new NumericNode("5px"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void lessMixinUsageTest() throws IOException {
+
+		CssToken[] input = {
+			CssToken.func(".rounded_corners"),
+			CssToken.atRule("radius"),
+			CssToken.operator(":"),
+			CssToken.numeric("5px"),
+			CssToken.operator(")"),
+
+			CssToken.blockBegin(),
+
+			CssToken.value("-moz-border-radius"),
+			CssToken.operator(":"),
+			CssToken.atRule("radius"),
+			CssToken.ruleDelim(),
+
+			CssToken.value("-webkit-border-radius"),
+			CssToken.operator(":"),
+			CssToken.atRule("radius"),
+			CssToken.ruleDelim(),
+
+			CssToken.value("border-radius"),
+			CssToken.operator(":"),
+			CssToken.atRule("radius"),
+			CssToken.ruleDelim(),
+
+			CssToken.blockEnd(),
+
+			CssToken.value("#header"),
+			CssToken.blockBegin(),
+			CssToken.value(".rounded_corners"),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd(),
+
+			CssToken.value("#footer"),
+			CssToken.blockBegin(),
+			CssToken.func(".rounded_corners"),
+			CssToken.numeric("10px"),
+			CssToken.operator(")"),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd()
+		};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(".rounded_corners"),
+				new DeclarationNode(
+					"-moz-border-radius",
+					new NumericNode("5px")),
+				new DeclarationNode(
+					"-webkit-border-radius",
+					new NumericNode("5px")),
+				new DeclarationNode(
+					"border-radius",
+					new NumericNode("5px"))),
+			new RuleSetNode(
+				new SelectorNode("#header"),
+				new DeclarationNode(
+					"-moz-border-radius",
+					new NumericNode("5px")),
+				new DeclarationNode(
+					"-webkit-border-radius",
+					new NumericNode("5px")),
+				new DeclarationNode(
+					"border-radius",
+					new NumericNode("5px"))),
+			new RuleSetNode(
+				new SelectorNode("#footer"),
+				new DeclarationNode(
+					"-moz-border-radius",
+					new NumericNode("10px")),
+				new DeclarationNode(
+					"-webkit-border-radius",
+					new NumericNode("10px")),
+				new DeclarationNode(
+					"border-radius",
+					new NumericNode("10px"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
 }

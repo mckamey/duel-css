@@ -1151,6 +1151,130 @@ public class CssLexerTests {
 		assertArrayEquals(expected, actual);
 	}
 
+	@Test
+	public void lessMixinFunctionTest() {
+
+		String input =
+			".rounded_corners(@radius: 5px) {\n" +
+			"\t-moz-border-radius: @radius;\n" +
+			"\t-webkit-border-radius: @radius;\n" +
+			"\tborder-radius: @radius;\n" +
+			"}\n" +
+			"#header {\n" +
+			"\t.rounded_corners;\n" +
+			"}\n\n" +
+			"#footer {\n" +
+			"\t.rounded_corners(10px);\n" +
+			"}\n";
+
+		Object[] expected = {
+			CssToken.func(".rounded_corners"),
+			CssToken.atRule("radius"),
+			CssToken.operator(":"),
+			CssToken.numeric("5px"),
+			CssToken.operator(")"),
+			CssToken.blockBegin(),
+
+			CssToken.value("-moz-border-radius"),
+			CssToken.operator(":"),
+			CssToken.atRule("radius"),
+			CssToken.ruleDelim(),
+
+			CssToken.value("-webkit-border-radius"),
+			CssToken.operator(":"),
+			CssToken.atRule("radius"),
+			CssToken.ruleDelim(),
+
+			CssToken.value("border-radius"),
+			CssToken.operator(":"),
+			CssToken.atRule("radius"),
+			CssToken.ruleDelim(),
+
+			CssToken.blockEnd(),
+
+			CssToken.value("#header"),
+			CssToken.blockBegin(),
+			CssToken.value(".rounded_corners"),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd(),
+
+			CssToken.value("#footer"),
+			CssToken.blockBegin(),
+			CssToken.func(".rounded_corners"),
+			CssToken.numeric("10px"),
+			CssToken.operator(")"),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd()
+		};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void lessMixinFunctionSpaceTest() {
+
+		String input =
+			".rounded_corners (@radius: 5px) {\n" +
+			"\t-moz-border-radius: @radius;\n" +
+			"\t-webkit-border-radius: @radius;\n" +
+			"\tborder-radius: @radius;\n" +
+			"}\n" +
+			"#header {\n" +
+			"\t.rounded_corners;\n" +
+			"}\n\n" +
+			"#footer {\n" +
+			"\t.rounded_corners (10px);\n" +
+			"}";
+
+		Object[] expected = {
+			CssToken.value(".rounded_corners"),
+			CssToken.operator("("),
+			CssToken.atRule("radius"),
+			CssToken.operator(":"),
+			CssToken.numeric("5px"),
+			CssToken.operator(")"),
+			CssToken.blockBegin(),
+
+			CssToken.value("-moz-border-radius"),
+			CssToken.operator(":"),
+			CssToken.atRule("radius"),
+			CssToken.ruleDelim(),
+
+			CssToken.value("-webkit-border-radius"),
+			CssToken.operator(":"),
+			CssToken.atRule("radius"),
+			CssToken.ruleDelim(),
+
+			CssToken.value("border-radius"),
+			CssToken.operator(":"),
+			CssToken.atRule("radius"),
+			CssToken.ruleDelim(),
+
+			CssToken.blockEnd(),
+
+			CssToken.value("#header"),
+			CssToken.blockBegin(),
+			CssToken.value(".rounded_corners"),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd(),
+
+			CssToken.value("#footer"),
+			CssToken.blockBegin(),
+			CssToken.value(".rounded_corners"),
+			CssToken.operator("("),
+			CssToken.numeric("10px"),
+			CssToken.operator(")"),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd(),
+		};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
 	private void dumpLists(Object[] expected, Object[] actual) {
 
 		for (Object token : expected) {

@@ -1,7 +1,6 @@
 package org.cssless.css.ast;
 
 import java.util.*;
-
 import org.cssless.css.parsing.InvalidNodeException;
 
 /**
@@ -19,7 +18,7 @@ public class RuleSetNode extends BlockNode {
 		super(children);
 
 		if (selector != null) {
-			this.selectors.add(selector);
+			this.addSelector(selector);
 		}
 	}
 
@@ -28,13 +27,13 @@ public class RuleSetNode extends BlockNode {
 
 		if (selectors != null) {
 			for (SelectorNode selector : selectors) {
-				this.selectors.add(selector);
+				this.addSelector(selector);
 			}
 		}
 	}
 
-	public List<SelectorNode> getSelectors() {
-		return selectors;
+	public Collection<SelectorNode> getSelectors() {
+		return this.selectors;
 	}
 
 	@Override
@@ -54,7 +53,7 @@ public class RuleSetNode extends BlockNode {
 		throw new InvalidNodeException("Rule-sets may only directly hold declarations and comments", child);
 	}
 
-	public void expandSelectors(List<SelectorNode> prefixes) {
+	public void expandSelectors(Collection<SelectorNode> prefixes) {
 		List<SelectorNode> expanded = new ArrayList<SelectorNode>(prefixes.size() * this.selectors.size());
 
 		for (SelectorNode suffix : this.selectors) {
@@ -82,7 +81,9 @@ public class RuleSetNode extends BlockNode {
 		}
 
 		this.selectors.clear();
-		this.selectors.addAll(expanded);
+		for (SelectorNode selector : expanded) {
+			this.addSelector(selector);
+		}
 	}
 
 	@Override
@@ -106,5 +107,14 @@ public class RuleSetNode extends BlockNode {
 		}
 
 		return super.equals(arg);
+	}
+
+	public void addSelector(SelectorNode selector) {
+		if (selector == null) {
+			return;
+		}
+
+		this.selectors.add(selector);
+		selector.setParent(this);
 	}
 }

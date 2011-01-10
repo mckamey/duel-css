@@ -6,7 +6,7 @@ public abstract class ContainerValueNode extends ValueNode {
 
 	public ContainerValueNode(String value, int index, int line, int column) {
 		super(value, index, line, column);
-		this.children = new ContainerNode();
+		this.children = new ContainerNode(index, line, column);
 		this.children.setParent(this.getParent());
 	}
 
@@ -40,7 +40,7 @@ public abstract class ContainerValueNode extends ValueNode {
 
 		return super.equals(arg);
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;

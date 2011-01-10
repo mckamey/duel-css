@@ -96,6 +96,14 @@ public class ContainerNode extends CssNode {
 		return false;
 	}
 
+	public boolean hasVariables() {
+		return (this.variables != null) && (this.variables.size() > 0);
+	}
+
+	public Collection<LessVariableDeclarationNode> getVariables() {
+		return (this.variables != null) ? this.variables.values() : null;
+	}
+
 	public boolean containsVariable(String name) {
 		return (this.variables != null) && this.variables.containsKey(name);
 	}
