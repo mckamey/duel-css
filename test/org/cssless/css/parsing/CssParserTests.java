@@ -1980,10 +1980,10 @@ public class CssParserTests {
 			CssToken.blockBegin(),
 			CssToken.value(".rounded_corners"),
 			CssToken.ruleDelim(),
-//			CssToken.value("color"),
-//			CssToken.operator(":"),
-//			CssToken.color("red"),
-//			CssToken.ruleDelim(),
+			CssToken.value("color"),
+			CssToken.operator(":"),
+			CssToken.color("red"),
+			CssToken.ruleDelim(),
 			CssToken.blockEnd(),
 
 			CssToken.value("#footer"),
@@ -1992,10 +1992,10 @@ public class CssParserTests {
 			CssToken.numeric("10px"),
 			CssToken.operator(")"),
 			CssToken.ruleDelim(),
-//			CssToken.value("color"),
-//			CssToken.operator(":"),
-//			CssToken.color("blue"),
-//			CssToken.ruleDelim(),
+			CssToken.value("color"),
+			CssToken.operator(":"),
+			CssToken.color("blue"),
+			CssToken.ruleDelim(),
 			CssToken.blockEnd()
 		};
 

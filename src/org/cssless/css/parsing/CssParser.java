@@ -627,13 +627,24 @@ public class CssParser {
 			throw new SyntaxException("Invalid sequence in rule-set", nestedSet.getIndex(), nestedSet.getLine(), nestedSet.getColumn());
 		}
 
-		for (SelectorNode selector : nestedSet.getSelectors()) {
-			// TODO: use selector to look up mixin rules, add mixin to parent
-			System.out.println("MIXIN: "+selector);
-		}
-
 		// remove ruleSet from parent
 		nestedSet.getParent().removeChild(nestedSet);
+
+		for (SelectorNode selector : nestedSet.getSelectors()) {
+			// look up mixin rules with selector
+			for (CssNode node : targetSet.getParent().getChildren()) {
+				RuleSetNode mixin = (node instanceof RuleSetNode) ? (RuleSetNode)node : null; 
+				if (mixin == null || !mixin.getSelectors().contains(selector)) {
+					continue;
+				}
+
+				// add mixin to parent
+				for (CssNode child : mixin.getChildren()) {
+					// TODO: clone node
+					targetSet.appendChild(child);
+				}
+			}
+		}
 	}
 
 	private void parseBlock(BlockNode block, boolean isRuleSet)
