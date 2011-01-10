@@ -1980,6 +1980,10 @@ public class CssParserTests {
 			CssToken.blockBegin(),
 			CssToken.value(".rounded_corners"),
 			CssToken.ruleDelim(),
+//			CssToken.value("color"),
+//			CssToken.operator(":"),
+//			CssToken.color("red"),
+//			CssToken.ruleDelim(),
 			CssToken.blockEnd(),
 
 			CssToken.value("#footer"),
@@ -1988,6 +1992,10 @@ public class CssParserTests {
 			CssToken.numeric("10px"),
 			CssToken.operator(")"),
 			CssToken.ruleDelim(),
+//			CssToken.value("color"),
+//			CssToken.operator(":"),
+//			CssToken.color("blue"),
+//			CssToken.ruleDelim(),
 			CssToken.blockEnd()
 		};
 
@@ -2013,7 +2021,10 @@ public class CssParserTests {
 					new NumericNode("5px")),
 				new DeclarationNode(
 					"border-radius",
-					new NumericNode("5px"))),
+					new NumericNode("5px")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("red"))),
 			new RuleSetNode(
 				new SelectorNode("#footer"),
 				new DeclarationNode(
@@ -2024,7 +2035,10 @@ public class CssParserTests {
 					new NumericNode("10px")),
 				new DeclarationNode(
 					"border-radius",
-					new NumericNode("10px"))));
+					new NumericNode("10px")),
+				new DeclarationNode(
+					"color",
+					new ColorNode("blue"))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 

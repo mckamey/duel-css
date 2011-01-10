@@ -174,7 +174,15 @@ public class CssParser {
 
 		RuleSetNode nestedParent = (parent instanceof RuleSetNode) ? (RuleSetNode)parent : null;
 
-		this.parseSelector(ruleSet, ident);
+		if (this.parseSelector(ruleSet, ident)) {
+			if (!nested) {
+				throw new InvalidTokenException("Invalid sequence in rule-set: "+ident, ident);
+			}
+
+			// not a selector but a mixin
+			this.evalMixins(nestedParent, ruleSet);
+			return;
+		}
 
 		while (this.hasNext()) {
 			switch (this.next.getToken()) {
@@ -193,7 +201,15 @@ public class CssParser {
 				case STRING:
 				case VALUE:
 				case OPERATOR:
-					this.parseSelector(ruleSet, this.next);
+					if (this.parseSelector(ruleSet, this.next)){
+						if (!nested) {
+							throw new InvalidTokenException("Invalid sequence in rule-set: "+ident, ident);
+						}
+
+						// not a selector but a mixin
+						this.evalMixins(nestedParent, ruleSet);
+						return;
+					}
 					continue;
 
 				case COMMENT:
@@ -205,13 +221,21 @@ public class CssParser {
 				case ERROR:
 					throw this.throwErrorToken(this.next);
 
+				case BLOCK_END:
+					if (!nested) {
+						throw new InvalidTokenException("Invalid token in rule-set: "+this.next, this.next);
+					}
+
+					// allow parent to consume token
+					return;
+
 				default:
 					throw new InvalidTokenException("Invalid token in rule-set: "+this.next, this.next);
 			}
 		}
 	}
 
-	private void parseSelector(RuleSetNode ruleSet, CssToken start)
+	private boolean parseSelector(RuleSetNode ruleSet, CssToken start)
 		throws IOException {
 
 		SelectorNode selector = new SelectorNode(start.getIndex(), start.getLine(), start.getColumn());
@@ -249,8 +273,18 @@ public class CssParser {
 			switch (this.next.getToken()) {
 				case BLOCK_BEGIN:
 					// terminate selector
-					return;
+					return false;
 
+				case BLOCK_END:
+					// signal was mixin
+					return true;
+
+				case RULE_DELIM:
+					// consume delim
+					this.next = null;
+					// signal was mixin
+					return true;
+					
 				case OPERATOR:
 					String value = this.next.getValue();
 					if (value != null) {
@@ -259,7 +293,7 @@ public class CssParser {
 								// consume delim
 								this.next = null;
 								// terminate selector
-								return;
+								return false;
 							}
 
 							CombinatorType combinator = CombinatorNode.getCombinator(value);
@@ -291,6 +325,8 @@ public class CssParser {
 					continue;
 			}
 		}
+
+		return false;
 	}
 
 	private void parseDeclaration(ContainerNode parent, CssToken ident) {
@@ -584,6 +620,20 @@ public class CssParser {
 			// suppress errors when evaluation not required
 			if (throwOnError) { throw ex; }
 		}
+	}
+
+	private void evalMixins(RuleSetNode targetSet, RuleSetNode nestedSet) {
+		if (targetSet == null) {
+			throw new SyntaxException("Invalid sequence in rule-set", nestedSet.getIndex(), nestedSet.getLine(), nestedSet.getColumn());
+		}
+
+		for (SelectorNode selector : nestedSet.getSelectors()) {
+			// TODO: use selector to look up mixin rules, add mixin to parent
+			System.out.println("MIXIN: "+selector);
+		}
+
+		// remove ruleSet from parent
+		nestedSet.getParent().removeChild(nestedSet);
 	}
 
 	private void parseBlock(BlockNode block, boolean isRuleSet)
