@@ -70,7 +70,7 @@ public class CssCompiler {
 	}
 
 	/**
-	 * Compiles view files
+	 * Processes CSS/LESS files
 	 * @throws IOException 
 	 */
 	public void execute() throws IOException {
@@ -80,47 +80,66 @@ public class CssCompiler {
 
 		List<File> inputFiles = findFiles(this.inputRoot);
 		if (inputFiles.size() < 1) {
-			System.err.println("this.inputRoot.getAbsolutePath(): Error: no input files found");
+			System.err.println("Error: no input files found in "+this.inputRoot.getAbsolutePath());
 			return;
 		}
 
-		for (File inputFile : inputFiles) {
-			StyleSheetNode stylesheet;
-			try {
-				FileReader reader = new FileReader(inputFile);
-				stylesheet = new CssParser().parse(new CssLexer(reader));
-
-			} catch (SyntaxException ex) {
-				this.reportSyntaxError(inputFile, ex);
-				continue;
-			}
-
-			if (stylesheet == null) {
-				System.err.println(inputFile.getAbsolutePath()+": Syntax error: no view found");
-				return;
-			}
-
-			CodeGenSettings settings = new CodeGenSettings();
+		CodeGenSettings settings = new CodeGenSettings();
 			// TODO: allow setting of properties from args
 //			settings.setIndent("\t");
 //			settings.setNewline(System.getProperty("line.separator"));
 
-			CssFormatter formatter = new CssFormatter(settings);
+		for (File inputFile : inputFiles) {
+			this.process(inputFile, new File(this.outputFolder, inputFile.getName()+CssFormatter.getFileExtension()), settings);
+		}
+	}
+
+	/**
+	 * Processes a single CSS/LESS file
+	 * @throws IOException 
+	 */
+	public void process(File source, File target) throws IOException {
+		this.process(source, target, null);
+	}
+
+	/**
+	 * Processes a single CSS/LESS file
+	 * @throws IOException 
+	 */
+	public void process(File source, File target, CodeGenSettings settings) throws IOException {
+		if (settings == null) {
+			settings = new CodeGenSettings();
+		}
+
+		StyleSheetNode stylesheet;
+		try {
+			FileReader reader = new FileReader(source);
+			stylesheet = new CssParser().parse(new CssLexer(reader));
+
+		} catch (SyntaxException ex) {
+			this.reportSyntaxError(source, ex);
+			return;
+		}
+
+		if (stylesheet == null) {
+			System.err.println("Syntax error: no stylesheet found in "+source.getAbsolutePath());
+			return;
+		}
+
+		CssFormatter formatter = new CssFormatter(settings);
+		try {
+			target.getParentFile().mkdirs();
+
+			FileWriter writer = new FileWriter(target, false);
 			try {
-				File outputFile = new File(this.outputFolder, inputFile.getName()+formatter.getFileExtension());
-				outputFile.getParentFile().mkdirs();
-
-				FileWriter writer = new FileWriter(outputFile, false);
-				try {
-					formatter.write(writer, stylesheet);
-				} finally {
-					writer.flush();
-					writer.close();
-				}
-
-			} catch (SyntaxException ex) {
-				this.reportSyntaxError(inputFile, ex);
+				formatter.write(writer, stylesheet);
+			} finally {
+				writer.flush();
+				writer.close();
 			}
+
+		} catch (SyntaxException ex) {
+			this.reportSyntaxError(source, ex);
 		}
 	}
 

@@ -21,7 +21,7 @@ public class CssFormatter {
 		this.prettyPrint = (!this.settings.getIndent().isEmpty() || !this.settings.getNewline().isEmpty());
 	}
 
-	public String getFileExtension() {
+	public static String getFileExtension() {
 		return ".css";
 	}
 
