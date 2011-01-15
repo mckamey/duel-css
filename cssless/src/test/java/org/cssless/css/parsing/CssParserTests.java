@@ -3,6 +3,7 @@ package org.cssless.css.parsing;
 import static org.junit.Assert.*;
 import java.io.IOException;
 import org.cssless.css.ast.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class CssParserTests {
@@ -1947,6 +1948,7 @@ public class CssParserTests {
 		assertEquals(expected, actual);
 	}
 
+	@Ignore("Mixins are not ready yet")
 	@Test
 	public void lessMixinUsageTest() throws IOException {
 
