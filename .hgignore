@@ -1,2 +1,9 @@
-relre:bin/*
-relre:build/test/*
+\.DS_Store
+\.classpath
+\.project
+\.settings
+\.iml
+\.ipr
+\.iws
+bin/*
+build/*
