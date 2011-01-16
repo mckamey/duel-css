@@ -18,6 +18,11 @@ public class ContainerNode extends CssNode {
 		}
 	}
 
+	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.CONTAINER;
+	}
+	
 	public boolean hasChildren() {
 		return !this.children.isEmpty();
 	}

@@ -14,6 +14,11 @@ public class LessVariableReferenceNode extends ValueNode {
 	}
 
 	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.LESS_VARIABLE_REFERENCE;
+	}
+
+	@Override
 	public CssNode eval(ContainerNode context) {
 		String varRef = this.getValue();
 		if (varRef == null || varRef.isEmpty()) {

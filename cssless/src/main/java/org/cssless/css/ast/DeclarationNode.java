@@ -22,6 +22,11 @@ public class DeclarationNode extends ContainerNode {
 		this.ident = ident;
 	}
 
+	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.DECLARATION;
+	}
+
 	public final void setIdent(String value) {
 		this.ident = value;
 	}

@@ -13,6 +13,11 @@ public class LessVariableDeclarationNode extends DeclarationNode {
 		super(ident, expression);
 	}
 
+	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.LESS_VARIABLE_DECLARATION;
+	}
+
 	public ValueNode getValue() {
 		int length = this.childCount();
 

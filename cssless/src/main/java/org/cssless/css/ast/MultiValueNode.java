@@ -11,6 +11,11 @@ public class MultiValueNode extends ContainerValueNode {
 	}
 
 	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.MULTI_VALUE;
+	}
+
+	@Override
 	public String getValue() {
 		throw new IllegalStateException("Value of MultiValueNode cannot be accessed directly as a String.");
 	}

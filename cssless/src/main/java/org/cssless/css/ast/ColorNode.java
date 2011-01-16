@@ -33,6 +33,11 @@ public class ColorNode extends ValueNode {
 		this.setChannels(r, g, b);
 	}
 
+	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.COLOR;
+	}
+
 	public int getRedChannel() {
 		return this.red;
 	}

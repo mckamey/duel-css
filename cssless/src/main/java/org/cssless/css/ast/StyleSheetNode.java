@@ -16,6 +16,11 @@ public class StyleSheetNode extends ContainerNode {
 	}
 
 	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.STYLESHEET;
+	}
+
+	@Override
 	protected CssNode filterChild(CssNode child) {
 		child = super.filterChild(child);
 

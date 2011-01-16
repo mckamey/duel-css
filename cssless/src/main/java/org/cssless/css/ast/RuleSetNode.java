@@ -32,6 +32,11 @@ public class RuleSetNode extends BlockNode {
 		}
 	}
 
+	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.RULE_SET;
+	}
+
 	public Collection<SelectorNode> getSelectors() {
 		return this.selectors;
 	}

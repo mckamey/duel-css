@@ -12,4 +12,9 @@ public class StringNode extends ValueNode {
 	public StringNode(String value) {
 		super(value);
 	}
+
+	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.STRING;
+	}
 }

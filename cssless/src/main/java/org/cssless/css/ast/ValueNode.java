@@ -17,6 +17,11 @@ public class ValueNode extends CssNode {
 		this.setValue(value);
 	}
 
+	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.VALUE;
+	}
+
 	public void setValue(String value) {
 		this.value = value;
 	}

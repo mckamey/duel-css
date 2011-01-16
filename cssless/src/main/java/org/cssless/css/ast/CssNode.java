@@ -19,6 +19,8 @@ public abstract class CssNode {
 		this.column = column;
 	}
 
+	public abstract CssNodeType getNodeType();
+	
 	public int getIndex() {
 		return index;
 	}
@@ -57,7 +59,7 @@ public abstract class CssNode {
 	public String toString() {
 		try {
 			StringBuilder buffer = new StringBuilder();
-			new org.cssless.css.codegen.CssFormatter().writeNode(buffer, this);
+			new org.cssless.css.codegen.CssFormatter().writeNode(buffer, this, null);
 			return buffer.toString();
 		} catch (Exception ex) {
 			return super.toString()+'\n'+ex.getMessage();

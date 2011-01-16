@@ -22,6 +22,11 @@ public class SelectorNode extends ContainerNode {
 	}
 
 	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.SELECTOR;
+	}
+
+	@Override
 	protected CssNode filterChild(CssNode child) {
 		child = super.filterChild(child);
 

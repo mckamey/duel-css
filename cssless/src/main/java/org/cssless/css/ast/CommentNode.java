@@ -12,4 +12,14 @@ public class CommentNode extends ValueNode {
 	public CommentNode(String value) {
 		super(value);
 	}
+
+	@Override
+	public WordBreak getWordBreak(boolean prettyPrint) {
+		return prettyPrint ? WordBreak.BOTH : WordBreak.NONE;
+	};
+
+	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.COMMENT;
+	}
 }

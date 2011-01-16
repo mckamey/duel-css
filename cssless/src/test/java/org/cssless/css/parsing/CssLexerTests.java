@@ -1275,6 +1275,7 @@ public class CssLexerTests {
 		assertArrayEquals(expected, actual);
 	}
 
+	@SuppressWarnings("unused")
 	private void dumpLists(Object[] expected, Object[] actual) {
 
 		for (Object token : expected) {

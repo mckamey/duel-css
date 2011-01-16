@@ -1,7 +1,6 @@
 package org.cssless.css.codegen;
 
 import static org.junit.Assert.*;
-import java.io.IOException;
 import org.cssless.css.ast.*;
 import org.cssless.css.parsing.InvalidNodeException;
 import org.junit.Test;

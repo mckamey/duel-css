@@ -21,6 +21,11 @@ public class CombinatorNode extends ValueNode {
 		this.combinator = combinator;
 	}
 
+	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.COMBINATOR;
+	}
+
 	public void setCombinator(CombinatorType combinator) {
 		this.combinator = combinator;
 		super.setValue(mapCombinator(combinator, -1, -1, -1));

@@ -34,6 +34,11 @@ public class NumericNode extends ValueNode {
 		super.setValue(this.formatNumber(this.number)+this.units);
 	}
 
+	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.NUMERIC;
+	}
+
 	public double getNumber() {
 		return this.number;
 	}

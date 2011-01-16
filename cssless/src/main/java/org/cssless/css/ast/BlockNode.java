@@ -12,4 +12,9 @@ public class BlockNode extends ContainerNode {
 	public BlockNode(CssNode... children) {
 		super(children);
 	}
+
+	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.BLOCK;
+	}
 }

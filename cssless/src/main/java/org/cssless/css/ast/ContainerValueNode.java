@@ -16,6 +16,9 @@ public abstract class ContainerValueNode extends ValueNode {
 		this.children.setParent(this.getParent());
 	}
 
+	@Override
+	public abstract CssNodeType getNodeType();
+
 	public ContainerNode getContainer() {
 		return this.children;
 	}

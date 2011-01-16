@@ -90,6 +90,7 @@ public class CssCompiler {
 //			settings.setNewline(System.getProperty("line.separator"));
 
 		for (File inputFile : inputFiles) {
+			// TODO: clean up public methods on CssCompiler
 			this.process(inputFile, new File(this.outputFolder, inputFile.getName()+CssFormatter.getFileExtension()), settings);
 		}
 	}
@@ -99,7 +100,7 @@ public class CssCompiler {
 	 * @throws IOException 
 	 */
 	public void process(File source, File target) throws IOException {
-		this.process(source, target, null);
+		this.process(source, target, null, null);
 	}
 
 	/**
@@ -107,6 +108,14 @@ public class CssCompiler {
 	 * @throws IOException 
 	 */
 	public void process(File source, File target, CodeGenSettings settings) throws IOException {
+		this.process(source, target, settings, null);
+	}
+
+	/**
+	 * Processes a single CSS/LESS file
+	 * @throws IOException 
+	 */
+	public void process(File source, File target, CodeGenSettings settings, CssFilter filter) throws IOException {
 		if (settings == null) {
 			settings = new CodeGenSettings();
 		}
@@ -132,7 +141,7 @@ public class CssCompiler {
 
 			FileWriter writer = new FileWriter(target, false);
 			try {
-				formatter.write(writer, stylesheet);
+				formatter.write(writer, stylesheet, filter);
 			} finally {
 				writer.flush();
 				writer.close();

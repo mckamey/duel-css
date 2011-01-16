@@ -777,4 +777,72 @@ public class CssLexer implements Iterator<CssToken> {
 		}
 		return list;
 	}
+
+	/**
+	 * Properly String-decodes the value
+	 * @return
+	 */
+	public static String decodeString(String value) {
+		if (value == null || value.isEmpty()) {
+			return value;
+		}
+
+		final int length = value.length();
+		StringBuilder buffer = new StringBuilder(length);
+		char delim = value.charAt(0);
+		if (delim != CssGrammar.OP_STRING_DELIM &&
+			delim != CssGrammar.OP_STRING_DELIM_ALT) {
+			return value;
+		}
+
+		// consume until reach the delim
+		char ch;
+		for (int i=1; i<length && (ch = value.charAt(i)) != delim; i++) {
+			if (ch == CssGrammar.OP_ESCAPE) {
+				i++;
+				if (i >= length) {
+					throw new SyntaxException("Unterminated string value", i, 1, i+1);
+				}
+				ch = value.charAt(i);
+				if (!CharUtility.isEscape(ch) && !CharUtility.isNewline(ch)) {
+					throw new SyntaxException("Malformed escape sequence", i, 1, i+1);
+				}
+				buffer.append(ch);
+
+			} else if (!CharUtility.isStringChar(ch) &&
+					ch != CssGrammar.OP_STRING_DELIM &&
+					ch != CssGrammar.OP_STRING_DELIM_ALT) {
+				throw new SyntaxException("Unterminated string value", i, 1, i+1);
+			} else {
+				buffer.append(ch);
+			}
+		}
+
+		return buffer.toString();
+	}
+
+	/**
+	 * Properly String-encodes the value
+	 * @param value
+	 */
+	public static String encodeString(String value) {
+		if (value == null || value.isEmpty()) {
+			return value;
+		}
+
+		final int length = value.length();
+		StringBuilder buffer = new StringBuilder(2*length);
+
+		buffer.append(CssGrammar.OP_STRING_DELIM);
+		for (int i=0; i<length; i++) {
+			char ch = value.charAt(i);
+			if (!CharUtility.isStringChar(ch)) {
+				buffer.append(CssGrammar.OP_ESCAPE);
+			}
+			buffer.append(ch);
+		}
+		buffer.append(CssGrammar.OP_STRING_DELIM);
+
+		return buffer.toString();
+	}
 }

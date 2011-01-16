@@ -14,6 +14,11 @@ public class OperatorNode extends ValueNode {
 	}
 
 	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.OPERATOR;
+	}
+
+	@Override
 	public WordBreak getWordBreak(boolean prettyPrint) {
 		String value = this.getValue(!prettyPrint);
 		if (value != null) {

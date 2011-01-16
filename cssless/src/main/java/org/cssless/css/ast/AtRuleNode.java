@@ -29,6 +29,11 @@ public class AtRuleNode extends ContainerNode {
 		this.block = block;
 	}
 
+	@Override
+	public CssNodeType getNodeType() {
+		return CssNodeType.AT_RULE;
+	}
+
 	public String getKeyword() {
 		return this.keyword;
 	}
