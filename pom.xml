@@ -6,9 +6,9 @@
 	<groupId>org.cssless</groupId>
 	<artifactId>css-root</artifactId>
 	<version>0.3.0</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
-	<name>CSS</name>
+	<name>CSS Root</name>
 	<description>CSS3 compactor / LESS processor for the JVM.</description>
 	<url>http://cssless.org</url>
 	<licenses>
