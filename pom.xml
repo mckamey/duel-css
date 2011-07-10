@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.cssless</groupId>
+	<artifactId>css-root</artifactId>
+	<version>0.3.0</version>
+	<packaging>jar</packaging>
+
+	<name>CSS</name>
+	<description>CSS3 compactor / LESS processor for the JVM.</description>
+	<url>http://cssless.org</url>
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>https://bitbucket.org/mckamey/cssless/src/tip/css/LICENSE.txt</url>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://bitbucket.org/mckamey/cssless</url>
+		<connection>scm:hg:https://bitbucket.org/mckamey/cssless</connection>
+		<developerConnection>scm:hg:https://bitbucket.org/mckamey/cssless</developerConnection>
+	</scm>
+	<developers>
+		<developer>
+			<id>mckamey</id>
+			<name>Stephen M. McKamey</name>
+			<url>http://mck.me</url>
+		</developer>
+	</developers>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<modules>
+		<module>css</module>
+	</modules>
+</project>
