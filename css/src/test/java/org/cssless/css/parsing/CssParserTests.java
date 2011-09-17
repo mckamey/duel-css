@@ -1,6 +1,7 @@
 package org.cssless.css.parsing;
 
 import static org.junit.Assert.*;
+
 import java.io.IOException;
 import org.cssless.css.ast.*;
 import org.junit.Ignore;
@@ -690,6 +691,51 @@ public class CssParserTests {
 	}
 
 	@Test
+	public void atRuleMediaAccessorPseudoElementTest() throws IOException {
+
+		CssToken[] input = {
+			CssToken.atRule("media"),
+			CssToken.value("print"),
+			CssToken.blockBegin(),
+			CssToken.accessor("a"),
+			CssToken.value("href"),
+			CssToken.value("]::after"),
+			CssToken.blockBegin(),
+			CssToken.value("content"),
+			CssToken.operator(":"),
+			CssToken.string("\" (\""),
+			CssToken.func("attr"),
+			CssToken.value("href"),
+			CssToken.operator(")"),
+			CssToken.string("\")\""),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd(),
+			CssToken.blockEnd()
+		};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new AtRuleNode("media",
+				new ValueNode[] {
+					new ValueNode("print")
+				},
+				new BlockNode(
+					new RuleSetNode(
+						new SelectorNode(
+							new AccessorNode("a", new ValueNode("href")),
+							new CombinatorNode(CombinatorType.SELF),
+							new ValueNode("::after")),
+						new DeclarationNode(
+							"content",
+							new StringNode("\" (\""),
+							new FunctionNode("attr", new ValueNode("href")),
+							new StringNode("\")\""))))));
+	
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void pseudoClassTest() throws IOException {
 
 		CssToken[] input = {
@@ -843,6 +889,66 @@ public class CssParserTests {
 				new DeclarationNode(
 					"text-transform",
 					new ValueNode("uppercase"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void pseudoElementOnAccessorTest() throws IOException {
+
+		CssToken[] input = {
+			CssToken.accessor("a"),
+			CssToken.value("href"),
+			CssToken.value("]:after"),
+			CssToken.blockBegin(),
+			CssToken.value("content"),
+			CssToken.operator(":"),
+			CssToken.string("\"foo\""),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd(),
+		};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new AccessorNode("a", new ValueNode("href")),
+					new CombinatorNode(CombinatorType.SELF),
+					new ValueNode(":after")),
+				new DeclarationNode(
+					"content",
+					new StringNode("\"foo\""))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void pseudoElementChildOfAccessorTest() throws IOException {
+
+		CssToken[] input = {
+			CssToken.accessor("a"),
+			CssToken.value("href"),
+			CssToken.operator("]"),
+			CssToken.value(":after"),
+			CssToken.blockBegin(),
+			CssToken.value("content"),
+			CssToken.operator(":"),
+			CssToken.string("\"foo\""),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd(),
+		};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new AccessorNode("a", new ValueNode("href")),
+					new ValueNode(":after")),
+				new DeclarationNode(
+					"content",
+					new StringNode("\"foo\""))));
 
 		StyleSheetNode actual = new CssParser().parse(input);
 

@@ -7,6 +7,11 @@ package org.cssless.css.ast;
 public enum CombinatorType {
 
 	/**
+	 * Self (no space or word break)
+	 */
+	SELF,
+
+	/**
 	 * Descendant (space)
 	 */
 	DESCENDANT,

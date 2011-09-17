@@ -284,7 +284,7 @@ public class CssParser {
 					this.next = null;
 					// signal was mixin
 					return true;
-					
+
 				case OPERATOR:
 					String value = this.next.getValue();
 					if (value != null) {
@@ -515,13 +515,14 @@ public class CssParser {
 			this.next = null;
 		}
 
+		String value;
 		int nesting = 0;
 		ContainerNode args = accessor.getContainer();
 
 		while (this.hasNext()) {
 			switch (this.next.getToken()) {
 				case OPERATOR:
-					String value = this.next.getValue();
+					value = this.next.getValue();
 					if (value != null) {
 						switch (value.charAt(0)) {
 							case CssGrammar.OP_PAREN_BEGIN:
@@ -546,6 +547,27 @@ public class CssParser {
 					continue;
 
 				default:
+					value = this.next.getValue();
+					if (value != null) {
+						switch (value.charAt(0)) {
+							case CssGrammar.OP_PAREN_BEGIN:
+								nesting++;
+								break;
+							case CssGrammar.OP_PAREN_END:
+								nesting--;
+								break;
+							case CssGrammar.OP_ATTR_END:
+								if (nesting <= 0) {
+									// trim token value, terminate accessor
+									this.next = CssToken.value(value.substring(1), this.next.getIndex()+1, this.next.getLine(), this.next.getColumn()+1);
+									// inject a joiner which will signal that what follows is attached to the accessor
+									parent.appendChild(new CombinatorNode(CombinatorType.SELF, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+									return;
+								}
+								break;
+						}
+					}
+
 					this.parseValue(args, this.next, isSelector, "accessor");
 					continue;
 			}

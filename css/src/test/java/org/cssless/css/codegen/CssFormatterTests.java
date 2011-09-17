@@ -1,7 +1,9 @@
 package org.cssless.css.codegen;
 
 import static org.junit.Assert.*;
+
 import java.io.IOException;
+
 import org.cssless.css.ast.*;
 import org.junit.Test;
 
@@ -781,6 +783,36 @@ public class CssFormatterTests {
 	}
 
 	@Test
+	public void atRuleMediaAccessorPseudoElementTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new AtRuleNode("media",
+				new ValueNode[] {
+					new ValueNode("print")
+				},
+				new BlockNode(
+					new RuleSetNode(
+						new SelectorNode(
+							new AccessorNode("a", new ValueNode("href")),
+							new CombinatorNode(CombinatorType.SELF),
+							new ValueNode("::after")),
+						new DeclarationNode(
+							"content",
+							new StringNode("\" (\""),
+							new FunctionNode("attr", new ValueNode("href")),
+							new StringNode("\")\""))))));
+
+		String expected =
+			"@media print{a[href]::after{content:\" (\" attr(href) \")\";}}";
+	
+		StringBuilder output = new StringBuilder();
+		new CssFormatter().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void pseudoClassTest() throws IOException {
 
 		StyleSheetNode input = new StyleSheetNode(
@@ -906,9 +938,52 @@ public class CssFormatterTests {
 			"{\n" +
 			"\ttext-transform: uppercase;\n" +
 			"}";
-		
+
 		StringBuilder output = new StringBuilder();
 		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void pseudoElementOnAccessorTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new AccessorNode("a", new ValueNode("href")),
+					new CombinatorNode(CombinatorType.SELF),
+					new ValueNode(":after")),
+				new DeclarationNode(
+					"content",
+					new StringNode("\"foo\""))));
+
+		String expected = "a[href]:after{content:\"foo\";}";
+
+		StringBuilder output = new StringBuilder();
+		new CssFormatter().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void pseudoElementChildOfAccessorTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new AccessorNode("a", new ValueNode("href")),
+					new ValueNode(":after")),
+				new DeclarationNode(
+					"content",
+					new StringNode("\"foo\""))));
+
+		String expected = "a[href] :after{content:\"foo\";}";
+
+		StringBuilder output = new StringBuilder();
+		new CssFormatter().write(output, input);
 		String actual = output.toString();
 
 		assertEquals(expected, actual);

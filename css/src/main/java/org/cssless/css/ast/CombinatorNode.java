@@ -51,6 +51,8 @@ public class CombinatorNode extends ValueNode {
 				return " ";
 			case SIBLING:
 				return "~";
+			case SELF:
+				return "";
 			default:
 				throw new SyntaxException("Invalid combinator type: "+combinator, index, line, column);
 		}
@@ -77,6 +79,10 @@ public class CombinatorNode extends ValueNode {
 
 	@Override
 	public WordBreak getWordBreak(boolean prettyPrint) {
+		if (this.combinator == CombinatorType.SELF) {
+			return WordBreak.NONE;
+		}
+
 		return prettyPrint ? WordBreak.BOTH : WordBreak.NONE;
 	}
 

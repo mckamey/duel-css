@@ -1,7 +1,8 @@
 package org.cssless.css.parsing;
 
-import org.junit.Test;
 import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 public class CssLexerTests {
 
@@ -551,6 +552,39 @@ public class CssLexerTests {
 	}
 
 	@Test
+	public void atRuleMediaAccessorPseudoElementTest() {
+
+		String input =
+			"@media print {\n" +
+			"\ta[href]::after { content: \" (\" attr(href) \")\"; }\n" +
+			"}";
+
+		Object[] expected = {
+			CssToken.atRule("media"),
+			CssToken.value("print"),
+			CssToken.blockBegin(),
+			CssToken.accessor("a"),
+			CssToken.value("href"),
+			CssToken.value("]::after"),
+			CssToken.blockBegin(),
+			CssToken.value("content"),
+			CssToken.operator(":"),
+			CssToken.string("\" (\""),
+			CssToken.func("attr"),
+			CssToken.value("href"),
+			CssToken.operator(")"),
+			CssToken.string("\")\""),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd(),
+			CssToken.blockEnd()
+		};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void pseudoClassTest() {
 
 		String input = "a:visited.className#id { color: #69C; }";
@@ -682,6 +716,53 @@ public class CssLexerTests {
 				CssToken.ruleDelim(),
 				CssToken.blockEnd()
 			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void pseudoElementOnAccessorTest() {
+
+		String input =
+			"a[href]:after { content: \"foo\"; }";
+
+		Object[] expected = {
+			CssToken.accessor("a"),
+			CssToken.value("href"),
+			CssToken.value("]:after"),
+			CssToken.blockBegin(),
+			CssToken.value("content"),
+			CssToken.operator(":"),
+			CssToken.string("\"foo\""),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd(),
+		};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void pseudoElementChildOfAccessorTest() {
+
+		String input =
+			"a[href] :after { content: \"foo\"; }";
+
+		Object[] expected = {
+			CssToken.accessor("a"),
+			CssToken.value("href"),
+			CssToken.operator("]"),
+			CssToken.value(":after"),
+			CssToken.blockBegin(),
+			CssToken.value("content"),
+			CssToken.operator(":"),
+			CssToken.string("\"foo\""),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd(),
+		};
 
 		Object[] actual = new CssLexer(input).toList().toArray();
 
