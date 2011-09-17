@@ -770,6 +770,33 @@ public class CssLexerTests {
 	}
 
 	@Test
+	public void pseudoClassComplexJoining() {
+
+		String input =
+			"*:not( :first-of-type ):not( :last-of-type ) {\n" +
+			"\tdisplay : none;\n" +
+			"}";
+
+		Object[] expected = {
+			CssToken.func("*:not"),
+			CssToken.value(":first-of-type"),
+			CssToken.func("):not"),
+			CssToken.value(":last-of-type"),
+			CssToken.operator(")"),
+			CssToken.blockBegin(),
+			CssToken.value("display"),
+			CssToken.operator(":"),
+			CssToken.value("none"),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd(),
+		};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void namespacePrefixDefaultTest() {
 
 		String input = "|p { color: silver; }";

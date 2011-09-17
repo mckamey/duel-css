@@ -448,13 +448,14 @@ public class CssParser {
 			this.next = null;
 		}
 
+		String value;
 		int nesting = 0;
 		ContainerNode args = func.getContainer();
 
 		while (this.hasNext()) {
 			switch (this.next.getToken()) {
 				case OPERATOR:
-					String value = this.next.getValue();
+					value = this.next.getValue();
 					if (value != null) {
 						switch (value.charAt(0)) {
 							case CssGrammar.OP_PAREN_BEGIN:
@@ -500,6 +501,38 @@ public class CssParser {
 					continue;
 
 				default:
+					value = this.next.getValue();
+					if (value != null) {
+						// should this check further into the string?
+						switch (value.charAt(0)) {
+							case CssGrammar.OP_PAREN_BEGIN:
+								nesting++;
+								break;
+							case CssGrammar.OP_PAREN_END:
+								if (nesting <= 0) {
+									// elevate any params to parent scope
+									if (args.hasVariables() && parent instanceof SelectorNode) {
+										ContainerNode ruleSet = parent.getParent();
+										if (ruleSet != null) {
+											for (LessVariableDeclarationNode variable : args.getVariables()) {
+												ruleSet.putVariable(variable);
+											}
+										}
+										if (!args.hasChildren()) {
+											parent.replaceChild(new ValueNode(func.getValue(), func.getIndex(), func.getLine(), func.getColumn()), func);
+										}
+									}
+
+									// trim token value, terminate function
+									this.next = new CssToken(this.next.getToken(), value.substring(1), this.next.getIndex()+1, this.next.getLine(), this.next.getColumn()+1);
+									// inject a joiner which will signal that what follows is attached to the accessor
+									parent.appendChild(new CombinatorNode(CombinatorType.SELF, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+									return;
+								}
+								nesting--;
+								break;
+						}
+					}
 					this.parseValue(args, this.next, isSelector, "function");
 					continue;
 			}
@@ -549,6 +582,7 @@ public class CssParser {
 				default:
 					value = this.next.getValue();
 					if (value != null) {
+						// should this check further into the string?
 						switch (value.charAt(0)) {
 							case CssGrammar.OP_PAREN_BEGIN:
 								nesting++;
@@ -559,7 +593,7 @@ public class CssParser {
 							case CssGrammar.OP_ATTR_END:
 								if (nesting <= 0) {
 									// trim token value, terminate accessor
-									this.next = CssToken.value(value.substring(1), this.next.getIndex()+1, this.next.getLine(), this.next.getColumn()+1);
+									this.next = new CssToken(this.next.getToken(), value.substring(1), this.next.getIndex()+1, this.next.getLine(), this.next.getColumn()+1);
 									// inject a joiner which will signal that what follows is attached to the accessor
 									parent.appendChild(new CombinatorNode(CombinatorType.SELF, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
 									return;

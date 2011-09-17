@@ -956,6 +956,38 @@ public class CssParserTests {
 	}
 
 	@Test
+	public void pseudoClassComplexJoining() throws IOException {
+
+		CssToken[] input = {
+			CssToken.func("*:not"),
+			CssToken.value(":first-of-type"),
+			CssToken.func("):not"),
+			CssToken.value(":last-of-type"),
+			CssToken.operator(")"),
+			CssToken.blockBegin(),
+			CssToken.value("display"),
+			CssToken.operator(":"),
+			CssToken.value("none"),
+			CssToken.ruleDelim(),
+			CssToken.blockEnd(),
+		};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new FunctionNode("*:not", new ValueNode(":first-of-type")),
+					new CombinatorNode(CombinatorType.SELF),
+					new FunctionNode(":not", new ValueNode(":last-of-type"))),
+				new DeclarationNode(
+					"display",
+					new ValueNode("none"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void namespacePrefixDefaultTest() throws IOException {
 
 		CssToken[] input = {

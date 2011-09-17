@@ -8,16 +8,11 @@ public class CssToken {
 	private final int line;
 	private final int column;
 
-	private CssToken(CssTokenType type, int index, int line, int column) {
-		this.type = type;
-		this.value = null;
-
-		this.index = index;
-		this.line = line;
-		this.column = column;
+	public CssToken(CssTokenType type, int index, int line, int column) {
+		this(type, null, index, line, column);
 	}
 
-	private CssToken(CssTokenType type, String value, int index, int line, int column) {
+	public CssToken(CssTokenType type, String value, int index, int line, int column) {
 		this.type = type;
 		this.value = value;
 

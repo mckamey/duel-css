@@ -990,6 +990,32 @@ public class CssFormatterTests {
 	}
 
 	@Test
+	public void pseudoClassComplexJoining() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new FunctionNode("*:not", new ValueNode(":first-of-type")),
+					new CombinatorNode(CombinatorType.SELF),
+					new FunctionNode(":not", new ValueNode(":last-of-type"))),
+				new DeclarationNode(
+					"display",
+					new ValueNode("none"))));
+
+		String expected =
+				"*:not(:first-of-type):not(:last-of-type)\n"+
+				"{\n" +
+				"\tdisplay: none;\n" +
+				"}";
+
+		StringBuilder output = new StringBuilder();
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void namespacePrefixDefaultTest() throws IOException {
 
 		StyleSheetNode input = new StyleSheetNode(
