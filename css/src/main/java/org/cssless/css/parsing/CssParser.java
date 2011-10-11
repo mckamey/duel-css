@@ -140,7 +140,8 @@ public class CssParser {
 				case BLOCK_BEGIN:
 					BlockNode block = new BlockNode(this.next.getIndex(), this.next.getLine(), this.next.getColumn());
 					atRule.setBlock(block);
-					boolean asRuleSet = !"media".equals(atRule.getKeyword());
+					String canonicalKeyword = CssGrammar.removeVendorPrefix(atRule.getKeyword());
+					boolean asRuleSet = !("media".equals(canonicalKeyword) || "keyframes".equals(canonicalKeyword));
 					this.parseBlock(block, asRuleSet);
 					return;
 

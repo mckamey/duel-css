@@ -90,12 +90,15 @@ public class NumericNode extends ValueNode {
 				break;
 			}
 		}
+
 		this.units = value.substring(index+1);
 
 		try {
 			this.number = Double.parseDouble(this.units.isEmpty() ? value : value.substring(0, index+1));
+
 		} catch (NumberFormatException ex) {
 			this.number = 0.0;
+			this.units = null;
 		}
 	}
 

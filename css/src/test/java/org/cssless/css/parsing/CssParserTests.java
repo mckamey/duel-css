@@ -691,6 +691,57 @@ public class CssParserTests {
 	}
 
 	@Test
+	public void atRuleVendorKeyframesTest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.atRule("-moz-keyframes"),
+				CssToken.value("fooName"),
+				CssToken.blockBegin(),
+				CssToken.value("from"),
+				CssToken.blockBegin(),
+				CssToken.value("-moz-transform"),
+				CssToken.operator(":"),
+				CssToken.func("translate"),
+				CssToken.numeric("0"),
+				CssToken.operator(")"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd(),
+				CssToken.value("to"),
+				CssToken.blockBegin(),
+				CssToken.value("-moz-transform"),
+				CssToken.operator(":"),
+				CssToken.func("translate"),
+				CssToken.numeric("100%"),
+				CssToken.operator(")"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd(),
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new AtRuleNode(
+				"-moz-keyframes",
+				new ValueNode[] {
+					new ValueNode("fooName"),
+				},
+				new BlockNode(
+					new RuleSetNode(
+						new SelectorNode("from"),
+						new DeclarationNode(
+							"-moz-transform",
+							new FunctionNode("translate", new NumericNode(0, "")))),
+					new RuleSetNode(
+						new SelectorNode("to"),
+						new DeclarationNode(
+							"-moz-transform",
+							new FunctionNode("translate", new NumericNode(100, "%")))))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void atRuleMediaAccessorPseudoElementTest() throws IOException {
 
 		CssToken[] input = {

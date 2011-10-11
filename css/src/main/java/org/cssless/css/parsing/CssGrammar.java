@@ -9,6 +9,7 @@ public final class CssGrammar {
 	private static ResourceBundle colors;
 	private static Map<String, Boolean> pseudo;
 	private static Map<String, Boolean> atRules;
+	private static Map<String, Boolean> vendorPrefixes;
 	private static boolean inited;
 
 	// static class
@@ -87,13 +88,37 @@ public final class CssGrammar {
 			return false;
 		}
 
-		if (!inited) {
-			initLookups();
-		}
+		// filter vendor lookups
+		keyword = removeVendorPrefix(keyword);
 
 		return atRules.containsKey(keyword);
 	}
 
+	/**
+	 * Removes vendor prefix from keyword
+	 * @param keyword
+	 * @return
+	 */
+	public static String removeVendorPrefix(String keyword) {
+		if (keyword == null || keyword.isEmpty()) {
+			return keyword;
+		}
+
+		if (!inited) {
+			initLookups();
+		}
+
+		if (keyword.charAt(0) == '-') {
+			int index = keyword.indexOf('-', 1)+1;
+			String prefix = keyword.substring(0, index);
+			if (vendorPrefixes.containsKey(prefix)) {
+				keyword = keyword.substring(index);
+			}
+		}
+
+		return keyword;
+	}
+	
 	/**
 	 * Decodes CSS3 color keywords into hex values
 	 * @param name
@@ -119,35 +144,44 @@ public final class CssGrammar {
 
 	private static void initLookups() {
 
-		String[] tags;
+		String[] items;
 		Map<String, Boolean> map;
 
 		// definitions maintained in CssKeywords.properties
 		ResourceBundle config = ResourceBundle.getBundle(KEYWORDS_RESOURCE);
 
 		// CSS3 pseudo-class keywords
-		tags = (config != null) && config.containsKey("pseudoClasses") ?
+		items = (config != null) && config.containsKey("pseudoClasses") ?
 				config.getString("pseudoClasses").split(",") : new String[0];
-		map = new HashMap<String, Boolean>(tags.length);
-		for (String value : tags) {
+		map = new HashMap<String, Boolean>(items.length);
+		for (String value : items) {
 			map.put(value, true);
 		}
 
 		// CSS3 pseudo-element keywords
-		tags = (config != null) && config.containsKey("pseudoElements") ?
+		items = (config != null) && config.containsKey("pseudoElements") ?
 				config.getString("pseudoElements").split(",") : new String[0];
-		for (String value : tags) {
+		for (String value : items) {
 			map.put(value, true);
 		}
 		pseudo = map;
 
 		// CSS3 at-rule keywords
-		tags = (config != null) && config.containsKey("atRules") ?
+		items = (config != null) && config.containsKey("atRules") ?
 				config.getString("atRules").split(",") : new String[0];
-		map = new HashMap<String, Boolean>(tags.length);
-		for (String value : tags) {
+		map = new HashMap<String, Boolean>(items.length);
+		for (String value : items) {
 			map.put(value, true);
 		}
 		atRules = map;
+
+		// CSS3 vendor prefixes
+		items = (config != null) && config.containsKey("vendorPrefixes") ?
+				config.getString("vendorPrefixes").split(",") : new String[0];
+		map = new HashMap<String, Boolean>(items.length);
+		for (String value : items) {
+			map.put(value, true);
+		}
+		vendorPrefixes = map;
 	}
 }
