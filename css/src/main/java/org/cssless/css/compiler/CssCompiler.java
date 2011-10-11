@@ -21,11 +21,17 @@ public class CssCompiler {
 			return;
 		}
 
+		// TODO: revamp command line so isn't order dependent
+		
 		CssCompiler compiler = new CssCompiler();
 		compiler.setInputRoot(args[0]);
 
 		if (args.length > 1) {
 			compiler.setOutputFolder(args[1]);
+
+			if (args.length > 2) {
+				compiler.setPrettyPrint("-pretty".equalsIgnoreCase(args[2]));
+			}
 		}
 
 		try {
@@ -37,8 +43,17 @@ public class CssCompiler {
 	}
 
 	private boolean verbose;
+	private boolean prettyPrint;
 	private File inputRoot;
 	private File outputFolder;
+
+	public boolean getPrettyPrint() {
+		return this.prettyPrint;
+	}
+
+	public void setPrettyPrint(boolean value) {
+		this.prettyPrint = value;
+	}
 
 	public String getInputRoot() {
 		return this.inputRoot.getAbsolutePath();
@@ -85,13 +100,18 @@ public class CssCompiler {
 		}
 
 		CodeGenSettings settings = new CodeGenSettings();
-			// TODO: allow setting of properties from args
-//			settings.setIndent("\t");
-//			settings.setNewline(System.getProperty("line.separator"));
+		if (this.prettyPrint) {
+			settings.setIndent("\t");
+			settings.setNewline(System.getProperty("line.separator"));
+			settings.setInlineBraces(true);
+		}
 
 		for (File inputFile : inputFiles) {
 			// TODO: clean up public methods on CssCompiler
-			this.process(inputFile, new File(this.outputFolder, inputFile.getName()+CssFormatter.getFileExtension()), settings);
+			String filename = inputFile.getName();
+			int index = filename.lastIndexOf('.');
+			filename = filename.substring(0, index);
+			this.process(inputFile, new File(this.outputFolder, filename+CssFormatter.getFileExtension()), settings);
 		}
 	}
 
