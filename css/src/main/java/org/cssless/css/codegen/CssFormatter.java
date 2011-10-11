@@ -234,7 +234,7 @@ public class CssFormatter {
 		WordBreak prev = null;
 		if (node.hasChildren()) {
 			for (CssNode child : node.getChildren()) {
-				prev = this.writeWordBreak(output, prev, child.getWordBreak(this.prettyPrint));
+				prev = this.writeWordBreak(output, prev, child);
 				this.writeNode(output, child, filter, depth);
 			}
 		}
@@ -293,7 +293,7 @@ public class CssFormatter {
 		WordBreak prev = null;
 		if (node.hasChildren()) {
 			for (CssNode child : node.getChildren()) {
-				prev = this.writeWordBreak(output, prev, child.getWordBreak(this.prettyPrint));
+				prev = this.writeWordBreak(output, prev, child);
 				this.writeNode(output, child, filter, depth);
 			}
 		}
@@ -313,9 +313,15 @@ public class CssFormatter {
 		}
 	}
 
-	private WordBreak writeWordBreak(Appendable output, WordBreak prev, WordBreak next)
+	private WordBreak writeWordBreak(Appendable output, WordBreak prev, CssNode child)
 		throws IOException {
 
+		if (!this.prettyPrint && (child instanceof CommentNode)) {
+			// non-printed comments interfere with word breaks
+			return prev;
+		}
+
+		WordBreak next = child.getWordBreak(this.prettyPrint);
 		if (prev != null &&
 			(WordBreak.BOTH.equals(prev) || WordBreak.POST.equals(prev)) &&
 			(WordBreak.BOTH.equals(next) || WordBreak.PRE.equals(next))) {

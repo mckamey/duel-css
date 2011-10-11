@@ -1516,6 +1516,38 @@ public class CssParserTests {
 	}
 
 	@Test
+	public void commentInlineTest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.value(".foo"),
+				CssToken.blockBegin(),
+				CssToken.value("padding"),
+				CssToken.operator(":"),
+				CssToken.numeric("1.5625em"),
+				CssToken.comment(" 25px / 16px "),
+				CssToken.numeric("1.25em"),
+				CssToken.ruleDelim(),
+				CssToken.comment(" 20px / 16px "),
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode(".foo")),
+				new DeclarationNode(
+					"padding",
+					new NumericNode(1.5625, "em"),
+					new CommentNode(" 25px / 16px "),
+					new NumericNode(1.25, "em")),
+				new CommentNode(" 20px / 16px ")));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void lessVariablesTest() throws IOException {
 
 		CssToken[] input = {

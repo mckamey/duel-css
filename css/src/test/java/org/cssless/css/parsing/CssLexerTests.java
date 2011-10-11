@@ -1187,6 +1187,34 @@ public class CssLexerTests {
 	}
 
 	@Test
+	public void commentInlineTest() {
+
+		String input =
+			".foo {\n" +
+			"\tpadding:\n" +
+			"\t\t1.5625em /* 25px / 16px */\n" +
+			"\t\t1.25em; /* 20px / 16px */\n" +
+			"}\n";
+
+		Object[] expected = {
+				CssToken.value(".foo"),
+				CssToken.blockBegin(),
+				CssToken.value("padding"),
+				CssToken.operator(":"),
+				CssToken.numeric("1.5625em"),
+				CssToken.comment(" 25px / 16px "),
+				CssToken.numeric("1.25em"),
+				CssToken.ruleDelim(),
+				CssToken.comment(" 20px / 16px "),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void commentLessTest() {
 
 		String input =

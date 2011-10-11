@@ -1474,4 +1474,56 @@ public class CssFormatterTests {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	public void commentInlineCompactTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode(".foo")),
+				new DeclarationNode(
+					"padding",
+					new NumericNode(1.5625, "em"),
+					new CommentNode(" 25px / 16px "),
+					new NumericNode(1.25, "em")),
+				new CommentNode(" 20px / 16px ")));
+
+		String expected = ".foo{padding:1.5625em 1.25em;}";
+
+		StringBuilder output = new StringBuilder();
+		new CssFormatter(new CodeGenSettings()).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void commentInlineTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(
+					new ValueNode(".foo")),
+				new DeclarationNode(
+					"padding",
+					new NumericNode(1.5625, "em"),
+					new CommentNode(" 25px / 16px "),
+					new NumericNode(1.25, "em")),
+				new CommentNode(" 20px / 16px ")));
+
+		// actually not that pretty as rules for comments are pretty crude
+		String expected =
+			".foo\n" +
+			"{\n" +
+			"\tpadding: 1.5625em /* 25px / 16px */ 1.25em;\n" +
+			"\t/* 20px / 16px */\n" +
+			"}";
+		
+		StringBuilder output = new StringBuilder();
+		new CssFormatter(new CodeGenSettings("\t", "\n")).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
 }
