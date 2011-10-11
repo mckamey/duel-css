@@ -10,6 +10,14 @@ import org.cssless.css.codegen.ArithmeticEvaluator;
  */
 public class CssParser {
 
+	private enum NODE_CONTEXT {
+		ACCESSOR,
+		AT_RULE,
+		DECLARATION,
+		FUNCTION,
+		SELECTOR
+	}
+	
 	private static final ArithmeticEvaluator evaluator = new ArithmeticEvaluator();
 
 	private CssToken next;
@@ -151,7 +159,7 @@ public class CssParser {
 					return;
 
 				default:
-					this.parseValue(atRule, this.next, false, "at-rule");
+					this.parseValue(atRule, this.next, false, NODE_CONTEXT.AT_RULE);
 					continue;
 			}
 		}
@@ -265,7 +273,7 @@ public class CssParser {
 					break;
 
 				default:
-					this.parseValue(selector, start, true, "selector");
+					this.parseValue(selector, start, true, NODE_CONTEXT.SELECTOR);
 					break;
 			}
 		}
@@ -322,7 +330,7 @@ public class CssParser {
 					continue;
 
 				default:
-					this.parseValue(selector, this.next, true, "selector");
+					this.parseValue(selector, this.next, true, NODE_CONTEXT.SELECTOR);
 					continue;
 			}
 		}
@@ -430,7 +438,7 @@ public class CssParser {
 					continue;
 
 				default:
-					this.parseValue(declaration, this.next, false, "declaration");
+					this.parseValue(declaration, this.next, false, NODE_CONTEXT.DECLARATION);
 					continue;
 			}
 		}
@@ -534,7 +542,7 @@ public class CssParser {
 								break;
 						}
 					}
-					this.parseValue(args, this.next, isSelector, "function");
+					this.parseValue(args, this.next, isSelector, NODE_CONTEXT.FUNCTION);
 					continue;
 			}
 		}
@@ -603,13 +611,13 @@ public class CssParser {
 						}
 					}
 
-					this.parseValue(args, this.next, isSelector, "accessor");
+					this.parseValue(args, this.next, isSelector, NODE_CONTEXT.ACCESSOR);
 					continue;
 			}
 		}
 	}
 
-	private void parseValue(ContainerNode parent, CssToken token, boolean isSelector, String label) {
+	private void parseValue(ContainerNode parent, CssToken token, boolean isSelector, NODE_CONTEXT context) {
 
 		switch (token.getToken()) {
 			case FUNCTION:
@@ -657,8 +665,15 @@ public class CssParser {
 			case ERROR:
 				throw this.throwErrorToken(token);
 
+			case RULE_DELIM:
+				if (context == NODE_CONTEXT.FUNCTION) {
+					// Data URIs contain semicolons
+					parent.appendChild(new OperatorNode(Character.toString(CssGrammar.OP_DECL_DELIM), token.getIndex(), token.getLine(), token.getColumn()));
+					break;
+				}
+
 			default:
-				throw new InvalidTokenException("Invalid token in "+label+": "+token, token);
+				throw new InvalidTokenException("Invalid token in "+context+": "+token, token);
 		}
 
 		if (this.next == token) {

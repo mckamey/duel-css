@@ -490,7 +490,7 @@ public class CssLexerTests {
 		String input =
 			"@font-face {\n" +
 			"\tfont-family: 'Foo';\n" +
-			"\tsrc: local('Foo'), url('http://example.com/fonts/foo.tt') format('truetype');\n" +
+			"\tsrc: local('☺'), url('http://example.com/fonts/foo.tt') format('truetype');\n" +
 			"}";
 
 		Object[] expected = {
@@ -503,11 +503,56 @@ public class CssLexerTests {
 				CssToken.value("src"),
 				CssToken.operator(":"),
 				CssToken.func("local"),
-				CssToken.string("'Foo'"),
+				CssToken.string("'☺'"),
 				CssToken.operator(")"),
 				CssToken.operator(","),
 				CssToken.func("url"),
 				CssToken.string("'http://example.com/fonts/foo.tt'"),
+				CssToken.operator(")"),
+				CssToken.func("format"),
+				CssToken.string("'truetype'"),
+				CssToken.operator(")"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void atRuleFontDataURITest() {
+
+		String input =
+			"@font-face {\n" +
+			"\tfont-family: 'Foo';\n" +
+			"\tsrc: url(data:font/woff;charset=utf-8;base64,d09GRgABAAABGRlRNAAABMAAAABwAAAAcWF3wvkdERUYAAAFMAAAAHQAAACAFKznYCbGdhc3AAAAJgAAAACAAAAAj) format('truetype');\n" +
+			"}";
+
+		Object[] expected = {
+				CssToken.atRule("font-face"),
+				CssToken.blockBegin(),
+				CssToken.value("font-family"),
+				CssToken.operator(":"),
+				CssToken.string("'Foo'"),
+				CssToken.ruleDelim(),
+				CssToken.value("src"),
+				CssToken.operator(":"),
+				CssToken.func("url"),
+				CssToken.value("data"),
+				CssToken.operator(":"),
+				CssToken.value("font"),
+				CssToken.operator("/"),
+				CssToken.value("woff"),
+				CssToken.ruleDelim(),
+				CssToken.value("charset"),
+				CssToken.operator("="),
+				CssToken.value("utf-8"),
+				CssToken.ruleDelim(),
+				CssToken.value("base64"),
+				CssToken.operator(","),
+				CssToken.value("d09GRgABAAABGRlRNAAABMAAAABwAAAAcWF3wvkdERUYAAAFMAAAAHQAAACAFKznYCbGdhc3AAAAJgAAAACAAAAAj"),
 				CssToken.operator(")"),
 				CssToken.func("format"),
 				CssToken.string("'truetype'"),

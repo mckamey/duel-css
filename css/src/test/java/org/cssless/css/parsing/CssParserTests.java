@@ -612,7 +612,7 @@ public class CssParserTests {
 				CssToken.value("src"),
 				CssToken.operator(":"),
 				CssToken.func("local"),
-				CssToken.string("'Foo'"),
+				CssToken.string("'☺'"),
 				CssToken.operator(")"),
 				CssToken.operator(","),
 				CssToken.func("url"),
@@ -637,11 +637,79 @@ public class CssParserTests {
 							"src",
 							new FunctionNode(
 								"local",
-								new StringNode("'Foo'")),
+								new StringNode("'☺'")),
 							new OperatorNode(","),
 							new FunctionNode(
 								"url",
 								new StringNode("'http://example.com/fonts/foo.tt'")),
+							new FunctionNode(
+								"format",
+								new StringNode("'truetype'"))))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void atRuleFontDataURITest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.atRule("font-face"),
+				CssToken.blockBegin(),
+				CssToken.value("font-family"),
+				CssToken.operator(":"),
+				CssToken.string("'Foo'"),
+				CssToken.ruleDelim(),
+				CssToken.value("src"),
+				CssToken.operator(":"),
+				CssToken.func("url"),
+				CssToken.value("data"),
+				CssToken.operator(":"),
+				CssToken.value("font"),
+				CssToken.operator("/"),
+				CssToken.value("woff"),
+				CssToken.ruleDelim(),
+				CssToken.value("charset"),
+				CssToken.operator("="),
+				CssToken.value("utf-8"),
+				CssToken.ruleDelim(),
+				CssToken.value("base64"),
+				CssToken.operator(","),
+				CssToken.value("d09GRgABAAABGRlRNAAABMAAAABwAAAAcWF3wvkdERUYAAAFMAAAAHQAAACAFKznYCbGdhc3AAAAJgAAAACAAAAAj"),
+				CssToken.operator(")"),
+				CssToken.func("format"),
+				CssToken.string("'truetype'"),
+				CssToken.operator(")"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+				new AtRuleNode(
+					"font-face",
+					null,
+					new BlockNode(
+						new DeclarationNode(
+							"font-family",
+							new StringNode("'Foo'")),
+						new DeclarationNode(
+							"src",
+							new FunctionNode(
+								"url",
+								new ValueNode("data"),
+								new OperatorNode(":"),
+								new ValueNode("font"),
+								new OperatorNode("/"),
+								new ValueNode("woff"),
+								new OperatorNode(";"),
+								new ValueNode("charset"),
+								new OperatorNode("="),
+								new ValueNode("utf-8"),
+								new OperatorNode(";"),
+								new ValueNode("base64"),
+								new OperatorNode(","),
+								new ValueNode("d09GRgABAAABGRlRNAAABMAAAABwAAAAcWF3wvkdERUYAAAFMAAAAHQAAACAFKznYCbGdhc3AAAAJgAAAACAAAAAj")),
 							new FunctionNode(
 								"format",
 								new StringNode("'truetype'"))))));
