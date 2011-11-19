@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.cssless.css.ast.*;
 import org.junit.Test;
 
-public class CssFormatterTests {
+public class CssFormatterTest {
 
 	@Test
 	public void valueListMixedTest() throws IOException {

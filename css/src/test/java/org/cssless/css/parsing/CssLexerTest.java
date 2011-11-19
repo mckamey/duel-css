@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class CssLexerTests {
+public class CssLexerTest {
 
 	@Test
 	public void valueListTest() {

@@ -5,7 +5,7 @@ import org.cssless.css.ast.*;
 import org.cssless.css.parsing.InvalidNodeException;
 import org.junit.Test;
 
-public class ArithmeticEvaluatorTests {
+public class ArithmeticEvaluatorTest {
 
 	@Test
 	public void evalOperandSingleTest() {

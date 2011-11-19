@@ -7,7 +7,7 @@ import org.cssless.css.ast.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class CssParserTests {
+public class CssParserTest {
 
 	@Test
 	public void valueListMixedTest() throws IOException {
