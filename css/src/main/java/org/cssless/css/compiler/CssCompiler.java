@@ -6,7 +6,12 @@ import org.cssless.css.ast.*;
 import org.cssless.css.codegen.*;
 import org.cssless.css.parsing.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CssCompiler {
+
+	private static final Logger log = LoggerFactory.getLogger(CssCompiler.class);
 
 	private static final String HELP =
 		"Usage:\n" +
@@ -73,12 +78,12 @@ public class CssCompiler {
 
 	private boolean ensureSettings() {
 		if (this.inputRoot == null || !this.inputRoot.exists()) {
-			System.err.println("Error: no input files found: "+this.inputRoot);
+			log.error("Error: no input files found: "+this.inputRoot);
 			return false;
 		}
 
 		if (this.outputFolder == null || !this.outputFolder.exists()) {
-			System.err.println("Error: no output path found: "+this.outputFolder);
+			log.error("Error: no output path found: "+this.outputFolder);
 		}
 
 		return true;
@@ -95,7 +100,7 @@ public class CssCompiler {
 
 		List<File> inputFiles = findFiles(this.inputRoot);
 		if (inputFiles.size() < 1) {
-			System.err.println("Error: no input files found in "+this.inputRoot.getAbsolutePath());
+			log.error("Error: no input files found in "+this.inputRoot.getAbsolutePath());
 			return;
 		}
 
@@ -151,7 +156,7 @@ public class CssCompiler {
 		}
 
 		if (stylesheet == null) {
-			System.err.println("Syntax error: no stylesheet found in "+source.getAbsolutePath());
+			log.error("Syntax error: no stylesheet found in "+source.getAbsolutePath());
 			return;
 		}
 
@@ -183,7 +188,7 @@ public class CssCompiler {
 				}
 			}
 
-			System.err.println(String.format(
+			log.error(String.format(
 				"%s:%d: %s",
 				inputFile.getAbsolutePath(),
 				ex.getLine(),
@@ -198,11 +203,11 @@ public class CssCompiler {
 				text = reader.readLine();
 			}
 
-			System.err.println(text);
+			log.error(text);
 			if (col > 0) {
-				System.err.println(String.format("%"+col+"s", "^"));
+				log.error(String.format("%"+col+"s", "^"));
 			} else {
-				System.err.println("^");
+				log.error("^");
 			}
 
 			if (this.verbose) {
