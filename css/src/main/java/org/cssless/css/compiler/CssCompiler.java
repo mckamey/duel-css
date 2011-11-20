@@ -13,31 +13,27 @@ import org.slf4j.LoggerFactory;
 public class CssCompiler {
 
 	private static final Logger log = LoggerFactory.getLogger(CssCompiler.class);
-	private final Settings settings;
-
-	public CssCompiler(Settings settings) {
-		if (settings == null) {
-			throw new NullPointerException("settings");
-		}
-		this.settings = settings;
-	}
-
+	
 	/**
 	 * Processes CSS/LESS files
 	 * @throws IOException 
 	 */
-	public void execute() throws IOException {
-		List<File> inputFiles = this.settings.findFiles(".less", ".css");
+	public void execute(Settings settings) throws IOException {
+		if (settings == null) {
+			throw new NullPointerException("settings");
+		}
+
+		List<File> inputFiles = settings.findFiles(".less", ".css");
 		if (inputFiles.size() < 1) {
-			log.error("Error: no input files found in "+this.settings.getSource());
+			log.error("Error: no input files found in "+settings.getSource());
 			return;
 		}
 
-		CodeGenSettings settings = new CodeGenSettings();
-		if (this.settings.getPrettyPrint()) {
-			settings.setIndent("\t");
-			settings.setNewline(System.getProperty("line.separator"));
-			settings.setInlineBraces(true);
+		CodeGenSettings formatSettings = new CodeGenSettings();
+		if (settings.getPrettyPrint()) {
+			formatSettings.setIndent("\t");
+			formatSettings.setNewline(System.getProperty("line.separator"));
+			formatSettings.setInlineBraces(true);
 		}
 
 		for (File inputFile : inputFiles) {
@@ -46,7 +42,7 @@ public class CssCompiler {
 			if (index > 0) {
 				filename = filename.substring(0, index);
 			}
-			this.process(inputFile, new File(this.settings.getTarget(), filename+CssFormatter.getFileExtension()), settings);
+			this.process(inputFile, new File(settings.getTarget(), filename+CssFormatter.getFileExtension()), formatSettings, null, settings.getVerbose());
 		}
 	}
 
@@ -71,6 +67,14 @@ public class CssCompiler {
 	 * @throws IOException 
 	 */
 	public void process(File source, File target, CodeGenSettings settings, CssFilter filter) throws IOException {
+		this.process(source, target, settings, filter, false);
+	}
+
+	/**
+	 * Processes a single CSS/LESS file
+	 * @throws IOException 
+	 */
+	public void process(File source, File target, CodeGenSettings settings, CssFilter filter, boolean verbose) throws IOException {
 		if (settings == null) {
 			settings = new CodeGenSettings();
 		}
@@ -81,7 +85,7 @@ public class CssCompiler {
 			stylesheet = new CssParser().parse(new CssLexer(reader));
 
 		} catch (SyntaxException ex) {
-			this.reportSyntaxError(source, ex);
+			this.reportSyntaxError(source, ex, verbose);
 			return;
 		}
 
@@ -103,11 +107,11 @@ public class CssCompiler {
 			}
 
 		} catch (SyntaxException ex) {
-			this.reportSyntaxError(source, ex);
+			this.reportSyntaxError(source, ex, verbose);
 		}
 	}
 
-	private void reportSyntaxError(File inputFile, SyntaxException ex) {
+	private void reportSyntaxError(File inputFile, SyntaxException ex, boolean verbose) {
 		try {
 			String message = ex.getMessage();
 			if (message == null) {
@@ -140,14 +144,14 @@ public class CssCompiler {
 				log.error("^");
 			}
 
-			if (this.settings.getVerbose()) {
+			if (verbose) {
 				ex.printStackTrace();
 			}
 
 		} catch (Exception ex2) {
 			ex.printStackTrace();
 
-			if (this.settings.getVerbose()) {
+			if (verbose) {
 				ex2.printStackTrace();
 			}
 		}

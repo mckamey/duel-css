@@ -47,7 +47,7 @@ public class CLI {
 		}
 
 		try {
-			new CssCompiler(settings).execute();
+			new CssCompiler().execute(settings);
 
 		} catch (Exception ex) {
 			ex.printStackTrace(System.err);
