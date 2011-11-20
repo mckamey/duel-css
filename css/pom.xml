@@ -74,7 +74,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.cssless.css.compiler.CssCompiler</mainClass>
+							<mainClass>org.cssless.css.compiler.CLI</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

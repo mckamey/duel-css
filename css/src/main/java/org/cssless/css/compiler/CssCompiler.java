@@ -2,6 +2,7 @@ package org.cssless.css.compiler;
 
 import java.io.*;
 import java.util.*;
+
 import org.cssless.css.ast.*;
 import org.cssless.css.codegen.*;
 import org.cssless.css.parsing.*;
@@ -12,81 +13,13 @@ import org.slf4j.LoggerFactory;
 public class CssCompiler {
 
 	private static final Logger log = LoggerFactory.getLogger(CssCompiler.class);
+	private final Settings settings;
 
-	private static final String HELP =
-		"Usage:\n" +
-		"\tjava -jar cssless.jar <input-file|input-folder> <output-folder>\n" +
-		"\tinput-file: path to the CSS/LESS input file (e.g. foo.less)\n"+
-		"\tinput-folder: path to the input folder containing CSS/LESS files\n"+
-		"\toutput-folder: path to the output folder\n";
-
-	public static void main(String[] args) {
-		if (args.length < 1) {
-			System.out.println(HELP);
-			return;
+	public CssCompiler(Settings settings) {
+		if (settings == null) {
+			throw new NullPointerException("settings");
 		}
-
-		// TODO: revamp command line so isn't order dependent
-		
-		CssCompiler compiler = new CssCompiler();
-		compiler.setInputRoot(args[0]);
-
-		if (args.length > 1) {
-			compiler.setOutputFolder(args[1]);
-
-			if (args.length > 2) {
-				compiler.setPrettyPrint("-pretty".equalsIgnoreCase(args[2]));
-			}
-		}
-
-		try {
-			compiler.execute();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private boolean verbose;
-	private boolean prettyPrint;
-	private File inputRoot;
-	private File outputFolder;
-
-	public boolean getPrettyPrint() {
-		return this.prettyPrint;
-	}
-
-	public void setPrettyPrint(boolean value) {
-		this.prettyPrint = value;
-	}
-
-	public String getInputRoot() {
-		return this.inputRoot.getAbsolutePath();
-	}
-
-	public void setInputRoot(String value) {
-		this.inputRoot = (value != null) ? new File(value.replace('\\', '/')) : null;
-	}
-
-	public String getOutputFolder() {
-		return this.outputFolder.getAbsolutePath();
-	}
-
-	public void setOutputFolder(String value) {
-		this.outputFolder = (value != null) ? new File(value.replace('\\', '/')) : null;
-	}
-
-	private boolean ensureSettings() {
-		if (this.inputRoot == null || !this.inputRoot.exists()) {
-			log.error("Error: no input files found: "+this.inputRoot);
-			return false;
-		}
-
-		if (this.outputFolder == null || !this.outputFolder.exists()) {
-			log.error("Error: no output path found: "+this.outputFolder);
-		}
-
-		return true;
+		this.settings = settings;
 	}
 
 	/**
@@ -94,29 +27,26 @@ public class CssCompiler {
 	 * @throws IOException 
 	 */
 	public void execute() throws IOException {
-		if (!this.ensureSettings()) {
-			return;
-		}
-
-		List<File> inputFiles = findFiles(this.inputRoot);
+		List<File> inputFiles = this.settings.findFiles(".less", ".css");
 		if (inputFiles.size() < 1) {
-			log.error("Error: no input files found in "+this.inputRoot.getAbsolutePath());
+			log.error("Error: no input files found in "+this.settings.getSource());
 			return;
 		}
 
 		CodeGenSettings settings = new CodeGenSettings();
-		if (this.prettyPrint) {
+		if (this.settings.getPrettyPrint()) {
 			settings.setIndent("\t");
 			settings.setNewline(System.getProperty("line.separator"));
 			settings.setInlineBraces(true);
 		}
 
 		for (File inputFile : inputFiles) {
-			// TODO: clean up public methods on CssCompiler
 			String filename = inputFile.getName();
 			int index = filename.lastIndexOf('.');
-			filename = filename.substring(0, index);
-			this.process(inputFile, new File(this.outputFolder, filename+CssFormatter.getFileExtension()), settings);
+			if (index > 0) {
+				filename = filename.substring(0, index);
+			}
+			this.process(inputFile, new File(this.settings.getTarget(), filename+CssFormatter.getFileExtension()), settings);
 		}
 	}
 
@@ -210,36 +140,16 @@ public class CssCompiler {
 				log.error("^");
 			}
 
-			if (this.verbose) {
+			if (this.settings.getVerbose()) {
 				ex.printStackTrace();
 			}
 
 		} catch (Exception ex2) {
 			ex.printStackTrace();
 
-			if (this.verbose) {
+			if (this.settings.getVerbose()) {
 				ex2.printStackTrace();
 			}
 		}
-	}
-
-	private static List<File> findFiles(File inputRoot) {
-
-		List<File> files = new ArrayList<File>();
-		Queue<File> folders = new LinkedList<File>();
-		folders.add(inputRoot);
-
-		while (!folders.isEmpty()) {
-			File file = folders.poll();
-			if (file.isDirectory()) {
-				folders.addAll(Arrays.asList(file.listFiles()));
-			} else if (file.getName().toLowerCase().endsWith(".less")) {
-				files.add(file);
-			} else if (file.getName().toLowerCase().endsWith(".css")) {
-				files.add(file);
-			}
-		}
-
-		return files;
 	}
 }
