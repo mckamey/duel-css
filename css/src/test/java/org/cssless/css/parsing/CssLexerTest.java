@@ -72,6 +72,34 @@ public class CssLexerTest {
 	}
 
 	@Test
+	public void valueHSLATest() {
+
+		String input = "h1 { color: hsla(0, 0%, 0%, 0.0); }";
+
+		Object[] expected = {
+				CssToken.value("h1"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.func("hsla"),
+				CssToken.numeric("0"),
+				CssToken.operator(","),
+				CssToken.numeric("0%"),
+				CssToken.operator(","),
+				CssToken.numeric("0%"),
+				CssToken.operator(","),
+				CssToken.numeric("0.0"),
+				CssToken.operator(")"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void valueListComplexTest() {
 
 		String input =

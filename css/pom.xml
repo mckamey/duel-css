@@ -11,7 +11,7 @@
 
 	<groupId>org.cssless</groupId>
 	<artifactId>css</artifactId>
-	<version>0.4.0</version>
+	<version>0.4.1</version>
 	<packaging>jar</packaging>
 
 	<name>CSS</name>
@@ -39,8 +39,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<slf4j.version>1.6.4</slf4j.version>
-		<junit.version>4.8.2</junit.version>
+		<slf4j.version>1.6.6</slf4j.version>
+		<junit.version>4.10</junit.version>
 		<jvm.version>1.6</jvm.version>
 	</properties>
 
@@ -51,8 +51,8 @@
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
+			<groupId>com.pseudocode</groupId>
+			<artifactId>slf4j-compact</artifactId>
 			<version>${slf4j.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -66,18 +66,37 @@
 	</dependencies>
 
 	<build>
+		<finalName>${project.artifactId}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.1</version>
+				<version>2.3.2</version>
 				<configuration>
 					<archive>
 						<manifest>
+							<addClasspath>true</addClasspath>
 							<mainClass>org.cssless.css.compiler.CLI</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
+			</plugin>
+
+			<!-- copy all dependencies to target -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -112,7 +131,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.1</version>
+						<version>1.4</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>

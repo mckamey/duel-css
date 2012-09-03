@@ -135,6 +135,34 @@ public class CssFormatterTest {
 	}
 
 	@Test
+	public void valueHSLACompactTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+				new RuleSetNode(
+						new SelectorNode("h1"),
+						new DeclarationNode(
+							"color",
+							new FunctionNode("hsla",
+								new NumericNode("0"),
+								new OperatorNode(","),
+								new NumericNode("0%"),
+								new OperatorNode(","),
+								new NumericNode("0%"),
+								new OperatorNode(","),
+								new NumericNode("0.0")))));
+				((NumericNode)((FunctionNode)((DeclarationNode)((RuleSetNode)input.getChildren().get(0)).getChildren().get(0)).getChildren().get(0)).getContainer().getChildren().get(2)).setKeepUnits(true);
+				((NumericNode)((FunctionNode)((DeclarationNode)((RuleSetNode)input.getChildren().get(0)).getChildren().get(0)).getChildren().get(0)).getContainer().getChildren().get(4)).setKeepUnits(true);
+
+		String expected = "h1{color:hsla(0,0%,0%,0);}";
+		
+		StringBuilder output = new StringBuilder();
+		new CssFormatter(new CodeGenSettings()).write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void valueFloatBareTest() throws IOException {
 
 		StyleSheetNode input = new StyleSheetNode(

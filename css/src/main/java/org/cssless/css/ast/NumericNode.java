@@ -9,6 +9,7 @@ public class NumericNode extends ValueNode {
 
 	private double number;
 	private String units;
+	private boolean keepUnits;
 
 	public NumericNode(String value, int index, int line, int column) {
 		super(value, index, line, column);
@@ -59,10 +60,18 @@ public class NumericNode extends ValueNode {
 		super.setValue(this.formatNumber(this.number)+this.units);
 	}
 
+	public boolean getKeepUnits() {
+		return keepUnits;
+	}
+
+	public void setKeepUnits(boolean value) {
+		this.keepUnits = value;
+	}
+
 	@Override
 	public String getValue(boolean compact) {
 		if (compact) {
-			if (this.number == 0.0) {
+			if (!this.keepUnits && this.number == 0.0) {
 				// no units needed for zero
 				return "0";
 			}
@@ -217,6 +226,9 @@ public class NumericNode extends ValueNode {
 		}
 
 		NumericNode that = (NumericNode)arg;
+		if (this.keepUnits != that.keepUnits) {
+			return false;
+		}
 		if (this.units == null ? that.units != null : !this.units.equals(that.units)) {
 			return false;
 		}

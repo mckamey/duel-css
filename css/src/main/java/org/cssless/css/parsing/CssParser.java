@@ -10,6 +10,9 @@ import org.cssless.css.codegen.ArithmeticEvaluator;
  */
 public class CssParser {
 
+	private static final String HSL = "hsl";
+	private static final String HSLA = "hsla";
+
 	private enum NODE_CONTEXT {
 		ACCESSOR,
 		AT_RULE,
@@ -448,7 +451,7 @@ public class CssParser {
 		}
 	}
 
-	private void parseFunction(ContainerNode parent, CssToken start, boolean isSelector) {
+	private FunctionNode parseFunction(ContainerNode parent, CssToken start, boolean isSelector) {
 
 		FunctionNode func = new FunctionNode(start.getValue(), start.getIndex(), start.getLine(), start.getColumn());
 		parent.appendChild(func);
@@ -487,7 +490,7 @@ public class CssParser {
 
 									// consume token, terminate function
 									this.next = null;
-									return;
+									return func;
 								}
 								nesting--;
 								break;
@@ -536,7 +539,7 @@ public class CssParser {
 									this.next = new CssToken(this.next.getToken(), value.substring(1), this.next.getIndex()+1, this.next.getLine(), this.next.getColumn()+1);
 									// inject a joiner which will signal that what follows is attached to the accessor
 									parent.appendChild(new CombinatorNode(CombinatorType.SELF, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
-									return;
+									return func;
 								}
 								nesting--;
 								break;
@@ -546,6 +549,8 @@ public class CssParser {
 					continue;
 			}
 		}
+
+		return func;
 	}
 
 	private void parseAccessor(ContainerNode parent, CssToken start, boolean isSelector) {
@@ -621,7 +626,30 @@ public class CssParser {
 
 		switch (token.getToken()) {
 			case FUNCTION:
-				this.parseFunction(parent, token, isSelector);
+				FunctionNode func = this.parseFunction(parent, token, isSelector);
+
+				// As of v21.0.1180.89, Chrome ignores saturation & brightness levels of "0" without percentage units.
+				// This is a workaround which forces units to be output for these two arguments.
+				String fn = func.getValue(true);
+				if (HSL.equals(fn) || HSLA.equals(fn)) {
+					// NOTE: args include the commas as operators
+					List<CssNode> args = func.getContainer().getChildren();
+					if (args.size() > 2) {
+						// HSL/A saturation percentage
+						CssNode arg = args.get(2);
+						if (arg instanceof NumericNode) {
+							((NumericNode)arg).setKeepUnits(true);
+						}
+
+						if (args.size() > 4) {
+							// HSL/A brightness percentage
+							arg = args.get(4);
+							if (arg instanceof NumericNode) {
+								((NumericNode)arg).setKeepUnits(true);
+							}
+						}
+					}
+				}
 				break;
 
 			case ACCESSOR:

@@ -50,6 +50,86 @@ public class CssParserTest {
 	}
 
 	@Test
+	public void valueHSLTest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.value("h1"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.func("hsl"),
+				CssToken.numeric("0"),
+				CssToken.operator(","),
+				CssToken.numeric("0%"),
+				CssToken.operator(","),
+				CssToken.numeric("0%"),
+				CssToken.operator(")"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("h1"),
+				new DeclarationNode(
+					"color",
+					new FunctionNode("hsl",
+						new NumericNode("0"),
+						new OperatorNode(","),
+						new NumericNode("0%"),
+						new OperatorNode(","),
+						new NumericNode("0%")))));
+		((NumericNode)((FunctionNode)((DeclarationNode)((RuleSetNode)expected.getChildren().get(0)).getChildren().get(0)).getChildren().get(0)).getContainer().getChildren().get(2)).setKeepUnits(true);
+		((NumericNode)((FunctionNode)((DeclarationNode)((RuleSetNode)expected.getChildren().get(0)).getChildren().get(0)).getChildren().get(0)).getContainer().getChildren().get(4)).setKeepUnits(true);
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void valueHSLATest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.value("h1"),
+				CssToken.blockBegin(),
+				CssToken.value("color"),
+				CssToken.operator(":"),
+				CssToken.func("hsla"),
+				CssToken.numeric("0"),
+				CssToken.operator(","),
+				CssToken.numeric("0%"),
+				CssToken.operator(","),
+				CssToken.numeric("0%"),
+				CssToken.operator(","),
+				CssToken.numeric("0.0"),
+				CssToken.operator(")"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode("h1"),
+				new DeclarationNode(
+					"color",
+					new FunctionNode("hsla",
+						new NumericNode("0"),
+						new OperatorNode(","),
+						new NumericNode("0%"),
+						new OperatorNode(","),
+						new NumericNode("0%"),
+						new OperatorNode(","),
+						new NumericNode("0.0")))));
+		((NumericNode)((FunctionNode)((DeclarationNode)((RuleSetNode)expected.getChildren().get(0)).getChildren().get(0)).getChildren().get(0)).getContainer().getChildren().get(2)).setKeepUnits(true);
+		((NumericNode)((FunctionNode)((DeclarationNode)((RuleSetNode)expected.getChildren().get(0)).getChildren().get(0)).getChildren().get(0)).getContainer().getChildren().get(4)).setKeepUnits(true);
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void valueListComplexTest() throws IOException {
 
 		CssToken[] input = {
