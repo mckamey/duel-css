@@ -20,7 +20,7 @@ public class OperatorNode extends ValueNode {
 
 	@Override
 	public WordBreak getWordBreak(boolean prettyPrint) {
-		String value = this.getValue(!prettyPrint);
+		String value = getValue(!prettyPrint);
 		if (value != null) {
 			char ch = value.charAt(0);
 			switch (ch) {

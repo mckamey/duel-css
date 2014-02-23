@@ -6,27 +6,27 @@ public abstract class ContainerValueNode extends ValueNode {
 
 	public ContainerValueNode(String value, int index, int line, int column) {
 		super(value, index, line, column);
-		this.children = new ContainerNode(index, line, column);
-		this.children.setParent(this.getParent());
+		children = new ContainerNode(index, line, column);
+		children.setParent(getParent());
 	}
 
-	public ContainerValueNode(String value, ValueNode... children) {
+	public ContainerValueNode(String value, ValueNode... childNodes) {
 		super(value);
-		this.children = new ContainerNode(children);
-		this.children.setParent(this.getParent());
+		children = new ContainerNode(childNodes);
+		children.setParent(getParent());
 	}
 
 	@Override
 	public abstract CssNodeType getNodeType();
 
 	public ContainerNode getContainer() {
-		return this.children;
+		return children;
 	}
 
 	@Override
 	void setParent(ContainerNode parent) {
 		super.setParent(parent);
-		this.children.setParent(parent);
+		children.setParent(parent);
 	}
 	
 	@Override
@@ -48,6 +48,6 @@ public abstract class ContainerValueNode extends ValueNode {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		return super.hashCode() * HASH_PRIME + this.children.hashCode();
+		return super.hashCode() * HASH_PRIME + children.hashCode();
 	}
 }

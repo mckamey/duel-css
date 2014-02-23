@@ -16,7 +16,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new ColorNode("#FF0");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -35,7 +35,7 @@ public class ArithmeticEvaluatorTest {
 			new NumericNode("10px"),
 			new NumericNode("20px"));
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -60,7 +60,7 @@ public class ArithmeticEvaluatorTest {
 			new NumericNode("12px"),
 			new NumericNode("18px"));
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -87,7 +87,7 @@ public class ArithmeticEvaluatorTest {
 			new NumericNode("12px"),
 			new NumericNode("18px"));
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -110,7 +110,7 @@ public class ArithmeticEvaluatorTest {
 			new NumericNode("15px"),
 			new NumericNode("20px"));
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -137,7 +137,7 @@ public class ArithmeticEvaluatorTest {
 			new NumericNode("15px"),
 			new NumericNode("20px"));
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -160,7 +160,7 @@ public class ArithmeticEvaluatorTest {
 			new NumericNode("15px"),
 			new NumericNode("20px"));
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -185,7 +185,7 @@ public class ArithmeticEvaluatorTest {
 			new NumericNode("15px"),
 			new NumericNode("20px"));
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -205,7 +205,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new NumericNode("4.75");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -231,7 +231,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new NumericNode("62");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -255,7 +255,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new NumericNode("3.5");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -295,7 +295,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new NumericNode("-12");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -311,7 +311,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new NumericNode("17px");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -327,7 +327,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new NumericNode("17px");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -343,7 +343,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new NumericNode("9px");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -359,7 +359,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new NumericNode("9px");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -375,7 +375,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new NumericNode("52px");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -391,7 +391,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new NumericNode("52px");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -407,7 +407,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new NumericNode("3.25px");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -423,7 +423,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new NumericNode("3.25px");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -438,7 +438,7 @@ public class ArithmeticEvaluatorTest {
 		};
 
 		try {
-			new ArithmeticEvaluator().eval(input);
+			ArithmeticEvaluator.eval(input);
 			fail("Expected InvalidNodeException");
 
 		} catch (InvalidNodeException ex) {
@@ -457,7 +457,7 @@ public class ArithmeticEvaluatorTest {
 		};
 
 		try {
-			new ArithmeticEvaluator().eval(input);
+			ArithmeticEvaluator.eval(input);
 			fail("Expected InvalidNodeException");
 
 		} catch (InvalidNodeException ex) {
@@ -476,7 +476,7 @@ public class ArithmeticEvaluatorTest {
 		};
 
 		try {
-			new ArithmeticEvaluator().eval(input);
+			ArithmeticEvaluator.eval(input);
 			fail("Expected InvalidNodeException");
 
 		} catch (InvalidNodeException ex) {
@@ -495,7 +495,7 @@ public class ArithmeticEvaluatorTest {
 		};
 
 		try {
-			new ArithmeticEvaluator().eval(input);
+			ArithmeticEvaluator.eval(input);
 			fail("Expected InvalidNodeException");
 
 		} catch (InvalidNodeException ex) {
@@ -515,7 +515,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new ColorNode("#142536");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -531,7 +531,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new ColorNode("#153759");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -547,7 +547,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new ColorNode("#0F3153");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -563,7 +563,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new ColorNode("#693");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -579,7 +579,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new ColorNode("#369CFF");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -595,7 +595,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new ColorNode("#010508");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -611,7 +611,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new ColorNode("#80FF7F");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -627,7 +627,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new ColorNode("#444444");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -643,7 +643,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new ColorNode("#444444");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -659,7 +659,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new ColorNode("#489CAC");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}
@@ -675,7 +675,7 @@ public class ArithmeticEvaluatorTest {
 
 		ValueNode expected = new ColorNode("#090D0E");
 
-		ValueNode actual = new ArithmeticEvaluator().eval(input);
+		ValueNode actual = ArithmeticEvaluator.eval(input);
 
 		assertEquals(expected, actual);
 	}

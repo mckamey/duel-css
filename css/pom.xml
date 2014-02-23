@@ -11,11 +11,11 @@
 
 	<groupId>org.duelengine</groupId>
 	<artifactId>css</artifactId>
-	<version>0.4.2</version>
+	<version>0.5.0</version>
 	<packaging>jar</packaging>
 
-	<name>CSS</name>
-	<description>CSS3 processor for the JVM</description>
+	<name>DUEL CSS</name>
+	<description>Standalone CSS3 processor for the JVM</description>
 	<url>http://duelengine.org</url>
 	<licenses>
 		<license>

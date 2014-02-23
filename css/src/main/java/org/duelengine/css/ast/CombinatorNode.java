@@ -9,16 +9,16 @@ public class CombinatorNode extends ValueNode {
 
 	private CombinatorType combinator;
 
-	public CombinatorNode(CombinatorType combinator, int index, int line, int column) {
-		super(mapCombinator(combinator, index, line, column), index, line, column);
+	public CombinatorNode(CombinatorType combinatorType, int index, int line, int column) {
+		super(mapCombinator(combinatorType, index, line, column), index, line, column);
 
-		this.combinator = combinator;
+		combinator = combinatorType;
 	}
 
-	public CombinatorNode(CombinatorType combinator) {
-		super(mapCombinator(combinator, -1, -1, -1));
+	public CombinatorNode(CombinatorType combinatorType) {
+		super(mapCombinator(combinatorType, -1, -1, -1));
 
-		this.combinator = combinator;
+		combinator = combinatorType;
 	}
 
 	@Override
@@ -26,14 +26,14 @@ public class CombinatorNode extends ValueNode {
 		return CssNodeType.COMBINATOR;
 	}
 
-	public void setCombinator(CombinatorType combinator) {
-		this.combinator = combinator;
-		super.setValue(mapCombinator(combinator, -1, -1, -1));
+	public void setCombinator(CombinatorType combinatorType) {
+		combinator = combinatorType;
+		super.setValue(mapCombinator(combinatorType, -1, -1, -1));
 	}
 
 	@Override
 	public void setValue(String value) {
-		this.combinator = getCombinator(value);
+		combinator = getCombinator(value);
 		super.setValue(value);
 	}
 
@@ -79,7 +79,7 @@ public class CombinatorNode extends ValueNode {
 
 	@Override
 	public WordBreak getWordBreak(boolean prettyPrint) {
-		if (this.combinator == CombinatorType.SELF) {
+		if (combinator == CombinatorType.SELF) {
 			return WordBreak.NONE;
 		}
 
@@ -105,8 +105,8 @@ public class CombinatorNode extends ValueNode {
 		final int HASH_PRIME = 1000003;
 
 		int hash = 0;
-		if (this.combinator != null) {
-			hash = hash * HASH_PRIME + this.combinator.hashCode();
+		if (combinator != null) {
+			hash = hash * HASH_PRIME + combinator.hashCode();
 		}
 		return hash;
 	}

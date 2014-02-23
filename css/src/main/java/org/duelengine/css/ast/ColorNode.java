@@ -20,7 +20,7 @@ public class ColorNode extends ValueNode {
 	public ColorNode(int r, int g, int b, int index, int line, int column) {
 		super(null, index, line, column);
 
-		this.setChannels(r, g, b);
+		setChannels(r, g, b);
 	}
 
 	public ColorNode(String value) {
@@ -30,7 +30,7 @@ public class ColorNode extends ValueNode {
 	public ColorNode(int r, int g, int b) {
 		super(null);
 
-		this.setChannels(r, g, b);
+		setChannels(r, g, b);
 	}
 
 	@Override
@@ -39,23 +39,23 @@ public class ColorNode extends ValueNode {
 	}
 
 	public int getRedChannel() {
-		return this.red;
+		return red;
 	}
 
 	public int getGreenChannel() {
-		return this.green;
+		return green;
 	}
 
 	public int getBlueChannel() {
-		return this.blue;
+		return blue;
 	}
 
 	public void setChannels(int r, int g, int b) {
 		// ensure channel bounds
-		this.red = r = Math.max(0x00, Math.min(0xFF, r));
-		this.green = g = Math.max(0x00, Math.min(0xFF, g));
-		this.blue = b = Math.max(0x00, Math.min(0xFF, b));
-		this.hasChannels = true;
+		red = r = Math.max(0x00, Math.min(0xFF, r));
+		green = g = Math.max(0x00, Math.min(0xFF, g));
+		blue = b = Math.max(0x00, Math.min(0xFF, b));
+		hasChannels = true;
 
 		// hex notation
 		super.setValue("#" + toHex(r) + toHex(g) + toHex(b));
@@ -64,12 +64,12 @@ public class ColorNode extends ValueNode {
 	@Override
 	public String getValue(boolean compact) {
 		String color = super.getValue(compact);
-		if (compact && this.hasChannels &&
+		if (compact && hasChannels &&
 			(color == null || color.isEmpty() || color.length() > 4)) {
 
-			String r = toHex(this.red);
-			String g = toHex(this.green);
-			String b = toHex(this.blue);
+			String r = toHex(red);
+			String g = toHex(green);
+			String b = toHex(blue);
 
 			if (r.charAt(0) == r.charAt(1) &&
 				g.charAt(0) == g.charAt(1) &&
@@ -91,10 +91,10 @@ public class ColorNode extends ValueNode {
 		super.setValue(value);
 
 		if (value == null || value.isEmpty()) {
-			this.hasChannels = true;
-			this.red = 0;
-			this.green = 0;
-			this.blue = 0;
+			hasChannels = true;
+			red = 0;
+			green = 0;
+			blue = 0;
 			return;
 		}
 
@@ -105,22 +105,22 @@ public class ColorNode extends ValueNode {
 
 		int length = color.length();
 		if ((length != 4 && length != 7) || color.charAt(0) != '#') {
-			this.hasChannels = false;
-			this.red = 0;
-			this.green = 0;
-			this.blue = 0;
+			hasChannels = false;
+			red = 0;
+			green = 0;
+			blue = 0;
 			return;
 		}
 
-		this.hasChannels = true;
+		hasChannels = true;
 		if (length == 4) {
-			this.red = fromHex(color.substring(1, 2)+color.substring(1, 2));
-			this.green = fromHex(color.substring(2, 3)+color.substring(2, 3));
-			this.blue = fromHex(color.substring(3, 4)+color.substring(3, 4));
+			red = fromHex(color.substring(1, 2)+color.substring(1, 2));
+			green = fromHex(color.substring(2, 3)+color.substring(2, 3));
+			blue = fromHex(color.substring(3, 4)+color.substring(3, 4));
 		} else {
-			this.red = fromHex(color.substring(1, 3));
-			this.green = fromHex(color.substring(3, 5));
-			this.blue = fromHex(color.substring(5, 7));
+			red = fromHex(color.substring(1, 3));
+			green = fromHex(color.substring(3, 5));
+			blue = fromHex(color.substring(5, 7));
 		}
 	}
 
@@ -131,7 +131,7 @@ public class ColorNode extends ValueNode {
 			int r = this.red + that.red;
 			int g = this.green + that.green;
 			int b = this.blue + that.blue;
-			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+			return new ColorNode(r, g, b, getIndex(), getLine(), getColumn());
 		}
 
 		if (operand instanceof NumericNode) {
@@ -140,10 +140,10 @@ public class ColorNode extends ValueNode {
 				throw new InvalidNodeException("Cannot use units when mixing numeric and color: "+that, that);
 			}
 			double number = that.getNumber();
-			int r = (int)(this.red + number);
-			int g = (int)(this.green + number);
-			int b = (int)(this.blue + number);
-			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+			int r = (int)(red + number);
+			int g = (int)(green + number);
+			int b = (int)(blue + number);
+			return new ColorNode(r, g, b, getIndex(), getLine(), getColumn());
 		}
 
 		return super.add(operand);
@@ -156,7 +156,7 @@ public class ColorNode extends ValueNode {
 			int r = this.red - that.red;
 			int g = this.green - that.green;
 			int b = this.blue - that.blue;
-			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+			return new ColorNode(r, g, b, getIndex(), getLine(), getColumn());
 		}
 
 		if (operand instanceof NumericNode) {
@@ -165,10 +165,10 @@ public class ColorNode extends ValueNode {
 				throw new InvalidNodeException("Cannot use units when mixing numeric and color: "+that, that);
 			}
 			double number = that.getNumber();
-			int r = (int)(this.red - number);
-			int g = (int)(this.green - number);
-			int b = (int)(this.blue - number);
-			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+			int r = (int)(red - number);
+			int g = (int)(green - number);
+			int b = (int)(blue - number);
+			return new ColorNode(r, g, b, getIndex(), getLine(), getColumn());
 		}
 
 		return super.subtract(operand);
@@ -181,7 +181,7 @@ public class ColorNode extends ValueNode {
 			int r = this.red * that.red;
 			int g = this.green * that.green;
 			int b = this.blue * that.blue;
-			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+			return new ColorNode(r, g, b, getIndex(), getLine(), getColumn());
 		}
 
 		if (operand instanceof NumericNode) {
@@ -190,10 +190,10 @@ public class ColorNode extends ValueNode {
 				throw new InvalidNodeException("Cannot use units when mixing numeric and color: "+that, that);
 			}
 			double number = that.getNumber();
-			int r = (int)(this.red * number);
-			int g = (int)(this.green * number);
-			int b = (int)(this.blue * number);
-			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+			int r = (int)(red * number);
+			int g = (int)(green * number);
+			int b = (int)(blue * number);
+			return new ColorNode(r, g, b, getIndex(), getLine(), getColumn());
 		}
 
 		return super.multiply(operand);
@@ -206,7 +206,7 @@ public class ColorNode extends ValueNode {
 			int r = this.red / that.red;
 			int g = this.green / that.green;
 			int b = this.blue / that.blue;
-			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+			return new ColorNode(r, g, b, getIndex(), getLine(), getColumn());
 		}
 
 		if (operand instanceof NumericNode) {
@@ -215,10 +215,10 @@ public class ColorNode extends ValueNode {
 				throw new InvalidNodeException("Cannot use units when mixing numeric and color: "+that, that);
 			}
 			double number = that.getNumber();
-			int r = (int)(this.red / number);
-			int g = (int)(this.green / number);
-			int b = (int)(this.blue / number);
-			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+			int r = (int)(red / number);
+			int g = (int)(green / number);
+			int b = (int)(blue / number);
+			return new ColorNode(r, g, b, getIndex(), getLine(), getColumn());
 		}
 
 		return super.divide(operand);

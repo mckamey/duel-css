@@ -8,8 +8,8 @@
 	<version>0.0.0</version>
 	<packaging>pom</packaging>
 
-	<name>CSS Root</name>
-	<description>CSS3 processor for the JVM</description>
+	<name>DUEL CSS Root</name>
+	<description>Standalone CSS3 processor for the JVM</description>
 	<url>http://duelengine.org</url>
 	<licenses>
 		<license>

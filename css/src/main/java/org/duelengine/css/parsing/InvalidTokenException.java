@@ -28,6 +28,6 @@ public class InvalidTokenException extends SyntaxException {
 	}
 
 	public CssToken getToken() {
-		return this.token;
+		return token;
 	}
 }

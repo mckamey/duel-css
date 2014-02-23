@@ -18,9 +18,9 @@ public class CodeGenSettings {
 	}
 
 	public CodeGenSettings(String indent, String newline, boolean inlineBraces) {
-		this.setIndent(indent);
-		this.setNewline(newline);
-		this.setInlineBraces(inlineBraces);
+		setIndent(indent);
+		setNewline(newline);
+		setInlineBraces(inlineBraces);
 	}
 	
 	/**
@@ -28,7 +28,7 @@ public class CodeGenSettings {
 	 * @return
 	 */
 	public String getIndent() {
-		return this.indent;
+		return indent;
 	}
 
 	/**
@@ -36,7 +36,7 @@ public class CodeGenSettings {
 	 * @param value
 	 */
 	public void setIndent(String value) {
-		this.indent = (value != null) ? value : "";
+		indent = (value != null) ? value : "";
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class CodeGenSettings {
 	 * @return
 	 */
 	public String getNewline() {
-		return this.newline;
+		return newline;
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class CodeGenSettings {
 	 * @param value
 	 */
 	public void setNewline(String value) {
-		this.newline = (value != null) ? value : "";
+		newline = (value != null) ? value : "";
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class CodeGenSettings {
 	 * @return
 	 */
 	public boolean useInlineBraces() {
-		return this.inlineBraces;
+		return inlineBraces;
 	}
 
 	/**
@@ -68,6 +68,6 @@ public class CodeGenSettings {
 	 * @param value
 	 */
 	public void setInlineBraces(boolean value) {
-		this.inlineBraces = value;
+		inlineBraces = value;
 	}
 }

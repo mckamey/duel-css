@@ -10,15 +10,13 @@ public abstract class CssNode {
 	private ContainerNode parent;
 
 	protected CssNode() {
-		this.index = -1;
-		this.line = -1;
-		this.column = -1;
+		index = line = column = -1;
 	}
 
-	protected CssNode(int index, int line, int column) {
-		this.index = index;
-		this.line = line;
-		this.column = column;
+	protected CssNode(int nodeIndex, int nodeLine, int nodeColumn) {
+		index = nodeIndex;
+		line = nodeLine;
+		column = nodeColumn;
 	}
 
 	public abstract CssNodeType getNodeType();
@@ -40,11 +38,11 @@ public abstract class CssNode {
 	}
 	
 	public ContainerNode getParent() {
-		return this.parent;
+		return parent;
 	}
 
-	void setParent(ContainerNode parent) {
-		this.parent = parent;
+	void setParent(ContainerNode value) {
+		parent = value;
 	}
 
 	/**

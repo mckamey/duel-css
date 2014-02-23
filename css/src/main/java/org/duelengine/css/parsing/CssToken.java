@@ -22,30 +22,30 @@ public class CssToken {
 	}
 
 	public CssTokenType getToken() {
-		return this.type;
+		return type;
 	}
 
 	public String getValue() {
-		return this.value;
+		return value;
 	}
 
 	public int getIndex() {
-		return this.index;
+		return index;
 	}
 
 	public int getLine() {
-		return this.line;
+		return line;
 	}
 
 	public int getColumn() {
-		return this.column;
+		return column;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder buffer = new StringBuilder(this.type.toString());
-		if (this.value != null) {
-			buffer.append(": ").append(this.value);
+		StringBuilder buffer = new StringBuilder(type.toString());
+		if (value != null) {
+			buffer.append(": ").append(value);
 		}
 		return buffer.toString();
 	}
@@ -67,9 +67,9 @@ public class CssToken {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = this.type.hashCode();
-		if (this.value != null) {
-			hash = hash * HASH_PRIME + this.value.hashCode();
+		int hash = type.hashCode();
+		if (value != null) {
+			hash = hash * HASH_PRIME + value.hashCode();
 		}
 		return hash;
 	}

@@ -30,9 +30,9 @@ public class CssFormatter {
 		this(null);
 	}
 
-	public CssFormatter(CodeGenSettings settings) {
-		this.settings = (settings != null) ? settings : new CodeGenSettings();
-		this.prettyPrint = (!this.settings.getIndent().isEmpty() || !this.settings.getNewline().isEmpty());
+	public CssFormatter(CodeGenSettings codeGenSettings) {
+		settings = (codeGenSettings != null) ? codeGenSettings : new CodeGenSettings();
+		prettyPrint = (!settings.getIndent().isEmpty() || !settings.getNewline().isEmpty());
 	}
 
 	public static String getFileExtension() {
@@ -48,7 +48,7 @@ public class CssFormatter {
 	public void write(Appendable output, StyleSheetNode stylesheet)
 		throws IOException {
 
-		this.write(output, stylesheet, null);
+		write(output, stylesheet, null);
 	}
 
 	/**
@@ -68,15 +68,15 @@ public class CssFormatter {
 		}
 
 		// TODO: expose another setting for spacing?
-		int spacing = this.settings.useInlineBraces() ? 1 : 2; 
+		int spacing = settings.useInlineBraces() ? 1 : 2; 
 		boolean needsDelim = false;
 		for (CssNode node : stylesheet.getChildren()) {
 			if (needsDelim) {
-				this.writeln(output, 0, spacing);
+				writeln(output, 0, spacing);
 			} else {
 				needsDelim = true;
 			}
-			this.writeNode(output, node, filter, 0);
+			writeNode(output, node, filter, 0);
 		}
 	}
 
@@ -97,34 +97,34 @@ public class CssFormatter {
 			output.append("null");
 
 		} else if (node instanceof AtRuleNode) {
-			this.writeAtRule(output, (AtRuleNode)node, filter, 0);
+			writeAtRule(output, (AtRuleNode)node, filter, 0);
 
 		} else if (node instanceof RuleSetNode) {
-			this.writeRuleSet(output, (RuleSetNode)node, filter, 0);
+			writeRuleSet(output, (RuleSetNode)node, filter, 0);
 
 		} else if (node instanceof DeclarationNode) {
-			this.writeDeclaration(output, (DeclarationNode)node, filter, 0);
+			writeDeclaration(output, (DeclarationNode)node, filter, 0);
 
 		} else if (node instanceof CommentNode) {
-			this.writeComment(output, (CommentNode)node, filter, 0);
+			writeComment(output, (CommentNode)node, filter, 0);
 
 		} else if (node instanceof FunctionNode) {
-			this.writeFunction(output, (FunctionNode)node, filter, 0);
+			writeFunction(output, (FunctionNode)node, filter, 0);
 
 		} else if (node instanceof AccessorNode) {
-			this.writeAccessor(output, (AccessorNode)node, filter, 0);
+			writeAccessor(output, (AccessorNode)node, filter, 0);
 
 		} else if (node instanceof MultiValueNode) {
-			this.writeContainer(output, ((MultiValueNode)node).getContainer(), filter, 0);
+			writeContainer(output, ((MultiValueNode)node).getContainer(), filter, 0);
 
 		} else if (node instanceof ValueNode) {
-			this.writeValue(output, (ValueNode)node);
+			writeValue(output, (ValueNode)node);
 
 		} else if (node instanceof BlockNode) {
-			this.writeBlock(output, (BlockNode)node, filter, 0);
+			writeBlock(output, (BlockNode)node, filter, 0);
 
 		} else if (node instanceof ContainerNode) {
-			this.writeExpression(output, (ContainerNode)node, filter, 0);
+			writeExpression(output, (ContainerNode)node, filter, 0);
 			
 		} else if (node != null) {
 			throw new UnsupportedOperationException("Node not yet implemented: "+node.getClass());
@@ -139,28 +139,28 @@ public class CssFormatter {
 		}
 
 		if (node instanceof AtRuleNode) {
-			this.writeAtRule(output, (AtRuleNode)node, filter, depth);
+			writeAtRule(output, (AtRuleNode)node, filter, depth);
 
 		} else if (node instanceof RuleSetNode) {
-			this.writeRuleSet(output, (RuleSetNode)node, filter, depth);
+			writeRuleSet(output, (RuleSetNode)node, filter, depth);
 
 		} else if (node instanceof DeclarationNode) {
-			this.writeDeclaration(output, (DeclarationNode)node, filter, depth);
+			writeDeclaration(output, (DeclarationNode)node, filter, depth);
 
 		} else if (node instanceof CommentNode) {
-			this.writeComment(output, (CommentNode)node, filter, depth);
+			writeComment(output, (CommentNode)node, filter, depth);
 
 		} else if (node instanceof FunctionNode) {
-			this.writeFunction(output, (FunctionNode)node, filter, depth);
+			writeFunction(output, (FunctionNode)node, filter, depth);
 
 		} else if (node instanceof AccessorNode) {
-			this.writeAccessor(output, (AccessorNode)node, filter, depth);
+			writeAccessor(output, (AccessorNode)node, filter, depth);
 
 		} else if (node instanceof MultiValueNode) {
-			this.writeContainer(output, ((MultiValueNode)node).getContainer(), filter, depth);
+			writeContainer(output, ((MultiValueNode)node).getContainer(), filter, depth);
 
 		} else if (node instanceof ValueNode) {
-			this.writeValue(output, (ValueNode)node);
+			writeValue(output, (ValueNode)node);
 
 		} else if (node != null) {
 			throw new UnsupportedOperationException("Node not yet implemented: "+node.getClass());
@@ -175,19 +175,19 @@ public class CssFormatter {
 
 		if (node.hasChildren()) {
 			output.append(' ');
-			this.writeExpression(output, node, filter, depth);
+			writeExpression(output, node, filter, depth);
 		}
 
 		BlockNode block = node.getBlock();
 		if (block != null) {
-			if (this.prettyPrint) {
-				if (this.settings.useInlineBraces()) {
+			if (prettyPrint) {
+				if (settings.useInlineBraces()) {
 					output.append(' ');
 				} else {
-					this.writeln(output, depth);
+					writeln(output, depth);
 				}
 			}
-			this.writeBlock(output, block, filter, depth);
+			writeBlock(output, block, filter, depth);
 		} else {
 			output.append(';');
 		}
@@ -197,7 +197,7 @@ public class CssFormatter {
 		throws IOException {
 
 		// remove empty rule-sets in compact mode
-		if (!this.prettyPrint && !node.hasChildren()) {
+		if (!prettyPrint && !node.hasChildren()) {
 			return;
 		}
 		
@@ -205,23 +205,23 @@ public class CssFormatter {
 		for (SelectorNode selector : node.getSelectors()) {
 			if (needsDelim) {
 				output.append(',');
-				if (this.prettyPrint) {
+				if (prettyPrint) {
 					output.append(' ');
 				}
 			} else {
 				needsDelim = true;
 			}
-			this.writeExpression(output, selector, filter, depth);
+			writeExpression(output, selector, filter, depth);
 		}
 
-		if (this.prettyPrint) {
-			if (this.settings.useInlineBraces()) {
+		if (prettyPrint) {
+			if (settings.useInlineBraces()) {
 				output.append(' ');
 			} else {
-				this.writeln(output, depth);
+				writeln(output, depth);
 			}
 		}
-		this.writeBlock(output, node, filter, depth);
+		writeBlock(output, node, filter, depth);
 	}
 
 	private void writeDeclaration(Appendable output, DeclarationNode node, CssFilter filter, int depth)
@@ -229,12 +229,12 @@ public class CssFormatter {
 
 		output.append(node.getIdent());
 		output.append(':');
-		if (this.prettyPrint) {
+		if (prettyPrint) {
 			output.append(' ');
 		}
-		this.writeExpression(output, node, filter, depth);
+		writeExpression(output, node, filter, depth);
 		if (node.isImportant()) {
-			if (this.prettyPrint) {
+			if (prettyPrint) {
 				output.append(' ');
 			}
 			output.append("!important");
@@ -248,8 +248,8 @@ public class CssFormatter {
 		WordBreak prev = null;
 		if (node.hasChildren()) {
 			for (CssNode child : node.getChildren()) {
-				prev = this.writeWordBreak(output, prev, child);
-				this.writeNode(output, child, filter, depth);
+				prev = writeWordBreak(output, prev, child);
+				writeNode(output, child, filter, depth);
 			}
 		}
 	}
@@ -261,25 +261,25 @@ public class CssFormatter {
 		depth++;
 
 		// TODO: expose another setting for spacing?
-		if (this.settings.useInlineBraces()) {
+		if (settings.useInlineBraces()) {
 			for (CssNode child : node.getChildren()) {
-				this.writeln(output, depth);
-				this.writeNode(output, child, filter, depth);
+				writeln(output, depth);
+				writeNode(output, child, filter, depth);
 			}
 		} else {
 			boolean needsDelim = false;
 			for (CssNode child : node.getChildren()) {
 				if (needsDelim && !(child instanceof DeclarationNode) && !(child instanceof CommentNode)) {
-					this.writeln(output, depth, 2);
+					writeln(output, depth, 2);
 				} else {
 					needsDelim = true;
-					this.writeln(output, depth);
+					writeln(output, depth);
 				}
-				this.writeNode(output, child, filter, depth);
+				writeNode(output, child, filter, depth);
 			}
 		}
 
-		this.writeln(output, --depth);
+		writeln(output, --depth);
 		output.append('}');
 	}
 
@@ -288,7 +288,7 @@ public class CssFormatter {
 
 		output.append(node.getValue());
 		output.append('(');
-		this.writeContainer(output, node.getContainer(), filter, depth);
+		writeContainer(output, node.getContainer(), filter, depth);
 		output.append(')');
 	}
 
@@ -297,7 +297,7 @@ public class CssFormatter {
 
 		output.append(node.getValue());
 		output.append('[');
-		this.writeContainer(output, node.getContainer(), filter, depth);
+		writeContainer(output, node.getContainer(), filter, depth);
 		output.append(']');
 	}
 
@@ -307,8 +307,8 @@ public class CssFormatter {
 		WordBreak prev = null;
 		if (node.hasChildren()) {
 			for (CssNode child : node.getChildren()) {
-				prev = this.writeWordBreak(output, prev, child);
-				this.writeNode(output, child, filter, depth);
+				prev = writeWordBreak(output, prev, child);
+				writeNode(output, child, filter, depth);
 			}
 		}
 	}
@@ -316,13 +316,13 @@ public class CssFormatter {
 	private void writeValue(Appendable output, ValueNode node)
 		throws IOException {
 
-		output.append(node.getValue(!this.prettyPrint));
+		output.append(node.getValue(!prettyPrint));
 	}
 
 	private void writeComment(Appendable output, CommentNode node, CssFilter filter, int depth)
 		throws IOException {
 
-		if (this.prettyPrint) {
+		if (prettyPrint) {
 			output.append("/*").append(node.getValue()).append("*/");
 		}
 	}
@@ -330,12 +330,12 @@ public class CssFormatter {
 	private WordBreak writeWordBreak(Appendable output, WordBreak prev, CssNode child)
 		throws IOException {
 
-		if (!this.prettyPrint && (child instanceof CommentNode)) {
+		if (!prettyPrint && (child instanceof CommentNode)) {
 			// non-printed comments interfere with word breaks
 			return prev;
 		}
 
-		WordBreak next = child.getWordBreak(this.prettyPrint);
+		WordBreak next = child.getWordBreak(prettyPrint);
 		if (prev != null &&
 			(WordBreak.BOTH.equals(prev) || WordBreak.POST.equals(prev)) &&
 			(WordBreak.BOTH.equals(next) || WordBreak.PRE.equals(next))) {
@@ -349,18 +349,18 @@ public class CssFormatter {
 	private void writeln(Appendable output, int depth)
 		throws IOException {
 
-		this.writeln(output, depth, 1);
+		writeln(output, depth, 1);
 	}
 	
 	private void writeln(Appendable output, int depth, int lines)
 		throws IOException {
 
-		String newline = this.settings.getNewline();
+		String newline = settings.getNewline();
 		for (int i=lines; i>0; i--) {
 			output.append(newline);
 		}
 
-		String indent = this.settings.getIndent();
+		String indent = settings.getIndent();
 		for (int i=depth; i>0; i--) {
 			output.append(indent);
 		}

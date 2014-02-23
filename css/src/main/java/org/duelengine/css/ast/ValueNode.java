@@ -5,16 +5,16 @@ package org.duelengine.css.ast;
  */
 public class ValueNode extends CssNode {
 
-	private String value;
+	private String nodeValue;
 
 	public ValueNode(String value, int index, int line, int column) {
 		super(index, line, column);
 
-		this.setValue(value);
+		setValue(value);
 	}
 
 	public ValueNode(String value) {
-		this.setValue(value);
+		setValue(value);
 	}
 
 	@Override
@@ -23,43 +23,43 @@ public class ValueNode extends CssNode {
 	}
 
 	public void setValue(String value) {
-		this.value = value;
+		nodeValue = value;
 	}
 
 	public String getValue() {
-		return this.getValue(false);
+		return getValue(false);
 	}
 
 	public String getValue(boolean compact) {
-		return this.value;
+		return nodeValue;
 	}
 
 	public ValueNode add(ValueNode operand) {
 		if (operand == null) {
 			throw new NullPointerException("operand");
 		}
-		throw new UnsupportedOperationException(this.getClass().getName()+" does not support addition with "+operand.getClass().getName());
+		throw new UnsupportedOperationException(getClass().getName()+" does not support addition with "+operand.getClass().getName());
 	}
 
 	public ValueNode subtract(ValueNode operand) {
 		if (operand == null) {
 			throw new NullPointerException("operand");
 		}
-		throw new UnsupportedOperationException(this.getClass().getName()+" does not support subtraction with "+operand.getClass().getName());
+		throw new UnsupportedOperationException(getClass().getName()+" does not support subtraction with "+operand.getClass().getName());
 	}
 
 	public ValueNode multiply(ValueNode operand) {
 		if (operand == null) {
 			throw new NullPointerException("operand");
 		}
-		throw new UnsupportedOperationException(this.getClass().getName()+" does not support multiplication with "+operand.getClass().getName());
+		throw new UnsupportedOperationException(getClass().getName()+" does not support multiplication with "+operand.getClass().getName());
 	}
 
 	public ValueNode divide(ValueNode operand) {
 		if (operand == null) {
 			throw new NullPointerException("operand");
 		}
-		throw new UnsupportedOperationException(this.getClass().getName()+" does not support division with "+operand.getClass().getName());
+		throw new UnsupportedOperationException(getClass().getName()+" does not support division with "+operand.getClass().getName());
 	}
 
 	@Override
@@ -75,14 +75,14 @@ public class ValueNode extends CssNode {
 		}
 
 		ValueNode that = (ValueNode)arg;
-		return (this.value == null ? that.value == null : this.value.equals(that.value));
+		return (this.nodeValue == null ? that.nodeValue == null : this.nodeValue.equals(that.nodeValue));
 	}
 
 	@Override
 	public int hashCode() {
 		int hash = 0;
-		if (this.value != null) {
-			hash = this.value.hashCode();
+		if (nodeValue != null) {
+			hash = nodeValue.hashCode();
 		}
 		return hash;
 	}

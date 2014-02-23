@@ -20,7 +20,7 @@ public class LessVariableReferenceNode extends ValueNode {
 
 	@Override
 	public CssNode eval(ContainerNode context) {
-		String varRef = this.getValue();
+		String varRef = getValue();
 		if (varRef == null || varRef.isEmpty()) {
 			throw new NullPointerException("varRef");
 		}

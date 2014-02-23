@@ -17,49 +17,49 @@ public class Settings {
 	private File source;
 
 	public boolean getPrettyPrint() {
-		return this.prettyPrint;
+		return prettyPrint;
 	}
 
 	public void setPrettyPrint(boolean value) {
-		this.prettyPrint = value;
+		prettyPrint = value;
 	}
 
 	public boolean getVerbose() {
-		return this.verbose;
+		return verbose;
 	}
 
 	public void setVerbose(boolean value) {
-		this.verbose = value;
+		verbose = value;
 	}
 	
 	public File getSource() {
-		return this.source;
+		return source;
 	}
 
 	public void setSource(String value) {
 		if (value == null || value.isEmpty()) {
-			this.source = null;
+			source = null;
 			return;
 		}
 
-		this.source = new File(value.replace('\\', '/'));
+		source = new File(value.replace('\\', '/'));
 	}
 
 	public File getTarget() {
-		if (this.target == null) {
-			return this.getSource();
+		if (target == null) {
+			return getSource();
 		}
 
-		return this.target;
+		return target;
 	}
 
 	public void setTarget(String value) {
 		if (value == null || value.isEmpty()) {
-			this.target = null;
+			target = null;
 			return;
 		}
 
-		this.target = new File(value.replace('\\', '/'));
+		target = new File(value.replace('\\', '/'));
 	}
 
 	//-----------------
@@ -91,7 +91,7 @@ public class Settings {
 		return files;
 	}
 
-	private void findFiles(List<File> files, Set<String> extensions, File searchPath)
+	private static void findFiles(List<File> files, Set<String> extensions, File searchPath)
 			throws IOException {
 
 		Queue<File> folders = new LinkedList<File>();

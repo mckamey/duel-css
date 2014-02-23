@@ -35,19 +35,19 @@ public class AtRuleNode extends ContainerNode {
 	}
 
 	public String getKeyword() {
-		return this.keyword;
+		return keyword;
 	}
 
 	public void setKeyword(String value) {
-		this.keyword = value;
+		keyword = value;
 	}
 
 	public BlockNode getBlock() {
-		return this.block;
+		return block;
 	}
 
 	public void setBlock(BlockNode value) {
-		this.block = value;
+		block = value;
 	}
 
 	@Override

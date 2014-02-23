@@ -21,7 +21,7 @@ public class RuleSetNode extends BlockNode {
 		super(children);
 
 		if (selector != null) {
-			this.addSelector(selector);
+			addSelector(selector);
 		}
 	}
 
@@ -30,7 +30,7 @@ public class RuleSetNode extends BlockNode {
 
 		if (selectors != null) {
 			for (SelectorNode selector : selectors) {
-				this.addSelector(selector);
+				addSelector(selector);
 			}
 		}
 	}
@@ -41,7 +41,7 @@ public class RuleSetNode extends BlockNode {
 	}
 
 	public Collection<SelectorNode> getSelectors() {
-		return this.selectors;
+		return selectors;
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class RuleSetNode extends BlockNode {
 
 		if (child instanceof RuleSetNode) {
 			// LESS allows nested rules, trickle up to parent
-			this.getParent().appendChild(child);
+			getParent().appendChild(child);
 			return null;
 		}
 
@@ -62,9 +62,9 @@ public class RuleSetNode extends BlockNode {
 	}
 
 	public void expandSelectors(Collection<SelectorNode> prefixes) {
-		List<SelectorNode> expanded = new ArrayList<SelectorNode>(prefixes.size() * this.selectors.size());
+		List<SelectorNode> expanded = new ArrayList<SelectorNode>(prefixes.size() * selectors.size());
 
-		for (SelectorNode suffix : this.selectors) {
+		for (SelectorNode suffix : selectors) {
 			ValueNode first = ((ValueNode)suffix.getFirstChild());
 			boolean mergedSelectors = (first.getValue() != null) && first.getValue().startsWith("&");
 
@@ -88,10 +88,19 @@ public class RuleSetNode extends BlockNode {
 			}
 		}
 
-		this.selectors.clear();
+		selectors.clear();
 		for (SelectorNode selector : expanded) {
-			this.addSelector(selector);
+			addSelector(selector);
 		}
+	}
+
+	public void addSelector(SelectorNode selector) {
+		if (selector == null) {
+			return;
+		}
+
+		selectors.add(selector);
+		selector.setParent(this);
 	}
 
 	@Override
@@ -115,14 +124,5 @@ public class RuleSetNode extends BlockNode {
 		}
 
 		return super.equals(arg);
-	}
-
-	public void addSelector(SelectorNode selector) {
-		if (selector == null) {
-			return;
-		}
-
-		this.selectors.add(selector);
-		selector.setParent(this);
 	}
 }

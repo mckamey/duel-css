@@ -28,23 +28,23 @@ public class DeclarationNode extends ContainerNode {
 	}
 
 	public final void setIdent(String value) {
-		this.ident = value;
+		ident = value;
 	}
 
 	public final String getIdent() {
-		return this.ident;
+		return ident;
 	}
 
 	public boolean isImportant() {
-		return this.important;
+		return important;
 	}
 
 	public void setImportant(boolean value) {
-		this.important = value;
+		important = value;
 	}
 
 	public DeclarationNode withImportant() {
-		this.important = true;
+		important = true;
 		return this;
 	}
 
@@ -81,9 +81,9 @@ public class DeclarationNode extends ContainerNode {
 	public int hashCode() {
 		final int HASH_PRIME = 1000003;
 
-		int hash = super.hashCode() * HASH_PRIME + ((Boolean)this.important).hashCode();
-		if (this.ident != null) {
-			hash = hash * HASH_PRIME + this.ident.hashCode();
+		int hash = super.hashCode() * HASH_PRIME + ((Boolean)important).hashCode();
+		if (ident != null) {
+			hash = hash * HASH_PRIME + ident.hashCode();
 		}
 		return hash;
 	}

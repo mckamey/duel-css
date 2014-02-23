@@ -20,7 +20,9 @@ import org.slf4j.LoggerFactory;
 public class CssCompiler {
 
 	private static final Logger log = LoggerFactory.getLogger(CssCompiler.class);
-	
+	private static final String CSS_EXT = ".css";
+	private static final String LESS_EXT = ".less";
+
 	/**
 	 * Processes CSS/LESS files
 	 * @throws IOException 
@@ -30,7 +32,7 @@ public class CssCompiler {
 			throw new NullPointerException("settings");
 		}
 
-		List<File> inputFiles = settings.findFiles(".less", ".css");
+		List<File> inputFiles = settings.findFiles(CSS_EXT, LESS_EXT);
 		if (inputFiles.size() < 1) {
 			log.error("Error: no input files found in "+settings.getSource());
 			return;
@@ -49,7 +51,7 @@ public class CssCompiler {
 			if (index > 0) {
 				filename = filename.substring(0, index);
 			}
-			this.process(inputFile, new File(settings.getTarget(), filename+CssFormatter.getFileExtension()), formatSettings, null, settings.getVerbose());
+			process(inputFile, new File(settings.getTarget(), filename+CssFormatter.getFileExtension()), formatSettings, null, settings.getVerbose());
 		}
 	}
 
@@ -58,7 +60,7 @@ public class CssCompiler {
 	 * @throws IOException 
 	 */
 	public void process(File source, File target) throws IOException {
-		this.process(source, target, null, null);
+		process(source, target, null, null);
 	}
 
 	/**
@@ -66,7 +68,7 @@ public class CssCompiler {
 	 * @throws IOException 
 	 */
 	public void process(File source, File target, CodeGenSettings settings) throws IOException {
-		this.process(source, target, settings, null);
+		process(source, target, settings, null);
 	}
 
 	/**
@@ -74,7 +76,7 @@ public class CssCompiler {
 	 * @throws IOException 
 	 */
 	public void process(File source, File target, CodeGenSettings settings, CssFilter filter) throws IOException {
-		this.process(source, target, settings, filter, false);
+		process(source, target, settings, filter, false);
 	}
 
 	/**
@@ -87,13 +89,19 @@ public class CssCompiler {
 		}
 
 		StyleSheetNode stylesheet;
+		FileReader reader = null;
 		try {
-			FileReader reader = new FileReader(source);
+			reader = new FileReader(source);
 			stylesheet = new CssParser().parse(new CssLexer(reader));
 
 		} catch (SyntaxException ex) {
-			this.reportSyntaxError(source, ex, verbose);
+			reportSyntaxError(source, ex, verbose);
 			return;
+
+		} finally {
+			if (reader != null) {
+				reader.close();
+			}
 		}
 
 		if (stylesheet == null) {
@@ -114,7 +122,7 @@ public class CssCompiler {
 			}
 
 		} catch (SyntaxException ex) {
-			this.reportSyntaxError(source, ex, verbose);
+			reportSyntaxError(source, ex, verbose);
 		}
 	}
 

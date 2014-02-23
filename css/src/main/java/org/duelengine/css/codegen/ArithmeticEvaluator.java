@@ -13,14 +13,15 @@ import org.duelengine.css.parsing.InvalidNodeException;
 
 /**
  * Implements single-pass variant of Dijkstra's shunting-yard algorithm.
+ * Inherently thread-safe as contains no mutable instance data.
  */
-public class ArithmeticEvaluator {
+public final class ArithmeticEvaluator {
 
 	/**
 	 * Evaluates sequences of values and operators as arithmetic expressions
 	 */
-	public ValueNode eval(CssNode... expr) {
-		return this.eval(Arrays.asList(expr));
+	public static ValueNode eval(CssNode... expr) {
+		return eval(Arrays.asList(expr));
 	}
 
 	/**
@@ -28,7 +29,7 @@ public class ArithmeticEvaluator {
 	 * @param expr
 	 * @return
 	 */
-	public ValueNode eval(Iterable<CssNode> expr) {
+	public static ValueNode eval(Iterable<CssNode> expr) {
 		try {
 			Stack<OperatorNode> operators = new Stack<OperatorNode>();
 			Stack<ValueNode> operands = new Stack<ValueNode>();
@@ -36,27 +37,27 @@ public class ArithmeticEvaluator {
 			boolean lastWasVar = false;
 			for (CssNode next : expr) {
 				if (next instanceof OperatorNode) {
-					int nextPrecedence = this.precedence((OperatorNode)next);
+					int nextPrecedence = precedence((OperatorNode)next);
 					if (nextPrecedence < 0) {
 						// unknown operator signals start of new expression
-						this.flushOperators(operators, operands);
+						flushOperators(operators, operands);
 						// operator is treated as a delimiter
 						operands.add((ValueNode)next);
 	
 					} else {
 						if (lastWasVar && "(".equals(((OperatorNode)next).getValue())) {
 							// var/parens boundary signals start of new expression
-							this.flushOperators(operators, operands);
+							flushOperators(operators, operands);
 						}
 	
-						this.processOp(operators, operands, (OperatorNode)next);
+						processOp(operators, operands, (OperatorNode)next);
 					}
 					lastWasVar = false;
 	
 				} else if (next instanceof ValueNode) {
 					if (lastWasVar) {
 						// two values without an infix operator signals start of new expression
-						this.flushOperators(operators, operands);
+						flushOperators(operators, operands);
 					}
 					operands.push((ValueNode)next);
 					lastWasVar = true;
@@ -66,7 +67,7 @@ public class ArithmeticEvaluator {
 				}
 			}
 
-			this.flushOperators(operators, operands);
+			flushOperators(operators, operands);
 	
 			int length = operands.size();
 			switch (length) {
@@ -94,20 +95,20 @@ public class ArithmeticEvaluator {
 		}
 	}
 
-	private void flushOperators(Stack<OperatorNode> operators, Stack<ValueNode> operands) {
+	private static void flushOperators(Stack<OperatorNode> operators, Stack<ValueNode> operands) {
 		// evaluate operators on stack
 		while (!operators.isEmpty()) {
-			ValueNode result = this.evalOp(operators.pop(), operands);
+			ValueNode result = evalOp(operators.pop(), operands);
 			if (result != null) {
 				operands.push(result);
 			}
 		}
 	}
 
-	private void processOp(Stack<OperatorNode> operators, Stack<ValueNode> operands, OperatorNode next) {
+	private static void processOp(Stack<OperatorNode> operators, Stack<ValueNode> operands, OperatorNode next) {
 		while (true) {
 			if (operators.isEmpty() || "(".equals(next.getValue()) ||
-				this.precedence(next) > this.precedence(operators.peek())) {
+				precedence(next) > precedence(operators.peek())) {
 				// push operator for later evaluation
 				operators.push(next);
 				return;
@@ -120,14 +121,14 @@ public class ArithmeticEvaluator {
 			}
 
 			// eval top operator, push result on operand stack
-			ValueNode result = this.evalOp(op, operands);
+			ValueNode result = evalOp(op, operands);
 			if (result != null) {
 				operands.push(result);
 			}
 		}
 	}
 
-	private ValueNode evalOp(OperatorNode op, Stack<ValueNode> operands) {
+	private static ValueNode evalOp(OperatorNode op, Stack<ValueNode> operands) {
 		String operator = op.getValue();
 		if (operator != null && operator.length() == 1) {
 			char opCh = operator.charAt(0);
@@ -163,7 +164,7 @@ public class ArithmeticEvaluator {
 		return op;
 	}
 
-	private int precedence(OperatorNode node) {
+	private static int precedence(OperatorNode node) {
 		String operator = node.getValue();
 
 		if (operator != null && operator.length() == 1) {

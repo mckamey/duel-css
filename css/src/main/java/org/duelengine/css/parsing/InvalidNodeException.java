@@ -36,6 +36,6 @@ public class InvalidNodeException extends SyntaxException {
 	}
 
 	public CssNode getNode() {
-		return this.node;
+		return node;
 	}
 }

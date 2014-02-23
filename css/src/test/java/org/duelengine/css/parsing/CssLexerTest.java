@@ -1303,7 +1303,7 @@ public class CssLexerTest {
 			};
 
 		CssLexer lexer = new CssLexer(input);
-		lexer.setLineComments(true);
+		lexer.allowLineComments(true);
 		Object[] actual = lexer.toList().toArray();
 
 		assertArrayEquals(expected, actual);
@@ -1324,7 +1324,7 @@ public class CssLexerTest {
 			};
 
 		CssLexer lexer = new CssLexer(input);
-		lexer.setLineComments(true);
+		lexer.allowLineComments(true);
 		Object[] actual = lexer.toList().toArray();
 
 		assertArrayEquals(expected, actual);

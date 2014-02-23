@@ -43,8 +43,6 @@ public class CssParser {
 		SELECTOR
 	}
 	
-	private static final ArithmeticEvaluator evaluator = new ArithmeticEvaluator();
-
 	private CssToken next;
 	private Iterator<CssToken> tokens;
 
@@ -57,7 +55,7 @@ public class CssParser {
 	public StyleSheetNode parse(CssToken... tokens)
 		throws IOException {
 
-		return this.parse(tokens != null ? Arrays.asList(tokens).iterator() : null);
+		return parse(tokens != null ? Arrays.asList(tokens).iterator() : null);
 	}
 
 	/**
@@ -69,32 +67,32 @@ public class CssParser {
 	public StyleSheetNode parse(Iterable<CssToken> tokens)
 		throws IOException {
 
-		return this.parse(tokens != null ? tokens.iterator() : null);
+		return parse(tokens != null ? tokens.iterator() : null);
 	}
 
 	/**
 	 * Parses token sequence into AST
-	 * @param tokens
+	 * @param cssTokens
 	 * @return
 	 */
-	public StyleSheetNode parse(Iterator<CssToken> tokens)
+	public StyleSheetNode parse(Iterator<CssToken> cssTokens)
 		throws IOException {
 
-		if (tokens == null) {
-			throw new NullPointerException("tokens");
+		if (cssTokens == null) {
+			throw new NullPointerException("cssTokens");
 		}
 
-		this.tokens = tokens;
+		tokens = cssTokens;
 		try {
 			StyleSheetNode document = new StyleSheetNode(0, 0, 0);
-			while (this.hasNext()) {
-				this.parseStatement(document, false);
+			while (hasNext()) {
+				parseStatement(document, false);
 			}
 			return document;
 
 		} finally {
-			this.tokens = null;
-			this.next = null;
+			tokens = null;
+			next = null;
 		}
 	}
 
@@ -112,19 +110,19 @@ public class CssParser {
 		// - declarations (unless root)
 		// - statements
 
-		switch (this.next.getToken()) {
+		switch (next.getToken()) {
 			case AT_RULE:
 				if (isRuleSet) {
-					throw new InvalidTokenException("Invalid token inside rule-set: "+this.next, this.next);
+					throw new InvalidTokenException("Invalid token inside rule-set: "+next, next);
 				}
 
 				// LESS also uses this for scoped variables
-				this.parseAtRule(parent);
+				parseAtRule(parent);
 				break;
 
 			case RULE_DELIM:
 				// consume extraneous ';'
-				this.next = null;
+				next = null;
 				break;
 
 			case FUNCTION:
@@ -135,56 +133,56 @@ public class CssParser {
 			case VALUE:
 			case OPERATOR:
 				// LESS can have nested rule-sets
-				this.parseRuleSet(parent, isRuleSet);
+				parseRuleSet(parent, isRuleSet);
 				break;
 
 			case COMMENT:
-				parent.appendChild(new CommentNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+				parent.appendChild(new CommentNode(next.getValue(), next.getIndex(), next.getLine(), next.getColumn()));
 				// consume token
-				this.next = null;
+				next = null;
 				break;
 
 			case ERROR:
-				throw this.throwErrorToken(this.next);
+				throw throwErrorToken(next);
 
 			default:
-				throw new InvalidTokenException("Invalid token: "+this.next, this.next);
+				throw new InvalidTokenException("Invalid token: "+next, next);
 		}
 	}
 
 	private void parseAtRule(ContainerNode parent)
 		throws IOException {
 
-		String keyword = this.next.getValue();
+		String keyword = next.getValue();
 		if (!CssGrammar.isAtRuleKeyword(keyword)) {
-			CssToken ident = this.next;
-			this.next = null;
-			this.parseDeclaration(parent, ident);
+			CssToken ident = next;
+			next = null;
+			parseDeclaration(parent, ident);
 			return;
 		}
 
-		AtRuleNode atRule = new AtRuleNode(keyword, this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+		AtRuleNode atRule = new AtRuleNode(keyword, next.getIndex(), next.getLine(), next.getColumn());
 		parent.appendChild(atRule);
 		// consume at-rule
-		this.next = null;
+		next = null;
 
-		while (this.hasNext()) {
-			switch (this.next.getToken()) {
+		while (hasNext()) {
+			switch (next.getToken()) {
 				case BLOCK_BEGIN:
-					BlockNode block = new BlockNode(this.next.getIndex(), this.next.getLine(), this.next.getColumn());
+					BlockNode block = new BlockNode(next.getIndex(), next.getLine(), next.getColumn());
 					atRule.setBlock(block);
 					String canonicalKeyword = CssGrammar.removeVendorPrefix(atRule.getKeyword());
 					boolean asRuleSet = !("media".equals(canonicalKeyword) || "keyframes".equals(canonicalKeyword));
-					this.parseBlock(block, asRuleSet);
+					parseBlock(block, asRuleSet);
 					return;
 
 				case RULE_DELIM:
 					// consume token
-					this.next = null;
+					next = null;
 					return;
 
 				default:
-					this.parseValue(atRule, this.next, false, NODE_CONTEXT.AT_RULE);
+					parseValue(atRule, next, false, NODE_CONTEXT.AT_RULE);
 					continue;
 			}
 		}
@@ -194,12 +192,12 @@ public class CssParser {
 		throws IOException {
 
 		// consume ident
-		CssToken ident = this.next;
-		this.next = null;
+		CssToken ident = next;
+		next = null;
 
 		// if nested, then must be rule set
-		if (nested && this.hasNext() && CssTokenType.OPERATOR.equals(this.next.getToken()) && ":".equals(this.next.getValue())) {
-			this.parseDeclaration(parent, ident);
+		if (nested && hasNext() && CssTokenType.OPERATOR.equals(next.getToken()) && ":".equals(next.getValue())) {
+			parseDeclaration(parent, ident);
 			return;
 		}
 
@@ -208,24 +206,24 @@ public class CssParser {
 
 		RuleSetNode nestedParent = (parent instanceof RuleSetNode) ? (RuleSetNode)parent : null;
 
-		if (this.parseSelector(ruleSet, ident)) {
+		if (parseSelector(ruleSet, ident)) {
 			if (!nested) {
 				throw new InvalidTokenException("Invalid sequence in rule-set: "+ident, ident);
 			}
 
 			// not a selector but a mixin
-			this.evalMixins(nestedParent, ruleSet);
+			evalMixins(nestedParent, ruleSet);
 			return;
 		}
 
-		while (this.hasNext()) {
-			switch (this.next.getToken()) {
+		while (hasNext()) {
+			switch (next.getToken()) {
 				case BLOCK_BEGIN:
 					if (nestedParent != null) {
 						// LESS allows nested rules, unroll selectors here
 						ruleSet.expandSelectors(nestedParent.getSelectors());
 					}
-					this.parseBlock(ruleSet, true);
+					parseBlock(ruleSet, true);
 					return;
 
 				case ACCESSOR:
@@ -235,36 +233,36 @@ public class CssParser {
 				case STRING:
 				case VALUE:
 				case OPERATOR:
-					if (this.parseSelector(ruleSet, this.next)){
+					if (parseSelector(ruleSet, next)){
 						if (!nested) {
 							throw new InvalidTokenException("Invalid sequence in rule-set: "+ident, ident);
 						}
 
 						// not a selector but a mixin
-						this.evalMixins(nestedParent, ruleSet);
+						evalMixins(nestedParent, ruleSet);
 						return;
 					}
 					continue;
 
 				case COMMENT:
-					ruleSet.appendChild(new CommentNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					ruleSet.appendChild(new CommentNode(next.getValue(), next.getIndex(), next.getLine(), next.getColumn()));
 					// consume token
-					this.next = null;
+					next = null;
 					continue;
 
 				case ERROR:
-					throw this.throwErrorToken(this.next);
+					throw throwErrorToken(next);
 
 				case BLOCK_END:
 					if (!nested) {
-						throw new InvalidTokenException("Invalid token in rule-set: "+this.next, this.next);
+						throw new InvalidTokenException("Invalid token in rule-set: "+next, next);
 					}
 
 					// allow parent to consume token
 					return;
 
 				default:
-					throw new InvalidTokenException("Invalid token in rule-set: "+this.next, this.next);
+					throw new InvalidTokenException("Invalid token in rule-set: "+next, next);
 			}
 		}
 	}
@@ -278,7 +276,7 @@ public class CssParser {
 		int nesting = 0;
 
 		// check identity of start
-		if (start != this.next) {
+		if (start != next) {
 			// need to process start token outside of loop due to look ahead needed for LESS nested rule-sets
 			switch (start.getToken()) {
 				case OPERATOR:
@@ -298,13 +296,13 @@ public class CssParser {
 					break;
 
 				default:
-					this.parseValue(selector, start, true, NODE_CONTEXT.SELECTOR);
+					parseValue(selector, start, true, NODE_CONTEXT.SELECTOR);
 					break;
 			}
 		}
 
-		while (this.hasNext()) {
-			switch (this.next.getToken()) {
+		while (hasNext()) {
+			switch (next.getToken()) {
 				case BLOCK_BEGIN:
 					// terminate selector
 					return false;
@@ -315,26 +313,26 @@ public class CssParser {
 
 				case RULE_DELIM:
 					// consume delim
-					this.next = null;
+					next = null;
 					// signal was mixin
 					return true;
 
 				case OPERATOR:
-					String value = this.next.getValue();
+					String value = next.getValue();
 					if (value != null) {
 						if (nesting <= 0) {
 							if (",".equals(value)) {
 								// consume delim
-								this.next = null;
+								next = null;
 								// terminate selector
 								return false;
 							}
 
 							CombinatorType combinator = CombinatorNode.getCombinator(value);
 							if (combinator != null) {
-								selector.appendChild(new CombinatorNode(combinator, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+								selector.appendChild(new CombinatorNode(combinator, next.getIndex(), next.getLine(), next.getColumn()));
 								// consume token
-								this.next = null;
+								next = null;
 								continue;
 							}
 						}
@@ -349,13 +347,13 @@ public class CssParser {
 						}
 					}
 
-					selector.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					selector.appendChild(new OperatorNode(value, next.getIndex(), next.getLine(), next.getColumn()));
 					// consume token
-					this.next = null;
+					next = null;
 					continue;
 
 				default:
-					this.parseValue(selector, this.next, true, NODE_CONTEXT.SELECTOR);
+					parseValue(selector, next, true, NODE_CONTEXT.SELECTOR);
 					continue;
 			}
 		}
@@ -365,11 +363,11 @@ public class CssParser {
 
 	private void parseDeclaration(ContainerNode parent, CssToken ident) {
 
-		if (!this.hasNext() || !CssTokenType.OPERATOR.equals(this.next.getToken()) || !":".equals(this.next.getValue())) {
+		if (!hasNext() || !CssTokenType.OPERATOR.equals(next.getToken()) || !":".equals(next.getValue())) {
 			throw new InvalidTokenException("Invalid declaration: "+ident, ident);
 		}
 		// consume ':'
-		this.next = null;
+		next = null;
 
 		boolean requiredEval = (ident.getToken() == CssTokenType.AT_RULE);
 		boolean optionalEval = false;
@@ -383,39 +381,39 @@ public class CssParser {
 
 		int nesting = 0;
 
-		while (this.hasNext()) {
-			switch (this.next.getToken()) {
+		while (hasNext()) {
+			switch (next.getToken()) {
 				case BLOCK_END:
 					if (requiredEval || optionalEval) {
-						this.evalExpressions(declaration, requiredEval);
+						evalExpressions(declaration, requiredEval);
 					}
 					return;
 
 				case AT_RULE:
 					// LESS variable references leverage @rule syntax
-					declaration.appendChild(new LessVariableReferenceNode(this.next.getValue(), this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					declaration.appendChild(new LessVariableReferenceNode(next.getValue(), next.getIndex(), next.getLine(), next.getColumn()));
 					requiredEval = true;
 					// consume token
-					this.next = null;
+					next = null;
 					continue;
 
 				case RULE_DELIM:
 					if (nesting <= 0) {
 						// consume ';' as end of declaration
-						this.next = null;
+						next = null;
 						if (requiredEval || optionalEval) {
-							this.evalExpressions(declaration, requiredEval);
+							evalExpressions(declaration, requiredEval);
 						}
 						return;
 					}
 					// still within function
-					declaration.appendChild(new OperatorNode(";", this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					declaration.appendChild(new OperatorNode(";", next.getIndex(), next.getLine(), next.getColumn()));
 					// consume token
-					this.next = null;
+					next = null;
 					continue;
 
 				case OPERATOR:
-					String value = this.next.getValue();
+					String value = next.getValue();
 					if (value != null) {
 						switch (value.charAt(0)) {
 							case CssGrammar.OP_PAREN_BEGIN:
@@ -426,7 +424,7 @@ public class CssParser {
 								if (nesting < 0) {
 									// end of LESS mixin function param, let caller consume token
 									if (requiredEval || optionalEval) {
-										this.evalExpressions(declaration, requiredEval);
+										evalExpressions(declaration, requiredEval);
 									}
 									return;
 								}
@@ -434,10 +432,10 @@ public class CssParser {
 //							case ',':
 //								if (nesting <= 0) {
 //									// consume token
-//									this.next = null;
+//									next = null;
 //									// end of LESS mixin function param
 //									if (requiredEval || optionalEval) {
-//										this.evalExpressions(declaration, requiredEval);
+//										evalExpressions(declaration, requiredEval);
 //									}
 //									return;
 //								}
@@ -451,25 +449,25 @@ public class CssParser {
 						}
 					}
 
-					declaration.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					declaration.appendChild(new OperatorNode(value, next.getIndex(), next.getLine(), next.getColumn()));
 					// consume token
-					this.next = null;
+					next = null;
 					continue;
 
 				case IMPORTANT:
 					declaration.setImportant(true);
 					// consume token
-					this.next = null;
+					next = null;
 					continue;
 
 				default:
-					this.parseValue(declaration, this.next, false, NODE_CONTEXT.DECLARATION);
+					parseValue(declaration, next, false, NODE_CONTEXT.DECLARATION);
 					continue;
 			}
 		}
 
 		if (requiredEval || optionalEval) {
-			this.evalExpressions(declaration, requiredEval);
+			evalExpressions(declaration, requiredEval);
 		}
 	}
 
@@ -477,19 +475,19 @@ public class CssParser {
 
 		FunctionNode func = new FunctionNode(start.getValue(), start.getIndex(), start.getLine(), start.getColumn());
 		parent.appendChild(func);
-		if (this.next == start) {
+		if (next == start) {
 			// consume function start
-			this.next = null;
+			next = null;
 		}
 
 		String value;
 		int nesting = 0;
 		ContainerNode args = func.getContainer();
 
-		while (this.hasNext()) {
-			switch (this.next.getToken()) {
+		while (hasNext()) {
+			switch (next.getToken()) {
 				case OPERATOR:
-					value = this.next.getValue();
+					value = next.getValue();
 					if (value != null) {
 						switch (value.charAt(0)) {
 							case CssGrammar.OP_PAREN_BEGIN:
@@ -511,7 +509,7 @@ public class CssParser {
 									}
 
 									// consume token, terminate function
-									this.next = null;
+									next = null;
 									return func;
 								}
 								nesting--;
@@ -522,20 +520,20 @@ public class CssParser {
 						}
 					}
 
-					args.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					args.appendChild(new OperatorNode(value, next.getIndex(), next.getLine(), next.getColumn()));
 					// consume token
-					this.next = null;
+					next = null;
 					continue;
 
 				case AT_RULE:
 					// LESS mixin function param
-					CssToken ident = this.next;
-					this.next = null;
-					this.parseDeclaration(args, ident);
+					CssToken ident = next;
+					next = null;
+					parseDeclaration(args, ident);
 					continue;
 
 				default:
-					value = this.next.getValue();
+					value = next.getValue();
 					if (value != null) {
 						// should this check further into the string?
 						switch (value.charAt(0)) {
@@ -558,16 +556,16 @@ public class CssParser {
 									}
 
 									// trim token value, terminate function
-									this.next = new CssToken(this.next.getToken(), value.substring(1), this.next.getIndex()+1, this.next.getLine(), this.next.getColumn()+1);
+									next = new CssToken(next.getToken(), value.substring(1), next.getIndex()+1, next.getLine(), next.getColumn()+1);
 									// inject a joiner which will signal that what follows is attached to the accessor
-									parent.appendChild(new CombinatorNode(CombinatorType.SELF, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+									parent.appendChild(new CombinatorNode(CombinatorType.SELF, next.getIndex(), next.getLine(), next.getColumn()));
 									return func;
 								}
 								nesting--;
 								break;
 						}
 					}
-					this.parseValue(args, this.next, isSelector, NODE_CONTEXT.FUNCTION);
+					parseValue(args, next, isSelector, NODE_CONTEXT.FUNCTION);
 					continue;
 			}
 		}
@@ -579,19 +577,19 @@ public class CssParser {
 
 		AccessorNode accessor = new AccessorNode(start.getValue(), start.getIndex(), start.getLine(), start.getColumn());
 		parent.appendChild(accessor);
-		if (this.next == start) {
+		if (next == start) {
 			// consume function start
-			this.next = null;
+			next = null;
 		}
 
 		String value;
 		int nesting = 0;
 		ContainerNode args = accessor.getContainer();
 
-		while (this.hasNext()) {
-			switch (this.next.getToken()) {
+		while (hasNext()) {
+			switch (next.getToken()) {
 				case OPERATOR:
-					value = this.next.getValue();
+					value = next.getValue();
 					if (value != null) {
 						switch (value.charAt(0)) {
 							case CssGrammar.OP_PAREN_BEGIN:
@@ -603,20 +601,20 @@ public class CssParser {
 							case CssGrammar.OP_ATTR_END:
 								if (nesting <= 0) {
 									// consume token, terminate accessor
-									this.next = null;
+									next = null;
 									return;
 								}
 								break;
 						}
 					}
 
-					args.appendChild(new OperatorNode(value, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+					args.appendChild(new OperatorNode(value, next.getIndex(), next.getLine(), next.getColumn()));
 					// consume token
-					this.next = null;
+					next = null;
 					continue;
 
 				default:
-					value = this.next.getValue();
+					value = next.getValue();
 					if (value != null) {
 						// should this check further into the string?
 						switch (value.charAt(0)) {
@@ -629,16 +627,16 @@ public class CssParser {
 							case CssGrammar.OP_ATTR_END:
 								if (nesting <= 0) {
 									// trim token value, terminate accessor
-									this.next = new CssToken(this.next.getToken(), value.substring(1), this.next.getIndex()+1, this.next.getLine(), this.next.getColumn()+1);
+									next = new CssToken(next.getToken(), value.substring(1), next.getIndex()+1, next.getLine(), next.getColumn()+1);
 									// inject a joiner which will signal that what follows is attached to the accessor
-									parent.appendChild(new CombinatorNode(CombinatorType.SELF, this.next.getIndex(), this.next.getLine(), this.next.getColumn()));
+									parent.appendChild(new CombinatorNode(CombinatorType.SELF, next.getIndex(), next.getLine(), next.getColumn()));
 									return;
 								}
 								break;
 						}
 					}
 
-					this.parseValue(args, this.next, isSelector, NODE_CONTEXT.ACCESSOR);
+					parseValue(args, next, isSelector, NODE_CONTEXT.ACCESSOR);
 					continue;
 			}
 		}
@@ -648,7 +646,7 @@ public class CssParser {
 
 		switch (token.getToken()) {
 			case FUNCTION:
-				FunctionNode func = this.parseFunction(parent, token, isSelector);
+				FunctionNode func = parseFunction(parent, token, isSelector);
 
 				// As of v21.0.1180.89, Chrome ignores saturation & brightness levels of "0" without percentage units.
 				// This is a workaround which forces units to be output for these two arguments.
@@ -675,7 +673,7 @@ public class CssParser {
 				break;
 
 			case ACCESSOR:
-				this.parseAccessor(parent, token, isSelector);
+				parseAccessor(parent, token, isSelector);
 				break;
 
 			case OPERATOR:
@@ -713,7 +711,7 @@ public class CssParser {
 				break;
 
 			case ERROR:
-				throw this.throwErrorToken(token);
+				throw throwErrorToken(token);
 
 			case RULE_DELIM:
 				if (context == NODE_CONTEXT.FUNCTION) {
@@ -726,15 +724,15 @@ public class CssParser {
 				throw new InvalidTokenException("Invalid token in "+context+": "+token, token);
 		}
 
-		if (this.next == token) {
+		if (next == token) {
 			// consume token
-			this.next = null;
+			next = null;
 		}
 	}
 
 	private void evalExpressions(DeclarationNode declaration, boolean throwOnError) {
 		try {
-			ValueNode result = evaluator.eval(declaration.getChildren());
+			ValueNode result = ArithmeticEvaluator.eval(declaration.getChildren());
 			declaration.getChildren().clear();
 			declaration.appendChild(result);
 
@@ -773,20 +771,20 @@ public class CssParser {
 		throws IOException {
 
 		// consume block begin
-		this.next = null;
+		next = null;
 
-		while (this.hasNext() && !CssTokenType.BLOCK_END.equals(this.next.getToken())) {
-			this.parseStatement(block, isRuleSet);
+		while (hasNext() && !CssTokenType.BLOCK_END.equals(next.getToken())) {
+			parseStatement(block, isRuleSet);
 		}
 
 		// consume block end
-		this.next = null;
+		next = null;
 	}
 
 	private InvalidTokenException throwErrorToken(CssToken token) {
 		// TODO: back with interface?
-		if (this.tokens instanceof CssLexer) {
-			return new InvalidTokenException("Syntax error: "+token, token, ((CssLexer)this.tokens).getLastError());
+		if (tokens instanceof CssLexer) {
+			return new InvalidTokenException("Syntax error: "+token, token, ((CssLexer)tokens).getLastError());
 		}
 
 		return new InvalidTokenException("Syntax error: "+token, token);
@@ -798,10 +796,10 @@ public class CssParser {
 	 */
 	private boolean hasNext() {
 		// ensure non-null value
-		while (this.next == null && this.tokens.hasNext()) {
-			this.next = this.tokens.next();
+		while (next == null && tokens.hasNext()) {
+			next = tokens.next();
 		}
 
-		return (this.next != null);
+		return (next != null);
 	}
 }

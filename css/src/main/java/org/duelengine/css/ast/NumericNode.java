@@ -20,7 +20,7 @@ public class NumericNode extends ValueNode {
 
 		this.number = number;
 		this.units = units;
-		super.setValue(this.formatNumber(this.number)+this.units);
+		super.setValue(formatNumber(number)+units);
 	}
 
 	public NumericNode(String value) {
@@ -32,7 +32,7 @@ public class NumericNode extends ValueNode {
 
 		this.number = number;
 		this.units = units;
-		super.setValue(this.formatNumber(this.number)+this.units);
+		super.setValue(formatNumber(number)+units);
 	}
 
 	@Override
@@ -41,23 +41,23 @@ public class NumericNode extends ValueNode {
 	}
 
 	public double getNumber() {
-		return this.number;
+		return number;
 	}
 
 	public void setNumber(double value) {
-		this.number = value;
+		number = value;
 
-		super.setValue(this.formatNumber(this.number)+this.units);
+		super.setValue(formatNumber(number)+units);
 	}
 
 	public String getUnits() {
-		return this.units;
+		return units;
 	}
 
 	public void setUnits(String value) {
-		this.units = value;
+		units = value;
 
-		super.setValue(this.formatNumber(this.number)+this.units);
+		super.setValue(formatNumber(number)+units);
 	}
 
 	public boolean getKeepUnits() {
@@ -65,18 +65,18 @@ public class NumericNode extends ValueNode {
 	}
 
 	public void setKeepUnits(boolean value) {
-		this.keepUnits = value;
+		keepUnits = value;
 	}
 
 	@Override
 	public String getValue(boolean compact) {
 		if (compact) {
-			if (!this.keepUnits && this.number == 0.0) {
+			if (!keepUnits && number == 0.0) {
 				// no units needed for zero
 				return "0";
 			}
 
-			return this.formatNumber(this.number)+this.units;
+			return formatNumber(number)+units;
 		}
 
 		return super.getValue(compact);
@@ -87,8 +87,8 @@ public class NumericNode extends ValueNode {
 		super.setValue(value);
 
 		if (value == null || value.isEmpty()) {
-			this.number = 0.0;
-			this.units = null;
+			number = 0.0;
+			units = null;
 			return;
 		}
 
@@ -100,14 +100,14 @@ public class NumericNode extends ValueNode {
 			}
 		}
 
-		this.units = value.substring(index+1);
+		units = value.substring(index+1);
 
 		try {
-			this.number = Double.parseDouble(this.units.isEmpty() ? value : value.substring(0, index+1));
+			number = Double.parseDouble(units.isEmpty() ? value : value.substring(0, index+1));
 
 		} catch (NumberFormatException ex) {
-			this.number = 0.0;
-			this.units = null;
+			number = 0.0;
+			units = null;
 		}
 	}
 
@@ -115,13 +115,12 @@ public class NumericNode extends ValueNode {
 	public ValueNode add(ValueNode operand) {
 		if (operand instanceof NumericNode) {
 			NumericNode that = (NumericNode)operand;
-			String units = this.units;
-			if (units == null || units.isEmpty()) {
-				units = that.units;
-			} else if (that.units != null && !that.units.isEmpty() && !units.equals(that.units)) {
+			if (this.units == null || this.units.isEmpty()) {
+				this.units = that.units;
+			} else if (that.units != null && !that.units.isEmpty() && !this.units.equals(that.units)) {
 				throw new InvalidNodeException("Incompatible units: "+this+", "+that, that);
 			}
-			return new NumericNode(this.number + that.number, units, this.getIndex(), this.getLine(), this.getColumn());
+			return new NumericNode(this.number + that.number, units, getIndex(), getLine(), getColumn());
 		}
 
 		if (operand instanceof ColorNode) {
@@ -136,24 +135,23 @@ public class NumericNode extends ValueNode {
 	public ValueNode subtract(ValueNode operand) {
 		if (operand instanceof NumericNode) {
 			NumericNode that = (NumericNode)operand;
-			String units = this.units;
-			if (units == null || units.isEmpty()) {
-				units = that.units;
-			} else if (that.units != null && !that.units.isEmpty() && !units.equals(that.units)) {
+			if (this.units == null || this.units.isEmpty()) {
+				this.units = that.units;
+			} else if (that.units != null && !that.units.isEmpty() && !this.units.equals(that.units)) {
 				throw new InvalidNodeException("Incompatible units: "+this+", "+that, that);
 			}
-			return new NumericNode(this.number - that.number, units, this.getIndex(), this.getLine(), this.getColumn());
+			return new NumericNode(this.number - that.number, this.units, getIndex(), getLine(), getColumn());
 		}
 
 		if (operand instanceof ColorNode) {
-			if (this.units != null && !this.units.isEmpty()) {
+			if (units != null && !units.isEmpty()) {
 				throw new InvalidNodeException("Cannot use units when mixing numeric and color: "+this, this);
 			}
 			ColorNode that = (ColorNode)operand;
-			int r = (int)(this.number - that.getRedChannel());
-			int g = (int)(this.number - that.getGreenChannel());
-			int b = (int)(this.number - that.getBlueChannel());
-			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+			int r = (int)(number - that.getRedChannel());
+			int g = (int)(number - that.getGreenChannel());
+			int b = (int)(number - that.getBlueChannel());
+			return new ColorNode(r, g, b, getIndex(), getLine(), getColumn());
 		}
 
 		return super.subtract(operand);
@@ -163,13 +161,12 @@ public class NumericNode extends ValueNode {
 	public ValueNode multiply(ValueNode operand) {
 		if (operand instanceof NumericNode) {
 			NumericNode that = (NumericNode)operand;
-			String units = this.units;
-			if (units == null || units.isEmpty()) {
-				units = that.units;
-			} else if (that.units != null && !that.units.isEmpty() && !units.equals(that.units)) {
+			if (this.units == null || this.units.isEmpty()) {
+				this.units = that.units;
+			} else if (that.units != null && !that.units.isEmpty() && !this.units.equals(that.units)) {
 				throw new InvalidNodeException("Incompatible units: "+this+", "+that, that);
 			}
-			return new NumericNode(this.number * that.number, units, this.getIndex(), this.getLine(), this.getColumn());
+			return new NumericNode(this.number * that.number, units, getIndex(), getLine(), getColumn());
 		}
 
 		if (operand instanceof ColorNode) {
@@ -184,24 +181,23 @@ public class NumericNode extends ValueNode {
 	public ValueNode divide(ValueNode operand) {
 		if (operand instanceof NumericNode) {
 			NumericNode that = (NumericNode)operand;
-			String units = this.units;
-			if (units == null || units.isEmpty()) {
-				units = that.units;
-			} else if (that.units != null && !that.units.isEmpty() && !units.equals(that.units)) {
+			if (this.units == null || this.units.isEmpty()) {
+				this.units = that.units;
+			} else if (that.units != null && !that.units.isEmpty() && !this.units.equals(that.units)) {
 				throw new InvalidNodeException("Incompatible units: "+this+", "+that, that);
 			}
-			return new NumericNode(this.number / that.number, units, this.getIndex(), this.getLine(), this.getColumn());
+			return new NumericNode(this.number / that.number, this.units, getIndex(), getLine(), getColumn());
 		}
 
 		if (operand instanceof ColorNode) {
-			if (this.units != null && !this.units.isEmpty()) {
+			if (units != null && !units.isEmpty()) {
 				throw new InvalidNodeException("Cannot use units when mixing numeric and color: "+this, this);
 			}
 			ColorNode that = (ColorNode)operand;
-			int r = (int)(this.number - that.getRedChannel());
-			int g = (int)(this.number - that.getGreenChannel());
-			int b = (int)(this.number - that.getBlueChannel());
-			return new ColorNode(r, g, b, this.getIndex(), this.getLine(), this.getColumn());
+			int r = (int)(number - that.getRedChannel());
+			int g = (int)(number - that.getGreenChannel());
+			int b = (int)(number - that.getBlueChannel());
+			return new ColorNode(r, g, b, getIndex(), getLine(), getColumn());
 		}
 
 		return super.divide(operand);
