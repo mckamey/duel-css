@@ -131,10 +131,17 @@ public class CssCompiler {
 			int col = ex.getColumn(),
 				line=ex.getLine();
 
-			LineNumberReader reader = new LineNumberReader(new FileReader(inputFile));
 			String text = "";
-			for (int i=-1; i<line; i++) {
-				text = reader.readLine();
+			LineNumberReader reader = null;
+			try {
+				reader = new LineNumberReader(new FileReader(inputFile));
+				for (int i=-1; i<line; i++) {
+					text = reader.readLine();
+				}
+			} finally {
+				if (reader != null) {
+					reader.close();
+				}
 			}
 
 			log.error(text);

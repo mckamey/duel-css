@@ -162,6 +162,8 @@ public class CssLexer implements Iterator<CssToken> {
 			case ERROR:
 				// remain in these states
 				return this.token;
+			default:
+				break;
 		}
 
 		boolean isNumber = false;
