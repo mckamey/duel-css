@@ -2,7 +2,8 @@ package org.duelengine.css.parsing;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;
+import org.duelengine.css.parsing.CssParser.Syntax;
+import org.junit.*;
 
 public class CssLexerTest {
 
@@ -1302,9 +1303,7 @@ public class CssLexerTest {
 				CssToken.blockEnd()
 			};
 
-		CssLexer lexer = new CssLexer(input);
-		lexer.allowLineComments(true);
-		Object[] actual = lexer.toList().toArray();
+		Object[] actual = new CssLexer(input, Syntax.LESS).toList().toArray();
 
 		assertArrayEquals(expected, actual);
 	}
@@ -1323,9 +1322,7 @@ public class CssLexerTest {
 				CssToken.comment("trailing comment")
 			};
 
-		CssLexer lexer = new CssLexer(input);
-		lexer.allowLineComments(true);
-		Object[] actual = lexer.toList().toArray();
+		Object[] actual = new CssLexer(input, Syntax.LESS).toList().toArray();
 
 		assertArrayEquals(expected, actual);
 	}

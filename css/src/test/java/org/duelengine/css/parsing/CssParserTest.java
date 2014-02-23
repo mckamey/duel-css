@@ -3,9 +3,25 @@ package org.duelengine.css.parsing;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import org.duelengine.css.ast.*;
-import org.junit.Ignore;
-import org.junit.Test;
+
+import org.duelengine.css.ast.AccessorNode;
+import org.duelengine.css.ast.AtRuleNode;
+import org.duelengine.css.ast.BlockNode;
+import org.duelengine.css.ast.ColorNode;
+import org.duelengine.css.ast.CombinatorNode;
+import org.duelengine.css.ast.CombinatorType;
+import org.duelengine.css.ast.CommentNode;
+import org.duelengine.css.ast.DeclarationNode;
+import org.duelengine.css.ast.FunctionNode;
+import org.duelengine.css.ast.NumericNode;
+import org.duelengine.css.ast.OperatorNode;
+import org.duelengine.css.ast.RuleSetNode;
+import org.duelengine.css.ast.SelectorNode;
+import org.duelengine.css.ast.StringNode;
+import org.duelengine.css.ast.StyleSheetNode;
+import org.duelengine.css.ast.ValueNode;
+import org.duelengine.css.parsing.CssParser.Syntax;
+import org.junit.*;
 
 public class CssParserTest {
 
@@ -1732,7 +1748,7 @@ public class CssParserTest {
 					"color",
 					new ColorNode("#4D926F"))));
 
-		StyleSheetNode actual = new CssParser().parse(input);
+		StyleSheetNode actual = new CssParser(Syntax.LESS).parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -1769,7 +1785,7 @@ public class CssParserTest {
 					"color",
 					new ColorNode("#6c94be"))));
 
-		StyleSheetNode actual = new CssParser().parse(input);
+		StyleSheetNode actual = new CssParser(Syntax.LESS).parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -1841,7 +1857,7 @@ public class CssParserTest {
 					"color",
 					new ColorNode("#333333"))));
 
-		StyleSheetNode actual = new CssParser().parse(input);
+		StyleSheetNode actual = new CssParser(Syntax.LESS).parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -1912,7 +1928,7 @@ public class CssParserTest {
 					"height",
 					new NumericNode("65%"))));
 
-		StyleSheetNode actual = new CssParser().parse(input);
+		StyleSheetNode actual = new CssParser(Syntax.LESS).parse(input);
 
 		assertEquals(expected, actual);
 	}
@@ -2312,7 +2328,7 @@ public class CssParserTest {
 					"border-radius",
 					new NumericNode("5px"))));
 
-		StyleSheetNode actual = new CssParser().parse(input);
+		StyleSheetNode actual = new CssParser(Syntax.LESS).parse(input);
 
 		assertEquals(expected, actual);
 	}

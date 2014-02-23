@@ -7,6 +7,8 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.duelengine.css.parsing.CssParser.Syntax;
+
 /**
  * Processes source text into a token sequence
  */
@@ -15,8 +17,8 @@ public class CssLexer implements Iterator<CssToken> {
 	private static final int EOF = -1;
 	private static final int CAPACITY = 16;
 
+	private final Syntax syntax;
 	private final LineNumberReader reader;
-	private boolean allowLineComments;
 	private final StringBuilder buffer = new StringBuilder(512);
 	private CssToken token = CssToken.start;
 	private boolean hasToken;
@@ -38,7 +40,16 @@ public class CssLexer implements Iterator<CssToken> {
 	 * @param text
 	 */
 	public CssLexer(String text) {
-		this(new StringReader(text));
+		this(new StringReader(text), null);
+	}
+
+	/**
+	 * Ctor
+	 * @param text
+	 * @param allowLineComments
+	 */
+	public CssLexer(String text, Syntax lexSyntax) {
+		this(new StringReader(text), lexSyntax);
 	}
 
 	/**
@@ -46,7 +57,21 @@ public class CssLexer implements Iterator<CssToken> {
 	 * @param source
 	 */
 	public CssLexer(Reader source) {
-		reader = new LineNumberReader(source);
+		this(source, null);
+	}
+
+	/**
+	 * Ctor
+	 * @param source
+	 * @param allowLineComments
+	 */
+	public CssLexer(Reader source, Syntax lexSyntax) {
+		syntax = (lexSyntax == null) ? Syntax.CSS : lexSyntax;
+
+		reader = (source instanceof LineNumberReader) ?
+			(LineNumberReader)source :
+			new LineNumberReader(source);
+
 		try {
 			// prime the sequence
 			nextChar();
@@ -100,19 +125,11 @@ public class CssLexer implements Iterator<CssToken> {
 	}
 
 	/**
-	 * Gets if line comments are allowed 
+	 * Gets the syntax used 
 	 * @return
 	 */
-	public boolean allowLineComments() {
-		return allowLineComments;
-	}
-
-	/**
-	 * Sets if line comments are allowed
-	 * @param value
-	 */
-	public void allowLineComments(boolean value) {
-		allowLineComments = value;
+	public Syntax syntax() {
+		return syntax;
 	}
 
 	/**
@@ -612,7 +629,8 @@ public class CssLexer implements Iterator<CssToken> {
 			// NOTE: this may throw an exception if block was unterminated
 			resetMark();
 
-			if (allowLineComments) {
+			if (syntax == Syntax.LESS) {
+				// allow C++ style line comments
 				setMark(CAPACITY);
 				value = tryScanBlockValue(CssGrammar.OP_COMMENT_ALT_BEGIN, CssGrammar.OP_COMMENT_ALT_END);
 

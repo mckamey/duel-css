@@ -32,6 +32,11 @@ import org.duelengine.css.codegen.ArithmeticEvaluator;
  */
 public class CssParser {
 
+	public enum Syntax {
+		CSS,
+		LESS
+	}
+
 	private static final String HSL = "hsl";
 	private static final String HSLA = "hsla";
 
@@ -42,9 +47,22 @@ public class CssParser {
 		FUNCTION,
 		SELECTOR
 	}
-	
+
+	private final Syntax syntax;
 	private CssToken next;
 	private Iterator<CssToken> tokens;
+
+	public CssParser() {
+		this(null);
+	}
+
+	public CssParser(Syntax parseSyntax) {
+		syntax = (parseSyntax == null) ? Syntax.CSS : parseSyntax;
+	}
+
+	public Syntax syntax() {
+		return syntax;
+	}
 
 	/**
 	 * Parses token sequence into AST
@@ -369,7 +387,7 @@ public class CssParser {
 		// consume ':'
 		next = null;
 
-		boolean requiredEval = (ident.getToken() == CssTokenType.AT_RULE);
+		boolean requiredEval = (syntax == Syntax.LESS) && (ident.getToken() == CssTokenType.AT_RULE);
 		boolean optionalEval = false;
 
 		// LESS variable declarations leverage @rule syntax
@@ -390,9 +408,14 @@ public class CssParser {
 					return;
 
 				case AT_RULE:
+					if (syntax != Syntax.LESS) {
+						throw new InvalidTokenException("Invalid declaration: "+ident, ident);
+					}
+
 					// LESS variable references leverage @rule syntax
 					declaration.appendChild(new LessVariableReferenceNode(next.getValue(), next.getIndex(), next.getLine(), next.getColumn()));
 					requiredEval = true;
+
 					// consume token
 					next = null;
 					continue;
@@ -496,7 +519,7 @@ public class CssParser {
 							case CssGrammar.OP_PAREN_END:
 								if (nesting <= 0) {
 									// elevate any params to parent scope
-									if (args.hasVariables() && parent instanceof SelectorNode) {
+									if ((syntax == Syntax.LESS) && args.hasVariables() && parent instanceof SelectorNode) {
 										ContainerNode ruleSet = parent.getParent();
 										if (ruleSet != null) {
 											for (LessVariableDeclarationNode variable : args.getVariables()) {
@@ -515,7 +538,9 @@ public class CssParser {
 								nesting--;
 								break;
 							case ',':
-								// TODO: check if children are LESS vars and consume?
+								if (syntax == Syntax.LESS) {
+									// TODO: check if children are LESS vars and consume?
+								}
 								break;
 						}
 					}

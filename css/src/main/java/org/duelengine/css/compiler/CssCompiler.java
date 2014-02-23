@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.List;
+import java.util.Locale;
 
 import org.duelengine.css.ast.StyleSheetNode;
 import org.duelengine.css.codegen.CodeGenSettings;
@@ -14,6 +15,7 @@ import org.duelengine.css.codegen.CssFormatter;
 import org.duelengine.css.parsing.CssLexer;
 import org.duelengine.css.parsing.CssParser;
 import org.duelengine.css.parsing.SyntaxException;
+import org.duelengine.css.parsing.CssParser.Syntax;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,11 +90,15 @@ public class CssCompiler {
 			settings = new CodeGenSettings();
 		}
 
+		String ext = source.getName();
+		ext = ext.substring(ext.lastIndexOf('.')+1).toLowerCase(Locale.ROOT);
+		Syntax syntax = LESS_EXT.equals(ext) ? Syntax.LESS : Syntax.CSS;
+
 		StyleSheetNode stylesheet;
 		FileReader reader = null;
 		try {
 			reader = new FileReader(source);
-			stylesheet = new CssParser().parse(new CssLexer(reader));
+			stylesheet = new CssParser(syntax).parse(new CssLexer(reader, syntax));
 
 		} catch (SyntaxException ex) {
 			reportSyntaxError(source, ex, verbose);
