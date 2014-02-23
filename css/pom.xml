@@ -9,24 +9,24 @@
 		<relativePath></relativePath>
 	</parent>
 
-	<groupId>org.cssless</groupId>
+	<groupId>org.duelengine</groupId>
 	<artifactId>css</artifactId>
 	<version>0.4.2</version>
 	<packaging>jar</packaging>
 
 	<name>CSS</name>
-	<description>CSS3 compactor / LESS processor for the JVM.</description>
-	<url>http://cssless.org</url>
+	<description>CSS3 processor for the JVM</description>
+	<url>http://duelengine.org</url>
 	<licenses>
 		<license>
 			<name>MIT License</name>
-			<url>https://bitbucket.org/mckamey/cssless/src/tip/LICENSE.txt</url>
+			<url>https://bitbucket.org/mckamey/duel-css/src/tip/LICENSE.txt</url>
 		</license>
 	</licenses>
 	<scm>
-		<url>https://bitbucket.org/mckamey/cssless</url>
-		<connection>scm:hg:https://bitbucket.org/mckamey/cssless</connection>
-		<developerConnection>scm:hg:https://bitbucket.org/mckamey/cssless</developerConnection>
+		<url>https://bitbucket.org/mckamey/duel-css</url>
+		<connection>scm:hg:https://bitbucket.org/mckamey/duel-css</connection>
+		<developerConnection>scm:hg:https://bitbucket.org/mckamey/duel-css</developerConnection>
 	</scm>
 	<developers>
 		<developer>
@@ -76,7 +76,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>org.cssless.css.compiler.CLI</mainClass>
+							<mainClass>org.duelengine.css.compiler.CLI</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
