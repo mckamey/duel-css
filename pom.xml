@@ -14,13 +14,13 @@
 	<licenses>
 		<license>
 			<name>MIT License</name>
-			<url>https://bitbucket.org/mckamey/duel-css/src/tip/LICENSE.txt</url>
+			<url>https://github.com/mckamey/duel/raw/master/LICENSE.txt</url>
 		</license>
 	</licenses>
 	<scm>
-		<url>https://bitbucket.org/mckamey/duel-css</url>
-		<connection>scm:hg:https://bitbucket.org/mckamey/duel-css</connection>
-		<developerConnection>scm:hg:https://bitbucket.org/mckamey/duel-css</developerConnection>
+		<url>https://github.com/mckamey/duel-css</url>
+		<connection>scm:git:https://github.com/mckamey/duel-css</connection>
+		<developerConnection>scm:git:https://github.com/mckamey/duel-css</developerConnection>
 	</scm>
 	<developers>
 		<developer>

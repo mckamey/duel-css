@@ -351,6 +351,31 @@ public class CssParserTest {
 	}
 
 	@Test
+	public void multibyteTest() throws IOException {
+
+		CssToken[] input = {
+				CssToken.value(".foo:before"),
+				CssToken.blockBegin(),
+				CssToken.value("content"),
+				CssToken.operator(":"),
+				CssToken.string("'❯'"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		StyleSheetNode expected = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(".foo:before"),
+				new DeclarationNode(
+					"content",
+					new StringNode("'❯'"))));
+
+		StyleSheetNode actual = new CssParser().parse(input);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void ruleSetEmptyTest() throws IOException {
 
 		CssToken[] input = {

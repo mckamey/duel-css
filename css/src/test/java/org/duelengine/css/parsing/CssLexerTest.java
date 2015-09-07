@@ -253,6 +253,26 @@ public class CssLexerTest {
 	}
 
 	@Test
+	public void multibyteTest() {
+
+		String input = ".foo:before {\r\n\tcontent: '❯';\r\n}";
+
+		Object[] expected = {
+				CssToken.value(".foo:before"),
+				CssToken.blockBegin(),
+				CssToken.value("content"),
+				CssToken.operator(":"),
+				CssToken.string("'❯'"),
+				CssToken.ruleDelim(),
+				CssToken.blockEnd()
+			};
+
+		Object[] actual = new CssLexer(input).toList().toArray();
+
+		assertArrayEquals(expected, actual);
+	}
+
+	@Test
 	public void ruleSetEmptyTest() {
 
 		String input = "h1 {}";

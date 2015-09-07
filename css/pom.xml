@@ -20,13 +20,13 @@
 	<licenses>
 		<license>
 			<name>MIT License</name>
-			<url>https://bitbucket.org/mckamey/duel-css/src/tip/LICENSE.txt</url>
+			<url>https://github.com/mckamey/duel/raw/master/LICENSE.txt</url>
 		</license>
 	</licenses>
 	<scm>
-		<url>https://bitbucket.org/mckamey/duel-css</url>
-		<connection>scm:hg:https://bitbucket.org/mckamey/duel-css</connection>
-		<developerConnection>scm:hg:https://bitbucket.org/mckamey/duel-css</developerConnection>
+		<url>https://github.com/mckamey/duel-css</url>
+		<connection>scm:hg:https://github.com/mckamey/duel-css</connection>
+		<developerConnection>scm:hg:https://github.com/mckamey/duel-css</developerConnection>
 	</scm>
 	<developers>
 		<developer>
@@ -39,9 +39,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<slf4j.version>1.7.6</slf4j.version>
-		<junit.version>4.11</junit.version>
-		<jvm.version>1.6</jvm.version>
+		<slf4j.version>1.7.12</slf4j.version>
+		<junit.version>4.12</junit.version>
+		<jvm.version>1.8</jvm.version>
 	</properties>
 
 	<dependencies>

@@ -280,6 +280,25 @@ public class CssFormatterTest {
 	}
 
 	@Test
+	public void multibyteTest() throws IOException {
+
+		StyleSheetNode input = new StyleSheetNode(
+			new RuleSetNode(
+				new SelectorNode(".foo:before"),
+				new DeclarationNode(
+					"content",
+					new StringNode("'❯'"))));
+
+		String expected = ".foo:before{content:'❯';}";
+		
+		StringBuilder output = new StringBuilder();
+		new CssFormatter().write(output, input);
+		String actual = output.toString();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void ruleSetEmptyTest() throws IOException {
 
 		StyleSheetNode input = new StyleSheetNode(
